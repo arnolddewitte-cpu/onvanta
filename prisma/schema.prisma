@@ -1,0 +1,226 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  super_admin
+  company_admin
+  manager
+  employee
+}
+
+enum PlanType {
+  starter
+  pro
+  enterprise
+}
+
+enum CompanyStatus {
+  trial
+  active
+  paused
+  cancelled
+}
+
+enum InstanceStatus {
+  scheduled
+  active
+  at_risk
+  completed
+  paused
+  cancelled
+}
+
+enum TaskStatus {
+  to_do
+  in_progress
+  awaiting_approval
+  done
+  overdue
+  skipped
+}
+
+enum BlockType {
+  video
+  text
+  document
+  task
+  flashcards
+  questionnaire
+  meeting
+  acknowledgement
+  manager_approval
+}
+
+enum ReviewResult {
+  good
+  doubt
+  fail
+}
+
+model Company {
+  id          String        @id @default(cuid())
+  name        String
+  slug        String        @unique
+  logoUrl     String?
+  plan        PlanType      @default(starter)
+  status      CompanyStatus @default(trial)
+  trialEndsAt DateTime?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  users       User[]
+  templates   Template[]
+  onboardings OnboardingInstance[]
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  avatarUrl String?
+  role      UserRole @default(employee)
+  companyId String
+  company   Company  @relation(fields: [companyId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  managedOnboardings OnboardingInstance[] @relation("ManagerOnboardings")
+  onboardings        OnboardingInstance[] @relation("EmployeeOnboardings")
+  flashcardReviews   FlashcardReview[]
+  tasks              Task[]
+}
+
+model Template {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  companyId   String
+  company     Company  @relation(fields: [companyId], references: [id])
+  published   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  phases      TemplatePhase[]
+  onboardings OnboardingInstance[]
+}
+
+model TemplatePhase {
+  id         String   @id @default(cuid())
+  templateId String
+  template   Template @relation(fields: [templateId], references: [id])
+  title      String
+  order      Int
+  createdAt  DateTime @default(now())
+
+  steps TemplateStep[]
+}
+
+model TemplateStep {
+  id          String        @id @default(cuid())
+  phaseId     String
+  phase       TemplatePhase @relation(fields: [phaseId], references: [id])
+  title       String
+  description String?
+  order       Int
+  createdAt   DateTime      @default(now())
+
+  blocks   StepBlock[]
+  progress StepProgress[]
+}
+
+model StepBlock {
+  id          String    @id @default(cuid())
+  stepId      String
+  step        TemplateStep @relation(fields: [stepId], references: [id])
+  type        BlockType
+  title       String
+  required    Boolean   @default(true)
+  order       Int
+  config      Json?
+  createdAt   DateTime  @default(now())
+}
+
+model OnboardingInstance {
+  id         String         @id @default(cuid())
+  templateId String
+  template   Template       @relation(fields: [templateId], references: [id])
+  employeeId String
+  employee   User           @relation("EmployeeOnboardings", fields: [employeeId], references: [id])
+  managerId  String?
+  manager    User?          @relation("ManagerOnboardings", fields: [managerId], references: [id])
+  companyId  String
+  company    Company        @relation(fields: [companyId], references: [id])
+  status     InstanceStatus @default(active)
+  startDate  DateTime       @default(now())
+  endDate    DateTime?
+  progressPct Int           @default(0)
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+
+  stepProgress StepProgress[]
+  tasks        Task[]
+  flashcardReviews FlashcardReview[]
+}
+
+model StepProgress {
+  id           String             @id @default(cuid())
+  instanceId   String
+  instance     OnboardingInstance @relation(fields: [instanceId], references: [id])
+  stepId       String
+  step         TemplateStep       @relation(fields: [stepId], references: [id])
+  completed    Boolean            @default(false)
+  completedAt  DateTime?
+  createdAt    DateTime           @default(now())
+}
+
+model Task {
+  id         String             @id @default(cuid())
+  instanceId String
+  instance   OnboardingInstance @relation(fields: [instanceId], references: [id])
+  userId     String
+  user       User               @relation(fields: [userId], references: [id])
+  title      String
+  status     TaskStatus         @default(to_do)
+  dueDate    DateTime?
+  doneAt     DateTime?
+  createdAt  DateTime           @default(now())
+  updatedAt  DateTime           @updatedAt
+}
+
+model FlashcardSet {
+  id        String      @id @default(cuid())
+  title     String
+  createdAt DateTime    @default(now())
+
+  cards   Flashcard[]
+  reviews FlashcardReview[]
+}
+
+model Flashcard {
+  id        String       @id @default(cuid())
+  setId     String
+  set       FlashcardSet @relation(fields: [setId], references: [id])
+  question  String
+  answer    String
+  order     Int
+  createdAt DateTime     @default(now())
+}
+
+model FlashcardReview {
+  id         String             @id @default(cuid())
+  userId     String
+  user       User               @relation(fields: [userId], references: [id])
+  setId      String
+  set        FlashcardSet       @relation(fields: [setId], references: [id])
+  instanceId String?
+  instance   OnboardingInstance? @relation(fields: [instanceId], references: [id])
+  result     ReviewResult
+  nextReview DateTime
+  interval   Int                @default(1)
+  createdAt  DateTime           @default(now())
+}
