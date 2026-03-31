@@ -57,23 +57,6 @@ export default function ManagerPage() {
 
   return (
     <main className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-100 px-6 py-4">
-        <div className="max-w-4xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-semibold text-sm">O</span>
-            </div>
-            <span className="font-semibold text-gray-900">Onvanta</span>
-          </div>
-          <button
-            onClick={() => router.push('/manager/approvals')}
-            className="text-sm bg-blue-50 text-blue-600 px-4 py-2 rounded-xl hover:bg-blue-100 transition-colors font-medium"
-          >
-            Goedkeuringen (2)
-          </button>
-        </div>
-      </div>
 
       <div className="max-w-4xl mx-auto px-6 py-8">
         <div className="mb-8">

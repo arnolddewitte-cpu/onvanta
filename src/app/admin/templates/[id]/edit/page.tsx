@@ -102,34 +102,18 @@ export default function TemplateEditPage() {
 
   return (
     <main className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-100 px-6 py-4">
-        <div className="max-w-4xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-semibold text-sm">O</span>
-            </div>
-            <span className="font-semibold text-gray-900">Onvanta</span>
-            <span className="text-xs bg-gray-100 text-gray-500 px-2 py-1 rounded-full">Admin</span>
-          </div>
-          <div className="flex items-center gap-3">
-            <a href="/admin/templates" className="text-sm text-gray-500 hover:text-gray-700">← Templates</a>
-            <button
-              onClick={handleSave}
-              className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
-                saved
-                  ? 'bg-green-500 text-white'
-                  : 'bg-blue-600 text-white hover:bg-blue-700'
-              }`}
-            >
-              {saved ? '✓ Opgeslagen!' : 'Opslaan'}
-            </button>
-          </div>
-        </div>
-      </div>
-
       <div className="max-w-4xl mx-auto px-6 py-8">
-        <h1 className="text-2xl font-semibold text-gray-900 mb-6">Template bewerken</h1>
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-2xl font-semibold text-gray-900">Template bewerken</h1>
+          <button
+            onClick={handleSave}
+            className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
+              saved ? 'bg-green-500 text-white' : 'bg-blue-600 text-white hover:bg-blue-700'
+            }`}
+          >
+            {saved ? '✓ Opgeslagen!' : 'Opslaan'}
+          </button>
+        </div>
 
         {/* Template info */}
         <div className="bg-white rounded-2xl border border-gray-100 p-6 mb-6">
@@ -159,7 +143,6 @@ export default function TemplateEditPage() {
         <div className="space-y-4 mb-4">
           {template.phases.map((phase, i) => (
             <div key={phase.id} className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
-              {/* Fase header */}
               <div className="p-4 bg-gray-50 border-b border-gray-100 flex items-center gap-3">
                 <div className="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
                   <span className="text-white text-xs font-bold">{i + 1}</span>
@@ -178,7 +161,6 @@ export default function TemplateEditPage() {
                 </button>
               </div>
 
-              {/* Stappen */}
               <div className="divide-y divide-gray-50">
                 {phase.steps.map((step, j) => (
                   <div key={step.id} className="p-4 flex items-center gap-3">
@@ -199,7 +181,6 @@ export default function TemplateEditPage() {
                 ))}
               </div>
 
-              {/* Stap toevoegen */}
               <div className="p-3 border-t border-gray-50">
                 <button
                   onClick={() => addStep(phase.id)}
@@ -212,7 +193,6 @@ export default function TemplateEditPage() {
           ))}
         </div>
 
-        {/* Fase toevoegen */}
         <button
           onClick={addPhase}
           className="w-full bg-white border-2 border-dashed border-gray-200 rounded-2xl py-4 text-sm text-gray-500 hover:border-blue-300 hover:text-blue-600 transition-colors"

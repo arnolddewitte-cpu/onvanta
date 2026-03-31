@@ -22,7 +22,6 @@ export default function FlashcardsPage() {
     const newResults = [...results, result]
     setResults(newResults)
     setFlipped(false)
-
     if (currentIndex + 1 >= cards.length) {
       setDone(true)
     } else {
@@ -44,23 +43,10 @@ export default function FlashcardsPage() {
 
     return (
       <main className="min-h-screen bg-gray-50">
-        <div className="bg-white border-b border-gray-100 px-6 py-4">
-          <div className="max-w-2xl mx-auto flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-semibold text-sm">O</span>
-              </div>
-              <span className="font-semibold text-gray-900">Onvanta</span>
-            </div>
-            <a href="/dashboard" className="text-sm text-gray-500 hover:text-gray-700">← Dashboard</a>
-          </div>
-        </div>
-
         <div className="max-w-md mx-auto px-6 py-16 text-center">
           <div className="text-5xl mb-4">🎉</div>
           <h1 className="text-2xl font-semibold text-gray-900 mb-2">Sessie afgerond!</h1>
           <p className="text-gray-500 mb-8">Je hebt alle {cards.length} kaarten doorlopen.</p>
-
           <div className="grid grid-cols-3 gap-4 mb-8">
             <div className="bg-green-50 rounded-2xl p-4">
               <p className="text-2xl font-bold text-green-600">{correct}</p>
@@ -75,7 +61,6 @@ export default function FlashcardsPage() {
               <p className="text-xs text-red-600 mt-1">Fout</p>
             </div>
           </div>
-
           <button
             onClick={restart}
             className="bg-blue-600 text-white px-6 py-3 rounded-xl text-sm font-medium hover:bg-blue-700 transition-colors"
@@ -89,20 +74,7 @@ export default function FlashcardsPage() {
 
   return (
     <main className="min-h-screen bg-gray-50">
-      <div className="bg-white border-b border-gray-100 px-6 py-4">
-        <div className="max-w-2xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-semibold text-sm">O</span>
-            </div>
-            <span className="font-semibold text-gray-900">Onvanta</span>
-          </div>
-          <a href="/dashboard" className="text-sm text-gray-500 hover:text-gray-700">← Dashboard</a>
-        </div>
-      </div>
-
       <div className="max-w-md mx-auto px-6 py-8">
-        {/* Voortgang */}
         <div className="flex items-center justify-between mb-6">
           <span className="text-sm text-gray-500">{currentIndex + 1} / {cards.length}</span>
           <div className="flex gap-1">
@@ -112,7 +84,6 @@ export default function FlashcardsPage() {
           </div>
         </div>
 
-        {/* Kaart */}
         <div
           onClick={() => setFlipped(!flipped)}
           className="bg-white rounded-2xl border border-gray-100 p-8 min-h-64 flex flex-col items-center justify-center cursor-pointer hover:shadow-md transition-shadow mb-6"
@@ -131,7 +102,6 @@ export default function FlashcardsPage() {
           )}
         </div>
 
-        {/* Knoppen */}
         {!flipped ? (
           <button
             onClick={() => setFlipped(true)}

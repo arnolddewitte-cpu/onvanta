@@ -28,24 +28,6 @@ export default function AdminPage() {
 
   return (
     <main className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-100 px-6 py-4">
-        <div className="max-w-5xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-semibold text-sm">O</span>
-            </div>
-            <span className="font-semibold text-gray-900">Onvanta</span>
-            <span className="text-xs bg-gray-100 text-gray-500 px-2 py-1 rounded-full">Admin</span>
-          </div>
-          <button
-            onClick={() => router.push('/admin/onboardings/new')}
-            className="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-blue-700 transition-colors"
-          >
-            + Onboarding starten
-          </button>
-        </div>
-      </div>
 
       <div className="max-w-5xl mx-auto px-6 py-8">
         <div className="mb-8">
