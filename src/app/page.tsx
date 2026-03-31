@@ -1,25 +1,12 @@
 import Link from 'next/link'
+import MarketingNav from '@/components/marketing-nav'
+import MarketingFooter from '@/components/marketing-footer'
 
 export default function HomePage() {
   return (
     <main className="min-h-screen" style={{ background: '#faf9f6', fontFamily: 'DM Sans, system-ui, sans-serif' }}>
 
-      {/* Nav */}
-      <nav className="sticky top-0 z-50 border-b" style={{ background: 'rgba(250,249,246,.92)', backdropFilter: 'blur(12px)', borderColor: '#e8e7e2', padding: '0 40px', height: '60px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
-          <div style={{ width: 30, height: 30, background: '#1a5fd4', borderRadius: 7, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: 16, fontStyle: 'italic', fontFamily: 'Georgia, serif' }}>O</div>
-          <span style={{ fontSize: 16, fontWeight: 500, color: '#0f0f0e', letterSpacing: '-.3px' }}>Onvanta</span>
-        </Link>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 32 }}>
-          <a href="#features" style={{ fontSize: 14, color: '#3a3a38', textDecoration: 'none' }}>Features</a>
-          <a href="#how-it-works" style={{ fontSize: 14, color: '#3a3a38', textDecoration: 'none' }}>How it works</a>
-          <a href="#pricing" style={{ fontSize: 14, color: '#3a3a38', textDecoration: 'none' }}>Pricing</a>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <Link href="/login" style={{ fontSize: 14, color: '#3a3a38', textDecoration: 'none', padding: '7px 14px', borderRadius: 10 }}>Log in</Link>
-          <Link href="/login" style={{ fontSize: 14, fontWeight: 500, color: 'white', background: '#1a5fd4', padding: '8px 18px', borderRadius: 10, textDecoration: 'none' }}>Start free trial →</Link>
-        </div>
-      </nav>
+      <MarketingNav activePage="Home" />
 
       {/* Hero */}
       <section style={{ maxWidth: 1100, margin: '0 auto', padding: '100px 40px 80px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 80, alignItems: 'center' }}>
@@ -35,10 +22,10 @@ export default function HomePage() {
             Structured onboarding, spaced repetition flashcards, and manager visibility — all in one system built for growing teams.
           </p>
           <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 40 }}>
-            <Link href="/login" style={{ fontSize: 16, fontWeight: 500, color: 'white', background: '#1a5fd4', padding: '14px 28px', borderRadius: 12, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+            <Link href="/signup" style={{ fontSize: 16, fontWeight: 500, color: 'white', background: '#1a5fd4', padding: '14px 28px', borderRadius: 12, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
               Start free trial →
             </Link>
-            <a href="#how-it-works" style={{ fontSize: 15, color: '#3a3a38', background: 'transparent', border: '1px solid #e8e7e2', padding: '13px 24px', borderRadius: 12, textDecoration: 'none' }}>
+            <a href="#features" style={{ fontSize: 15, color: '#3a3a38', background: 'transparent', border: '1px solid #e8e7e2', padding: '13px 24px', borderRadius: 12, textDecoration: 'none' }}>
               See how it works
             </a>
           </div>
@@ -134,7 +121,7 @@ export default function HomePage() {
                     </div>
                   ))}
                 </div>
-                <Link href="/login" style={{ display: 'block', textAlign: 'center', padding: '10px 20px', borderRadius: 10, fontSize: 14, fontWeight: 500, textDecoration: 'none', background: p.featured ? '#1a5fd4' : '#f2f1ed', color: p.featured ? 'white' : '#0f0f0e' }}>
+                <Link href="/signup" style={{ display: 'block', textAlign: 'center', padding: '10px 20px', borderRadius: 10, fontSize: 14, fontWeight: 500, textDecoration: 'none', background: p.featured ? '#1a5fd4' : '#f2f1ed', color: p.featured ? 'white' : '#0f0f0e' }}>
                   {p.name === 'Enterprise' ? 'Contact sales' : 'Start free trial'}
                 </Link>
               </div>
@@ -147,42 +134,13 @@ export default function HomePage() {
       <section style={{ background: '#1a5fd4', padding: '80px 40px', textAlign: 'center' }}>
         <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 'clamp(32px, 4vw, 48px)', fontWeight: 400, color: 'white', marginBottom: 16 }}>Ready to onboard smarter?</h2>
         <p style={{ fontSize: 18, color: 'rgba(255,255,255,.8)', fontWeight: 300, maxWidth: 520, margin: '0 auto 32px' }}>Start your free 14-day trial. Full Pro access, no credit card required.</p>
-        <Link href="/login" style={{ fontSize: 16, fontWeight: 500, color: '#1a5fd4', background: 'white', padding: '14px 28px', borderRadius: 12, textDecoration: 'none', display: 'inline-block' }}>
+        <Link href="/signup" style={{ fontSize: 16, fontWeight: 500, color: '#1a5fd4', background: 'white', padding: '14px 28px', borderRadius: 12, textDecoration: 'none', display: 'inline-block' }}>
           Start free trial →
         </Link>
         <div style={{ fontSize: 13, color: 'rgba(255,255,255,.6)', marginTop: 16 }}>14-day free trial · Full Pro access · No credit card required</div>
       </section>
 
-      {/* Footer */}
-      <footer style={{ background: '#0f0f0e', padding: '48px 40px 24px' }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: 40, marginBottom: 40 }}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
-              <div style={{ width: 30, height: 30, background: '#1a5fd4', borderRadius: 7, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: 16, fontStyle: 'italic', fontFamily: 'Georgia, serif' }}>O</div>
-              <span style={{ fontSize: 16, fontWeight: 500, color: 'white' }}>Onvanta</span>
-            </div>
-            <p style={{ fontSize: 14, color: '#7a7a78', lineHeight: 1.6, maxWidth: 260 }}>New hires, productive faster. Onboarding, training, and knowledge retention in one system.</p>
-          </div>
-          {[
-            { title: 'Product', links: ['Features', 'How it works', 'Pricing'] },
-            { title: 'Company', links: ['About', 'Blog', 'Contact'] },
-            { title: 'Legal', links: ['Privacy policy', 'Terms of service', 'Cookie policy'] },
-          ].map((col, i) => (
-            <div key={i}>
-              <h4 style={{ fontSize: 13, fontWeight: 500, color: 'white', marginBottom: 16 }}>{col.title}</h4>
-              {col.links.map((l, j) => (
-                <div key={j} style={{ marginBottom: 10 }}>
-                  <a href="#" style={{ fontSize: 14, color: '#7a7a78', textDecoration: 'none' }}>{l}</a>
-                </div>
-              ))}
-            </div>
-          ))}
-        </div>
-        <div style={{ borderTop: '1px solid #1a1a1a', paddingTop: 24, display: 'flex', justifyContent: 'space-between', fontSize: 13, color: '#7a7a78' }}>
-          <span>© 2026 Onvanta. All rights reserved.</span>
-          <span>Made in the Netherlands 🇳🇱</span>
-        </div>
-      </footer>
+      <MarketingFooter />
     </main>
   )
 }

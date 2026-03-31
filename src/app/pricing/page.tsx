@@ -2,6 +2,8 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
+import MarketingNav from '@/components/marketing-nav'
+import MarketingFooter from '@/components/marketing-footer'
 
 export default function PricingPage() {
   const [annual, setAnnual] = useState(true)
@@ -63,26 +65,10 @@ export default function PricingPage() {
     },
   ]
 
-  const nav = { background: 'rgba(250,249,246,.92)', backdropFilter: 'blur(12px)', borderBottom: '1px solid #e8e7e2', padding: '0 40px', height: 60, display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky' as const, top: 0, zIndex: 50 }
-
   return (
     <main style={{ background: '#faf9f6', fontFamily: 'DM Sans, system-ui, sans-serif', minHeight: '100vh' }}>
 
-      {/* Nav */}
-      <nav style={nav}>
-        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
-          <div style={{ width: 30, height: 30, background: '#1a5fd4', borderRadius: 7, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: 16, fontStyle: 'italic', fontFamily: 'Georgia, serif' }}>O</div>
-          <span style={{ fontSize: 16, fontWeight: 500, color: '#0f0f0e' }}>Onvanta</span>
-        </Link>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 32 }}>
-          <Link href="/#features" style={{ fontSize: 14, color: '#3a3a38', textDecoration: 'none' }}>Features</Link>
-          <Link href="/pricing" style={{ fontSize: 14, color: '#0f0f0e', fontWeight: 500, textDecoration: 'none' }}>Pricing</Link>
-        </div>
-        <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-          <Link href="/login" style={{ fontSize: 14, color: '#3a3a38', textDecoration: 'none', padding: '7px 14px' }}>Log in</Link>
-          <Link href="/login" style={{ fontSize: 14, fontWeight: 500, color: 'white', background: '#1a5fd4', padding: '8px 18px', borderRadius: 10, textDecoration: 'none' }}>Start free trial →</Link>
-        </div>
-      </nav>
+      <MarketingNav activePage="Pricing" />
 
       {/* Hero */}
       <div style={{ textAlign: 'center', padding: '80px 40px 56px', maxWidth: 700, margin: '0 auto' }}>
@@ -95,14 +81,9 @@ export default function PricingPage() {
         <p style={{ fontSize: 18, fontWeight: 300, color: '#3a3a38', marginBottom: 32 }}>
           Per active onboardee. Managers and admins are always free.
         </p>
-
-        {/* Toggle */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, marginBottom: 56 }}>
           <span style={{ fontSize: 14, color: annual ? '#7a7a78' : '#0f0f0e', fontWeight: annual ? 400 : 500 }}>Monthly</span>
-          <button
-            onClick={() => setAnnual(!annual)}
-            style={{ width: 44, height: 24, borderRadius: 12, background: '#1a5fd4', border: 'none', cursor: 'pointer', position: 'relative' }}
-          >
+          <button onClick={() => setAnnual(!annual)} style={{ width: 44, height: 24, borderRadius: 12, background: '#1a5fd4', border: 'none', cursor: 'pointer', position: 'relative' }}>
             <div style={{ position: 'absolute', width: 18, height: 18, borderRadius: '50%', background: 'white', top: 3, left: annual ? 23 : 3, transition: 'left .2s' }} />
           </button>
           <span style={{ fontSize: 14, color: annual ? '#0f0f0e' : '#7a7a78', fontWeight: annual ? 500 : 400 }}>Annual</span>
@@ -147,7 +128,7 @@ export default function PricingPage() {
                 </div>
               ))}
             </div>
-            <Link href="/login" style={{ display: 'block', textAlign: 'center', padding: '11px', borderRadius: 10, fontSize: 14, fontWeight: 500, textDecoration: 'none', background: plan.featured ? '#1a5fd4' : 'transparent', color: plan.featured ? 'white' : '#3a3a38', border: plan.featured ? 'none' : '1px solid #e8e7e2' }}>
+            <Link href={plan.cta === 'Contact sales' ? '/contact' : '/signup'} style={{ display: 'block', textAlign: 'center', padding: '11px', borderRadius: 10, fontSize: 14, fontWeight: 500, textDecoration: 'none', background: plan.featured ? '#1a5fd4' : 'transparent', color: plan.featured ? 'white' : '#3a3a38', border: plan.featured ? 'none' : '1px solid #e8e7e2' }}>
               {plan.cta}
             </Link>
           </div>
@@ -176,41 +157,12 @@ export default function PricingPage() {
       <section style={{ background: '#1a5fd4', padding: '80px 40px', textAlign: 'center' }}>
         <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 'clamp(32px, 4vw, 48px)', fontWeight: 400, color: 'white', marginBottom: 16 }}>Start your free trial today.</h2>
         <p style={{ fontSize: 18, color: 'rgba(255,255,255,.8)', fontWeight: 300, maxWidth: 440, margin: '0 auto 32px' }}>14 days, full Pro access, no credit card required.</p>
-        <Link href="/login" style={{ fontSize: 16, fontWeight: 500, color: '#1a5fd4', background: 'white', padding: '14px 28px', borderRadius: 12, textDecoration: 'none', display: 'inline-block' }}>
+        <Link href="/signup" style={{ fontSize: 16, fontWeight: 500, color: '#1a5fd4', background: 'white', padding: '14px 28px', borderRadius: 12, textDecoration: 'none', display: 'inline-block' }}>
           Start free trial →
         </Link>
       </section>
 
-      {/* Footer */}
-      <footer style={{ background: '#0f0f0e', padding: '48px 40px 24px' }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: 40, marginBottom: 40 }}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
-              <div style={{ width: 30, height: 30, background: '#1a5fd4', borderRadius: 7, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: 16, fontStyle: 'italic', fontFamily: 'Georgia, serif' }}>O</div>
-              <span style={{ fontSize: 16, fontWeight: 500, color: 'white' }}>Onvanta</span>
-            </div>
-            <p style={{ fontSize: 14, color: '#7a7a78', lineHeight: 1.6, maxWidth: 260 }}>New hires, productive faster.</p>
-          </div>
-          {[
-            { title: 'Product', links: ['Features', 'Pricing'] },
-            { title: 'Company', links: ['About', 'Contact'] },
-            { title: 'Legal', links: ['Privacy policy', 'Terms of service'] },
-          ].map((col, i) => (
-            <div key={i}>
-              <h4 style={{ fontSize: 13, fontWeight: 500, color: 'white', marginBottom: 16 }}>{col.title}</h4>
-              {col.links.map((l, j) => (
-                <div key={j} style={{ marginBottom: 10 }}>
-                  <a href="#" style={{ fontSize: 14, color: '#7a7a78', textDecoration: 'none' }}>{l}</a>
-                </div>
-              ))}
-            </div>
-          ))}
-        </div>
-        <div style={{ borderTop: '1px solid #1a1a1a', paddingTop: 24, display: 'flex', justifyContent: 'space-between', fontSize: 13, color: '#7a7a78' }}>
-          <span>© 2026 Onvanta. All rights reserved.</span>
-          <span>Made in the Netherlands 🇳🇱</span>
-        </div>
-      </footer>
+      <MarketingFooter />
     </main>
   )
 }
