@@ -1,6 +1,6 @@
 'use client'
 
-import { use, useState } from 'react'
+import { use, useEffect, useState } from 'react'
 import Link from 'next/link'
 
 type BlockType = 'video' | 'text' | 'task' | 'acknowledgement' | 'flashcards'
@@ -50,26 +50,19 @@ const BLOCK_META: Record<BlockType, { label: string; icon: string; desc: string;
   flashcards:      { label: 'Flashcards',  icon: '⚡', desc: 'Kenniskaarten met spaced rep.',   color: '#db2777', bg: '#fdf2f8' },
 }
 
-const MOCK_BLOCKS: Block[] = [
-  {
-    id: '1',
-    type: 'video',
-    title: 'Welkomstvideo',
-    url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-  },
-  {
-    id: '2',
-    type: 'text',
-    title: 'Wat ga je leren?',
-    body: 'In deze stap maak je kennis met onze producten en werkwijze. Lees de video zorgvuldig en maak aantekeningen.',
-  },
-  {
-    id: '3',
-    type: 'acknowledgement',
-    title: 'Bevestiging',
-    statement: 'Ik heb de welkomstvideo bekeken en begrijp de inhoud.',
-  },
-]
+// Vertaal een DB StepBlock row terug naar een typed Block
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function rowToBlock(row: { id: string; type: string; title: string; config: any }): Block {
+  const { id, type, title, config } = row
+  switch (type as BlockType) {
+    case 'video':           return { id, type: 'video',           title, url:         config?.url         ?? '' }
+    case 'text':            return { id, type: 'text',            title, body:        config?.body        ?? '' }
+    case 'task':            return { id, type: 'task',            title, description: config?.description ?? '' }
+    case 'acknowledgement': return { id, type: 'acknowledgement', title, statement:   config?.statement   ?? '' }
+    case 'flashcards':      return { id, type: 'flashcards',      title, cards:       config?.cards       ?? [] }
+    default:                return { id, type: 'text',            title, body: '' }
+  }
+}
 
 export default function StepEditorPage({
   params: paramsPromise,
@@ -78,12 +71,26 @@ export default function StepEditorPage({
 }) {
   const params = use(paramsPromise)
 
-  const [stepTitle, setStepTitle] = useState('Welkomstvideo bekijken')
-  const [blocks, setBlocks] = useState<Block[]>(MOCK_BLOCKS)
+  const [stepTitle, setStepTitle] = useState('')
+  const [blocks, setBlocks] = useState<Block[]>([])
+  const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState('')
   const [showPicker, setShowPicker] = useState(false)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [saveError, setSaveError] = useState('')
+
+  useEffect(() => {
+    fetch(`/api/admin/steps/${params.stepId}/blocks`)
+      .then(r => r.json())
+      .then(data => {
+        if (data.error) { setLoadError(data.error); return }
+        setStepTitle(data.step.title)
+        setBlocks((data.blocks ?? []).map(rowToBlock))
+      })
+      .catch(() => setLoadError('Kon stap niet laden'))
+      .finally(() => setLoading(false))
+  }, [params.stepId])
 
   function addBlock(type: BlockType) {
     const id = Date.now().toString()
@@ -188,6 +195,18 @@ export default function StepEditorPage({
       setSaving(false)
     }
   }
+
+  if (loading) return (
+    <main style={{ minHeight: '100vh', background: '#f8f8f7', fontFamily: 'DM Sans, system-ui, sans-serif', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <span style={{ fontSize: 13, color: '#7a7a78' }}>Laden...</span>
+    </main>
+  )
+
+  if (loadError) return (
+    <main style={{ minHeight: '100vh', background: '#f8f8f7', fontFamily: 'DM Sans, system-ui, sans-serif', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <span style={{ fontSize: 13, color: '#dc2626' }}>{loadError}</span>
+    </main>
+  )
 
   return (
     <main style={{ minHeight: '100vh', background: '#f8f8f7', fontFamily: 'DM Sans, system-ui, sans-serif' }}>

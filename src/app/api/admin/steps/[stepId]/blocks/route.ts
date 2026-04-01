@@ -3,6 +3,33 @@ import { supabaseAdmin } from '@/lib/supabase'
 
 type BlockType = 'video' | 'text' | 'task' | 'acknowledgement' | 'flashcards'
 
+export async function GET(
+  _req: NextRequest,
+  { params }: { params: Promise<{ stepId: string }> }
+) {
+  const { stepId } = await params
+
+  const [{ data: step, error: stepError }, { data: blocks, error: blocksError }] =
+    await Promise.all([
+      supabaseAdmin
+        .from('TemplateStep')
+        .select('id, title')
+        .eq('id', stepId)
+        .single(),
+      supabaseAdmin
+        .from('StepBlock')
+        .select('id, type, title, config, order')
+        .eq('stepId', stepId)
+        .order('order'),
+    ])
+
+  if (stepError) {
+    return NextResponse.json({ error: 'Stap niet gevonden' }, { status: 404 })
+  }
+
+  return NextResponse.json({ step, blocks: blocks ?? [] })
+}
+
 interface IncomingBlock {
   type: BlockType
   title: string
@@ -67,8 +94,6 @@ export async function POST(
       required: true,
       config: buildConfig(block),
     }))
-
-    console.log('Inserting rows:', JSON.stringify(rows, null, 2))
 
     const { data, error: insertError } = await supabaseAdmin
       .from('StepBlock')
