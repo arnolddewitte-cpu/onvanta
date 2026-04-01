@@ -2,8 +2,9 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 
-export default function TemplateEditPage() {
+export default function TemplateEditPage({ params }: { params: { id: string } }) {
   const router = useRouter()
 
   const [template, setTemplate] = useState({
@@ -171,6 +172,12 @@ export default function TemplateEditPage() {
                       onChange={e => updateStepTitle(phase.id, step.id, e.target.value)}
                       className="flex-1 text-sm text-gray-900 focus:outline-none border-b border-transparent focus:border-blue-300 py-1"
                     />
+                    <Link
+                      href={`/admin/templates/${params.id}/edit/${step.id}`}
+                      className="text-xs text-blue-500 hover:text-blue-700 px-2 py-1 rounded-lg hover:bg-blue-50 transition-colors whitespace-nowrap"
+                    >
+                      Blokken →
+                    </Link>
                     <button
                       onClick={() => deleteStep(phase.id, step.id)}
                       className="text-gray-300 hover:text-red-400 transition-colors"
