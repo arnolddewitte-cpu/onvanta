@@ -63,15 +63,17 @@ enum ReviewResult {
 }
 
 model Company {
-  id          String        @id @default(cuid())
-  name        String
-  slug        String        @unique
-  logoUrl     String?
-  plan        PlanType      @default(starter)
-  status      CompanyStatus @default(trial)
-  trialEndsAt DateTime?
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  id                   String        @id @default(cuid())
+  name                 String
+  slug                 String        @unique
+  logoUrl              String?
+  plan                 PlanType      @default(starter)
+  status               CompanyStatus @default(trial)
+  trialEndsAt          DateTime?
+  stripeCustomerId     String?
+  stripeSubscriptionId String?
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
 
   users       User[]
   templates   Template[]
