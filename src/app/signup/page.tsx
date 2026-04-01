@@ -10,25 +10,46 @@ export default function SignupPage() {
     email: '',
     company: '',
     size: '',
-    password: '',
   })
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
   const [done, setDone] = useState(false)
-
-  function handleNext() {
-    if (step < 3) setStep(step + 1)
-    else setDone(true)
-  }
 
   const steps = [
     { label: 'Your details', desc: 'Name and work email' },
     { label: 'Your company', desc: 'Company info' },
-    { label: 'Set password', desc: 'Secure your account' },
   ]
+
+  async function handleSubmit() {
+    setLoading(true)
+    setError('')
+
+    try {
+      const res = await fetch('/api/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        setError(data.error || 'Er ging iets mis')
+        setLoading(false)
+        return
+      }
+
+      setDone(true)
+    } catch {
+      setError('Er ging iets mis. Probeer het opnieuw.')
+      setLoading(false)
+    }
+  }
 
   if (done) {
     return (
       <main style={{ background: '#faf9f6', fontFamily: 'DM Sans, system-ui, sans-serif', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-        <nav style={{ padding: '0 40px', height: 60, display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #e8e7e2', background: 'white' }}>
+        <nav style={{ padding: '0 40px', height: 60, display: 'flex', alignItems: 'center', borderBottom: '1px solid #e8e7e2', background: 'white' }}>
           <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
             <div style={{ width: 28, height: 28, background: '#1a5fd4', borderRadius: 7, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: 14, fontStyle: 'italic', fontFamily: 'Georgia, serif' }}>O</div>
             <span style={{ fontSize: 16, fontWeight: 500, color: '#0f0f0e' }}>Onvanta</span>
@@ -38,10 +59,14 @@ export default function SignupPage() {
           <div style={{ textAlign: 'center', maxWidth: 440 }}>
             <div style={{ fontSize: 48, marginBottom: 16 }}>🎉</div>
             <h1 style={{ fontFamily: 'Georgia, serif', fontSize: 32, fontWeight: 400, color: '#0f0f0e', marginBottom: 12 }}>Welcome to Onvanta!</h1>
-            <p style={{ fontSize: 16, color: '#3a3a38', fontWeight: 300, marginBottom: 32, lineHeight: 1.6 }}>Your 14-day Pro trial is active. Check your inbox for a magic link to log in.</p>
-            <Link href="/login" style={{ display: 'inline-block', background: '#1a5fd4', color: 'white', padding: '13px 28px', borderRadius: 12, fontSize: 15, fontWeight: 500, textDecoration: 'none' }}>
-              Go to login →
-            </Link>
+            <p style={{ fontSize: 16, color: '#3a3a38', fontWeight: 300, marginBottom: 8, lineHeight: 1.6 }}>Your 14-day Pro trial is active.</p>
+            <p style={{ fontSize: 16, color: '#3a3a38', fontWeight: 300, marginBottom: 32, lineHeight: 1.6 }}>Check your inbox at <strong>{form.email}</strong> for a magic link to log in.</p>
+            <div style={{ background: '#e8f0fc', borderRadius: 12, padding: '16px 20px', fontSize: 14, color: '#1a5fd4', textAlign: 'left' }}>
+              <strong>What's next?</strong><br />
+              1. Click the magic link in your email<br />
+              2. Create your first onboarding template<br />
+              3. Invite your first team member
+            </div>
           </div>
         </div>
       </main>
@@ -119,7 +144,7 @@ export default function SignupPage() {
                   <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: '#3a3a38', marginBottom: 6 }}>Work email</label>
                   <input type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} placeholder="jan@company.com" style={{ width: '100%', padding: '11px 14px', border: '1px solid #e8e7e2', borderRadius: 8, fontSize: 14, fontFamily: 'DM Sans, sans-serif', color: '#0f0f0e', outline: 'none' }} />
                 </div>
-                <button onClick={handleNext} disabled={!form.name || !form.email} style={{ width: '100%', padding: 13, background: '#1a5fd4', color: 'white', border: 'none', borderRadius: 10, fontSize: 15, fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', opacity: !form.name || !form.email ? 0.4 : 1 }}>
+                <button onClick={() => setStep(2)} disabled={!form.name || !form.email} style={{ width: '100%', padding: 13, background: '#1a5fd4', color: 'white', border: 'none', borderRadius: 10, fontSize: 15, fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', opacity: !form.name || !form.email ? 0.4 : 1 }}>
                   Continue →
                 </button>
               </>
@@ -133,7 +158,7 @@ export default function SignupPage() {
                   <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: '#3a3a38', marginBottom: 6 }}>Company name</label>
                   <input type="text" value={form.company} onChange={e => setForm({ ...form, company: e.target.value })} placeholder="Acme B.V." style={{ width: '100%', padding: '11px 14px', border: '1px solid #e8e7e2', borderRadius: 8, fontSize: 14, fontFamily: 'DM Sans, sans-serif', color: '#0f0f0e', outline: 'none' }} />
                 </div>
-                <div style={{ marginBottom: 24 }}>
+                <div style={{ marginBottom: 16 }}>
                   <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: '#3a3a38', marginBottom: 6 }}>Team size</label>
                   <select value={form.size} onChange={e => setForm({ ...form, size: e.target.value })} style={{ width: '100%', padding: '11px 14px', border: '1px solid #e8e7e2', borderRadius: 8, fontSize: 14, fontFamily: 'DM Sans, sans-serif', color: '#0f0f0e', outline: 'none', background: 'white' }}>
                     <option value="">Select team size</option>
@@ -143,37 +168,28 @@ export default function SignupPage() {
                     <option value="100+">100+ employees</option>
                   </select>
                 </div>
-                <div style={{ display: 'flex', gap: 10 }}>
-                  <button onClick={() => setStep(1)} style={{ flex: 1, padding: 13, background: 'transparent', color: '#3a3a38', border: '1px solid #e8e7e2', borderRadius: 10, fontSize: 14, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>← Back</button>
-                  <button onClick={handleNext} disabled={!form.company || !form.size} style={{ flex: 2, padding: 13, background: '#1a5fd4', color: 'white', border: 'none', borderRadius: 10, fontSize: 15, fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', opacity: !form.company || !form.size ? 0.4 : 1 }}>
-                    Continue →
-                  </button>
-                </div>
-              </>
-            )}
 
-            {step === 3 && (
-              <>
-                <h3 style={{ fontFamily: 'Georgia, serif', fontSize: 28, fontWeight: 400, marginBottom: 6, color: '#0f0f0e' }}>Set your password</h3>
-                <p style={{ fontSize: 14, color: '#7a7a78', marginBottom: 28 }}>Almost there — secure your account.</p>
-                <div style={{ marginBottom: 24 }}>
-                  <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: '#3a3a38', marginBottom: 6 }}>Password</label>
-                  <input type="password" value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} placeholder="Min. 8 characters" style={{ width: '100%', padding: '11px 14px', border: '1px solid #e8e7e2', borderRadius: 8, fontSize: 14, fontFamily: 'DM Sans, sans-serif', color: '#0f0f0e', outline: 'none' }} />
-                </div>
-                <div style={{ background: '#e2f4eb', border: '1px solid #9FE1CB', borderRadius: 8, padding: '10px 14px', fontSize: 13, color: '#177a4a', marginBottom: 24 }}>
+                {error && (
+                  <div style={{ background: '#fdecea', border: '1px solid #f5c4b3', borderRadius: 8, padding: '10px 14px', fontSize: 13, color: '#c0392b', marginBottom: 16 }}>
+                    {error}
+                  </div>
+                )}
+
+                <div style={{ background: '#e2f4eb', border: '1px solid #9FE1CB', borderRadius: 8, padding: '10px 14px', fontSize: 13, color: '#177a4a', marginBottom: 20 }}>
                   ✓ 14-day free trial · Full Pro access · No credit card required
                 </div>
+
                 <div style={{ display: 'flex', gap: 10 }}>
-                  <button onClick={() => setStep(2)} style={{ flex: 1, padding: 13, background: 'transparent', color: '#3a3a38', border: '1px solid #e8e7e2', borderRadius: 10, fontSize: 14, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>← Back</button>
-                  <button onClick={handleNext} disabled={form.password.length < 8} style={{ flex: 2, padding: 13, background: '#1a5fd4', color: 'white', border: 'none', borderRadius: 10, fontSize: 15, fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', opacity: form.password.length < 8 ? 0.4 : 1 }}>
-                    Start free trial →
+                  <button onClick={() => setStep(1)} style={{ flex: 1, padding: 13, background: 'transparent', color: '#3a3a38', border: '1px solid #e8e7e2', borderRadius: 10, fontSize: 14, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>← Back</button>
+                  <button onClick={handleSubmit} disabled={!form.company || loading} style={{ flex: 2, padding: 13, background: '#1a5fd4', color: 'white', border: 'none', borderRadius: 10, fontSize: 15, fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', opacity: !form.company || loading ? 0.4 : 1 }}>
+                    {loading ? 'Bezig...' : 'Start free trial →'}
                   </button>
                 </div>
               </>
             )}
 
             <p style={{ fontSize: 12, color: '#b8b8b5', textAlign: 'center', marginTop: 20, lineHeight: 1.5 }}>
-              By signing up you agree to our <a href="#" style={{ color: '#1a5fd4' }}>Terms</a> and <a href="#" style={{ color: '#1a5fd4' }}>Privacy Policy</a>.
+              By signing up you agree to our <a href="/terms" style={{ color: '#1a5fd4' }}>Terms</a> and <a href="/privacy" style={{ color: '#1a5fd4' }}>Privacy Policy</a>.
             </p>
           </div>
         </div>
