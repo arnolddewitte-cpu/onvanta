@@ -1,46 +1,49 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+
+interface Template {
+  id: string
+  name: string
+  description: string
+  published: boolean
+  updatedAt: string
+  phaseCount: number
+  stepCount: number
+}
+
+function timeAgo(iso: string): string {
+  const diff = Date.now() - new Date(iso).getTime()
+  const mins = Math.floor(diff / 60000)
+  if (mins < 60) return `${mins} minuten geleden`
+  const hours = Math.floor(mins / 60)
+  if (hours < 24) return `${hours} uur geleden`
+  const days = Math.floor(hours / 24)
+  if (days < 7) return `${days} dag${days !== 1 ? 'en' : ''} geleden`
+  const weeks = Math.floor(days / 7)
+  return `${weeks} week${weeks !== 1 ? 'en' : ''} geleden`
+}
 
 export default function TemplatesPage() {
   const router = useRouter()
+  const [templates, setTemplates] = useState<Template[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
 
-  const templates = [
-    {
-      id: '1',
-      title: 'Customer Service Medewerker',
-      description: 'Productkennis, klantcommunicatie, systemen en procedures.',
-      phases: 4,
-      steps: 12,
-      flashcardSets: 3,
-      lastUpdated: '2 dagen geleden',
-      activeOnboardings: 2,
-    },
-    {
-      id: '2',
-      title: 'Sales Medewerker',
-      description: 'Offertes maken, klantcontact, druktechnieken en prijsopbouw.',
-      phases: 4,
-      steps: 10,
-      flashcardSets: 2,
-      lastUpdated: '1 week geleden',
-      activeOnboardings: 1,
-    },
-    {
-      id: '3',
-      title: 'Operator',
-      description: 'Machines bedienen, kwaliteitscontrole en productieplanning.',
-      phases: 3,
-      steps: 8,
-      flashcardSets: 2,
-      lastUpdated: '3 dagen geleden',
-      activeOnboardings: 1,
-    },
-  ]
+  useEffect(() => {
+    fetch('/api/admin/templates')
+      .then(r => r.json())
+      .then(data => {
+        if (data.error) { setError(data.error); return }
+        setTemplates(data)
+      })
+      .catch(() => setError('Kon templates niet laden'))
+      .finally(() => setLoading(false))
+  }, [])
 
   return (
     <main className="min-h-screen bg-gray-50">
-
       <div className="max-w-4xl mx-auto px-6 py-8">
         <div className="flex items-center justify-between mb-8">
           <div>
@@ -55,7 +58,20 @@ export default function TemplatesPage() {
           </button>
         </div>
 
-        {/* Templates lijst */}
+        {loading && (
+          <div className="text-center py-16 text-gray-400 text-sm">Laden...</div>
+        )}
+
+        {error && (
+          <div className="text-center py-16 text-red-500 text-sm">{error}</div>
+        )}
+
+        {!loading && !error && templates.length === 0 && (
+          <div className="text-center py-16 text-gray-400 text-sm">
+            Nog geen templates. Maak je eerste template aan.
+          </div>
+        )}
+
         <div className="space-y-4">
           {templates.map(template => (
             <div
@@ -64,7 +80,14 @@ export default function TemplatesPage() {
             >
               <div className="flex items-start justify-between mb-4">
                 <div className="flex-1">
-                  <h3 className="font-semibold text-gray-900 text-lg">{template.title}</h3>
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-semibold text-gray-900 text-lg">{template.name}</h3>
+                    {!template.published && (
+                      <span className="text-xs bg-yellow-50 text-yellow-600 border border-yellow-200 px-2 py-0.5 rounded-full">
+                        concept
+                      </span>
+                    )}
+                  </div>
                   <p className="text-sm text-gray-500 mt-1">{template.description}</p>
                 </div>
                 <div className="flex gap-2 ml-4">
@@ -83,13 +106,12 @@ export default function TemplatesPage() {
                 </div>
               </div>
 
-              {/* Stats */}
               <div className="flex items-center gap-6 text-sm text-gray-500">
-                <span>📋 {template.phases} fases</span>
-                <span>📝 {template.steps} stappen</span>
-                <span>🃏 {template.flashcardSets} flashcard sets</span>
-                <span>👥 {template.activeOnboardings} actief</span>
-                <span className="ml-auto text-xs text-gray-400">Bijgewerkt {template.lastUpdated}</span>
+                <span>📋 {template.phaseCount} fases</span>
+                <span>📝 {template.stepCount} stappen</span>
+                <span className="ml-auto text-xs text-gray-400">
+                  Bijgewerkt {timeAgo(template.updatedAt)}
+                </span>
               </div>
             </div>
           ))}
