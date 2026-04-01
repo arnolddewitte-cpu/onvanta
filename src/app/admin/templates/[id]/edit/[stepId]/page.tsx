@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { use, useState } from 'react'
 import Link from 'next/link'
 
 type BlockType = 'video' | 'text' | 'task' | 'acknowledgement' | 'flashcards'
@@ -72,10 +72,11 @@ const MOCK_BLOCKS: Block[] = [
 ]
 
 export default function StepEditorPage({
-  params,
+  params: paramsPromise,
 }: {
-  params: { id: string; stepId: string }
+  params: Promise<{ id: string; stepId: string }>
 }) {
+  const params = use(paramsPromise)
 
   const [stepTitle, setStepTitle] = useState('Welkomstvideo bekijken')
   const [blocks, setBlocks] = useState<Block[]>(MOCK_BLOCKS)
@@ -174,7 +175,8 @@ export default function StepEditorPage({
       const data = await res.json()
 
       if (!res.ok) {
-        setSaveError(data.error || 'Er ging iets mis')
+        setSaveError(data.detail || data.error || 'Er ging iets mis')
+        console.error('Save error:', data)
         return
       }
 

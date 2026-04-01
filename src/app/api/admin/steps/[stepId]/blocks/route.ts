@@ -48,7 +48,10 @@ export async function POST(
 
     if (deleteError) {
       console.error('Delete error:', deleteError)
-      return NextResponse.json({ error: 'Kon bestaande blokken niet verwijderen' }, { status: 500 })
+      return NextResponse.json(
+        { error: 'Kon bestaande blokken niet verwijderen', detail: deleteError.message, code: deleteError.code },
+        { status: 500 }
+      )
     }
 
     // 2. Voeg de nieuwe blokken in
@@ -65,6 +68,8 @@ export async function POST(
       config: buildConfig(block),
     }))
 
+    console.log('Inserting rows:', JSON.stringify(rows, null, 2))
+
     const { data, error: insertError } = await supabaseAdmin
       .from('StepBlock')
       .insert(rows)
@@ -72,7 +77,10 @@ export async function POST(
 
     if (insertError) {
       console.error('Insert error:', insertError)
-      return NextResponse.json({ error: 'Kon blokken niet opslaan' }, { status: 500 })
+      return NextResponse.json(
+        { error: 'Kon blokken niet opslaan', detail: insertError.message, code: insertError.code, hint: insertError.hint },
+        { status: 500 }
+      )
     }
 
     return NextResponse.json({ success: true, blocks: data })
