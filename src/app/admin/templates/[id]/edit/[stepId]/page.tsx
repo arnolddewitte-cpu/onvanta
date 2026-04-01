@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 
 type BlockType = 'video' | 'text' | 'task' | 'acknowledgement' | 'flashcards'
@@ -77,13 +76,13 @@ export default function StepEditorPage({
 }: {
   params: { id: string; stepId: string }
 }) {
-  const router = useRouter()
 
   const [stepTitle, setStepTitle] = useState('Welkomstvideo bekijken')
   const [blocks, setBlocks] = useState<Block[]>(MOCK_BLOCKS)
   const [showPicker, setShowPicker] = useState(false)
+  const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
-  const [editingCardIdx, setEditingCardIdx] = useState<{ blockId: string; cardIdx: number } | null>(null)
+  const [saveError, setSaveError] = useState('')
 
   function addBlock(type: BlockType) {
     const id = Date.now().toString()
@@ -149,9 +148,43 @@ export default function StepEditorPage({
     }))
   }
 
-  function handleSave() {
-    setSaved(true)
-    setTimeout(() => setSaved(false), 2000)
+  async function handleSave() {
+    setSaving(true)
+    setSaveError('')
+
+    // Zet elk blok om naar het formaat dat de API verwacht
+    const payload = blocks.map(block => {
+      const base = { type: block.type, title: block.title }
+      switch (block.type) {
+        case 'video':           return { ...base, url: block.url }
+        case 'text':            return { ...base, body: block.body }
+        case 'task':            return { ...base, description: block.description }
+        case 'acknowledgement': return { ...base, statement: block.statement }
+        case 'flashcards':      return { ...base, cards: block.cards }
+      }
+    })
+
+    try {
+      const res = await fetch(`/api/admin/steps/${params.stepId}/blocks`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ blocks: payload }),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        setSaveError(data.error || 'Er ging iets mis')
+        return
+      }
+
+      setSaved(true)
+      setTimeout(() => setSaved(false), 2500)
+    } catch {
+      setSaveError('Er ging iets mis. Probeer het opnieuw.')
+    } finally {
+      setSaving(false)
+    }
   }
 
   return (
@@ -173,23 +206,30 @@ export default function StepEditorPage({
             style={{ fontSize: 15, fontWeight: 600, color: '#0f0f0e', border: 'none', outline: 'none', background: 'transparent', minWidth: 200 }}
           />
         </div>
-        <button
-          onClick={handleSave}
-          style={{
-            background: saved ? '#16a34a' : '#1a5fd4',
-            color: 'white',
-            border: 'none',
-            borderRadius: 8,
-            padding: '8px 18px',
-            fontSize: 13,
-            fontWeight: 500,
-            cursor: 'pointer',
-            fontFamily: 'DM Sans, sans-serif',
-            transition: 'background .15s',
-          }}
-        >
-          {saved ? '✓ Opgeslagen' : 'Opslaan'}
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          {saveError && (
+            <span style={{ fontSize: 12, color: '#dc2626' }}>{saveError}</span>
+          )}
+          <button
+            onClick={handleSave}
+            disabled={saving}
+            style={{
+              background: saved ? '#16a34a' : '#1a5fd4',
+              color: 'white',
+              border: 'none',
+              borderRadius: 8,
+              padding: '8px 18px',
+              fontSize: 13,
+              fontWeight: 500,
+              cursor: saving ? 'default' : 'pointer',
+              fontFamily: 'DM Sans, sans-serif',
+              opacity: saving ? 0.6 : 1,
+              transition: 'background .15s',
+            }}
+          >
+            {saving ? 'Opslaan...' : saved ? '✓ Opgeslagen' : 'Opslaan'}
+          </button>
+        </div>
       </div>
 
       <div style={{ maxWidth: 720, margin: '0 auto', padding: '36px 24px' }}>
