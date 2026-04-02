@@ -57,15 +57,49 @@ export async function GET(
     completed = progress?.completed ?? false
   }
 
-  // Volgende stap bepalen
-  const { data: allSteps } = await supabaseAdmin
+  // Volgende stap bepalen (eerst binnen huidige fase, anders eerste stap van volgende fase)
+  const { data: phaseSteps } = await supabaseAdmin
     .from('TemplateStep')
-    .select('id, order, phaseId')
+    .select('id, order')
     .eq('phaseId', step.phase.id)
     .order('order')
 
-  const currentIndex = (allSteps ?? []).findIndex(s => s.id === stepId)
-  const nextStep = allSteps?.[currentIndex + 1] ?? null
+  const currentIndex = (phaseSteps ?? []).findIndex(s => s.id === stepId)
+  const nextStepInPhase = phaseSteps?.[currentIndex + 1] ?? null
+
+  let nextStepId: string | null = nextStepInPhase?.id ?? null
+
+  if (!nextStepId) {
+    // Laatste stap van fase — zoek eerste stap van volgende fase
+    const { data: currentPhase } = await supabaseAdmin
+      .from('TemplatePhase')
+      .select('order, templateId')
+      .eq('id', step.phase.id)
+      .single()
+
+    if (currentPhase) {
+      const { data: nextPhase } = await supabaseAdmin
+        .from('TemplatePhase')
+        .select('id')
+        .eq('templateId', currentPhase.templateId)
+        .gt('order', currentPhase.order)
+        .order('order')
+        .limit(1)
+        .single()
+
+      if (nextPhase) {
+        const { data: firstStep } = await supabaseAdmin
+          .from('TemplateStep')
+          .select('id')
+          .eq('phaseId', nextPhase.id)
+          .order('order')
+          .limit(1)
+          .single()
+
+        nextStepId = firstStep?.id ?? null
+      }
+    }
+  }
 
   return NextResponse.json({
     step: {
@@ -77,7 +111,7 @@ export async function GET(
     blocks: blocks ?? [],
     completed,
     instanceId,
-    nextStepId: nextStep?.id ?? null,
+    nextStepId,
   })
 }
 

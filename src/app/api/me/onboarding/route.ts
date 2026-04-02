@@ -42,11 +42,23 @@ export async function GET() {
   const completedCount = allSteps.filter(s => completedStepIds.has(s.id)).length
   const progressPct = totalSteps > 0 ? Math.round((completedCount / totalSteps) * 100) : 0
 
+  // Phases unlock sequentially: phase 1 is always active, phase N unlocks when phase N-1 is completed
+  let prevPhaseCompleted = true
   const phasesWithStatus = (phases ?? []).map(phase => {
     const steps = (phase.steps as { id: string; title: string; order: number }[])
+      .sort((a, b) => a.order - b.order)
     const allDone = steps.length > 0 && steps.every(s => completedStepIds.has(s.id))
-    const anyDone = steps.some(s => completedStepIds.has(s.id))
-    const phaseStatus = allDone ? 'completed' : anyDone ? 'active' : 'todo'
+
+    let phaseStatus: 'completed' | 'active' | 'todo'
+    if (allDone) {
+      phaseStatus = 'completed'
+    } else if (prevPhaseCompleted) {
+      phaseStatus = 'active'
+    } else {
+      phaseStatus = 'todo'
+    }
+
+    prevPhaseCompleted = allDone
 
     return {
       id: phase.id,
