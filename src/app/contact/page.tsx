@@ -3,14 +3,31 @@
 import { useState } from 'react'
 import MarketingNav from '@/components/marketing-nav'
 import MarketingFooter from '@/components/marketing-footer'
+import CookieBanner from '@/components/cookie-banner'
 
 export default function ContactPage() {
   const [form, setForm] = useState({ name: '', email: '', company: '', message: '' })
   const [sent, setSent] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState('')
 
-  function handleSubmit() {
+  async function handleSubmit() {
     if (!form.name || !form.email || !form.message) return
-    setSent(true)
+    setSubmitting(true)
+    setError('')
+
+    const res = await fetch('/api/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(form),
+    })
+
+    setSubmitting(false)
+    if (res.ok) {
+      setSent(true)
+    } else {
+      setError('Something went wrong. Please try again.')
+    }
   }
 
   return (
@@ -78,8 +95,9 @@ export default function ContactPage() {
                   <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: '#3a3a38', marginBottom: 6 }}>Message</label>
                   <textarea value={form.message} onChange={e => setForm({ ...form, message: e.target.value })} placeholder="Tell us about your team and what you're looking for..." rows={5} style={{ width: '100%', padding: '11px 14px', border: '1px solid #e8e7e2', borderRadius: 8, fontSize: 14, fontFamily: 'DM Sans, sans-serif', color: '#0f0f0e', outline: 'none', resize: 'vertical' }} />
                 </div>
-                <button onClick={handleSubmit} disabled={!form.name || !form.email || !form.message} style={{ width: '100%', padding: 13, background: '#1a5fd4', color: 'white', border: 'none', borderRadius: 10, fontSize: 15, fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', opacity: !form.name || !form.email || !form.message ? 0.4 : 1 }}>
-                  Send message →
+                {error && <p style={{ fontSize: 13, color: '#dc2626', margin: 0 }}>{error}</p>}
+                <button onClick={handleSubmit} disabled={!form.name || !form.email || !form.message || submitting} style={{ width: '100%', padding: 13, background: '#1a5fd4', color: 'white', border: 'none', borderRadius: 10, fontSize: 15, fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', opacity: !form.name || !form.email || !form.message || submitting ? 0.4 : 1 }}>
+                  {submitting ? 'Sending...' : 'Send message →'}
                 </button>
               </div>
             </>
@@ -88,6 +106,7 @@ export default function ContactPage() {
       </div>
 
       <MarketingFooter />
+      <CookieBanner />
     </main>
   )
 }

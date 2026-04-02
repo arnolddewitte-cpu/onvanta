@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useState } from 'react'
 import MarketingNav from '@/components/marketing-nav'
 import MarketingFooter from '@/components/marketing-footer'
+import CookieBanner from '@/components/cookie-banner'
 
 export default function PricingPage() {
   const [annual, setAnnual] = useState(true)
@@ -163,6 +164,7 @@ export default function PricingPage() {
       </section>
 
       <MarketingFooter />
+      <CookieBanner />
     </main>
   )
 }

@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import MarketingNav from '@/components/marketing-nav'
 import MarketingFooter from '@/components/marketing-footer'
+import CookieBanner from '@/components/cookie-banner'
 
 export default function HomePage() {
   return (
@@ -141,6 +142,7 @@ export default function HomePage() {
       </section>
 
       <MarketingFooter />
+      <CookieBanner />
     </main>
   )
 }

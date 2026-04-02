@@ -1,5 +1,6 @@
 import MarketingNav from '@/components/marketing-nav'
 import MarketingFooter from '@/components/marketing-footer'
+import CookieBanner from '@/components/cookie-banner'
 
 export default function AboutPage() {
   return (
@@ -87,6 +88,7 @@ export default function AboutPage() {
       </section>
 
       <MarketingFooter />
+      <CookieBanner />
     </main>
   )
 }
