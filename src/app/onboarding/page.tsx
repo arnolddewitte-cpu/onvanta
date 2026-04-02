@@ -1,60 +1,64 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+
+interface Step {
+  id: string
+  title: string
+  status: 'completed' | 'todo'
+}
+
+interface Phase {
+  id: string
+  title: string
+  status: 'completed' | 'active' | 'todo'
+  steps: Step[]
+}
+
+interface OnboardingData {
+  instanceId: string
+  progressPct: number
+  totalSteps: number
+  completedCount: number
+  phases: Phase[]
+}
 
 export default function OnboardingPage() {
   const router = useRouter()
+  const [data, setData] = useState<OnboardingData | null>(null)
+  const [loading, setLoading] = useState(true)
 
-  const phases = [
-    {
-      title: 'Preboarding',
-      description: 'Voorbereiding voor je eerste dag',
-      status: 'completed',
-      steps: [
-        { id: 'welkomstbericht', title: 'Welkomstbericht lezen', status: 'completed' },
-        { id: 'toegang', title: 'Toegang tot systemen aanvragen', status: 'completed' },
-      ],
-    },
-    {
-      title: 'Dag 1',
-      description: 'Jouw eerste dag bij het bedrijf',
-      status: 'active',
-      steps: [
-        { id: 'welkomstvideo', title: 'Welkomstvideo bekijken', status: 'completed' },
-        { id: 'kennismaking', title: 'Kennismaking met het team', status: 'active' },
-        { id: 'handboek', title: 'Bedrijfshandboek lezen', status: 'todo' },
-      ],
-    },
-    {
-      title: 'Week 1',
-      description: 'De eerste week',
-      status: 'todo',
-      steps: [
-        { id: 'productkennis', title: 'Productkennis module', status: 'todo' },
-        { id: 'klantcommunicatie', title: 'Klantcommunicatie training', status: 'todo' },
-        { id: 'flashcards-druk', title: 'Flashcards: druktechnieken', status: 'todo' },
-      ],
-    },
-    {
-      title: 'Maand 1',
-      description: 'Eerste maand volledig operationeel',
-      status: 'todo',
-      steps: [
-        { id: 'kennistoets', title: 'Kennistoets afleggen', status: 'todo' },
-        { id: 'evaluatie', title: 'Eerste klantgesprek evaluatie', status: 'todo' },
-      ],
-    },
-  ]
+  useEffect(() => {
+    fetch('/api/me/onboarding')
+      .then(r => r.json())
+      .then(d => setData(d.instance === null ? null : d))
+      .finally(() => setLoading(false))
+  }, [])
 
-  const statusConfig = {
-    completed: { color: 'bg-green-500', label: 'Afgerond', ring: 'ring-green-200', bg: 'bg-green-50' },
-    active: { color: 'bg-blue-500', label: 'Bezig', ring: 'ring-blue-200', bg: 'bg-blue-50' },
-    todo: { color: 'bg-gray-200', label: 'Nog te doen', ring: 'ring-gray-100', bg: 'bg-gray-50' },
+  if (loading) {
+    return (
+      <main className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <p className="text-gray-400 text-sm">Laden...</p>
+      </main>
+    )
+  }
+
+  if (!data) {
+    return (
+      <main className="min-h-screen bg-gray-50">
+        <div className="max-w-3xl mx-auto px-6 py-8">
+          <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center">
+            <div className="text-4xl mb-4">📋</div>
+            <p className="text-gray-500 text-sm">Geen actieve onboarding gevonden.</p>
+          </div>
+        </div>
+      </main>
+    )
   }
 
   return (
     <main className="min-h-screen bg-gray-50">
-
       <div className="max-w-3xl mx-auto px-6 py-8">
         <div className="mb-8">
           <h1 className="text-2xl font-semibold text-gray-900">Jouw onboarding</h1>
@@ -65,73 +69,78 @@ export default function OnboardingPage() {
         <div className="bg-white rounded-2xl border border-gray-100 p-5 mb-8">
           <div className="flex justify-between text-sm mb-2">
             <span className="text-gray-500">Totale voortgang</span>
-            <span className="font-semibold text-gray-900">25%</span>
+            <span className="font-semibold text-gray-900">{data.progressPct}%</span>
           </div>
-          <div className="w-full bg-gray-100 rounded-full h-2">
-            <div className="bg-blue-600 h-2 rounded-full" style={{ width: '25%' }}></div>
+          <div className="w-full bg-gray-100 rounded-full h-2 mb-2">
+            <div
+              className="bg-blue-600 h-2 rounded-full transition-all duration-500"
+              style={{ width: `${data.progressPct}%` }}
+            />
           </div>
+          <p className="text-xs text-gray-400">{data.completedCount} van {data.totalSteps} stappen voltooid</p>
         </div>
 
         {/* Fases */}
         <div className="space-y-4">
-          {phases.map((phase, i) => {
-            const config = statusConfig[phase.status as keyof typeof statusConfig]
+          {data.phases.map((phase, i) => {
+            const isCompleted = phase.status === 'completed'
+            const isActive = phase.status === 'active'
+
             return (
-              <div key={i} className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
-                {/* Fase header */}
+              <div key={phase.id} className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
                 <div className="p-5 flex items-center gap-4">
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ring-4 ${config.ring} ${config.bg}`}>
-                    {phase.status === 'completed' ? (
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ring-4 ${
+                    isCompleted ? 'ring-green-200 bg-green-50' :
+                    isActive ? 'ring-blue-200 bg-blue-50' : 'ring-gray-100 bg-gray-50'
+                  }`}>
+                    {isCompleted ? (
                       <span className="text-green-500 text-lg">✓</span>
                     ) : (
-                      <span className={`font-bold ${phase.status === 'active' ? 'text-blue-500' : 'text-gray-400'}`}>{i + 1}</span>
+                      <span className={`font-bold ${isActive ? 'text-blue-500' : 'text-gray-400'}`}>{i + 1}</span>
                     )}
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
                       <h3 className="font-semibold text-gray-900">{phase.title}</h3>
-                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${phase.status === 'completed' ? 'bg-green-50 text-green-600' : phase.status === 'active' ? 'bg-blue-50 text-blue-600' : 'bg-gray-100 text-gray-400'}`}>
-                        {config.label}
+                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                        isCompleted ? 'bg-green-50 text-green-600' :
+                        isActive ? 'bg-blue-50 text-blue-600' : 'bg-gray-100 text-gray-400'
+                      }`}>
+                        {isCompleted ? 'Afgerond' : isActive ? 'Bezig' : 'Nog te doen'}
                       </span>
                     </div>
-                    <p className="text-sm text-gray-500 mt-0.5">{phase.description}</p>
                   </div>
                 </div>
 
-                {/* Stappen — altijd zichtbaar */}
                 <div className="border-t border-gray-50 px-5 pb-4">
                   <div className="space-y-1 mt-3">
-                    {phase.steps.map((step) => (
-                      <button
-                        key={step.id}
-                        onClick={() => router.push(`/onboarding/${step.id}`)}
-                        className={`w-full flex items-center gap-3 py-2.5 px-3 rounded-xl text-left transition-colors ${
-                          step.status === 'todo' && phase.status === 'todo'
-                            ? 'opacity-50 cursor-not-allowed'
-                            : 'hover:bg-gray-50 cursor-pointer'
-                        }`}
-                        disabled={step.status === 'todo' && phase.status === 'todo'}
-                      >
-                        <div className={`w-5 h-5 rounded-full flex-shrink-0 flex items-center justify-center ${
-                          step.status === 'completed' ? 'bg-green-500' :
-                          step.status === 'active' ? 'bg-blue-500' : 'bg-gray-200'
-                        }`}>
-                          {step.status === 'completed' && <span className="text-white text-xs">✓</span>}
-                        </div>
-                        <span className={`text-sm flex-1 ${
-                          step.status === 'completed' ? 'line-through text-gray-400' :
-                          step.status === 'active' ? 'text-gray-900 font-medium' : 'text-gray-500'
-                        }`}>
-                          {step.title}
-                        </span>
-                        {step.status !== 'todo' && (
-                          <span className="text-gray-300 text-sm">→</span>
-                        )}
-                        {step.status === 'active' && (
-                          <span className="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full">Bezig</span>
-                        )}
-                      </button>
-                    ))}
+                    {phase.steps.map(step => {
+                      const done = step.status === 'completed'
+                      const canClick = phase.status !== 'todo'
+
+                      return (
+                        <button
+                          key={step.id}
+                          onClick={() => canClick && router.push(`/onboarding/${step.id}`)}
+                          className={`w-full flex items-center gap-3 py-2.5 px-3 rounded-xl text-left transition-colors ${
+                            !canClick ? 'opacity-40 cursor-not-allowed' : 'hover:bg-gray-50 cursor-pointer'
+                          }`}
+                          disabled={!canClick}
+                        >
+                          <div className={`w-5 h-5 rounded-full flex-shrink-0 flex items-center justify-center ${
+                            done ? 'bg-green-500' : 'bg-gray-200'
+                          }`}>
+                            {done && <span className="text-white text-xs">✓</span>}
+                          </div>
+                          <span className={`text-sm flex-1 ${
+                            done ? 'line-through text-gray-400' : 'text-gray-700'
+                          }`}>
+                            {step.title}
+                          </span>
+                          {canClick && !done && <span className="text-gray-300 text-sm">→</span>}
+                        </button>
+                      )
+                    })}
                   </div>
                 </div>
               </div>
