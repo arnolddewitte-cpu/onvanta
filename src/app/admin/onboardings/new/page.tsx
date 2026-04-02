@@ -44,7 +44,7 @@ export default function NewOnboardingPage() {
       .then(data => setTemplates(Array.isArray(data) ? data.filter((t: Template & { published?: boolean }) => t) : []))
       .finally(() => setLoadingTemplates(false))
 
-    fetch('/api/admin/users')
+    fetch('/api/admin/users?managers=1')
       .then(r => r.json())
       .then(data => setManagers(Array.isArray(data) ? data : []))
       .finally(() => setLoadingManagers(false))
