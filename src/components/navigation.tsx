@@ -1,7 +1,8 @@
 'use client'
 
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { useState } from 'react'
 
 type Role = 'employee' | 'manager' | 'company_admin' | 'super_admin'
 
@@ -31,9 +32,24 @@ const navConfig = {
   ],
 }
 
+const roleLabel: Record<Role, string> = {
+  employee: 'Medewerker',
+  manager: 'Manager',
+  company_admin: 'Admin',
+  super_admin: 'Super Admin',
+}
+
 export default function Navigation({ role = 'employee' }: Props) {
   const pathname = usePathname()
+  const router = useRouter()
+  const [loggingOut, setLoggingOut] = useState(false)
   const items = navConfig[role] ?? navConfig.employee
+
+  async function handleLogout() {
+    setLoggingOut(true)
+    await fetch('/api/auth/logout', { method: 'POST' })
+    router.push('/login')
+  }
 
   return (
     <>
@@ -70,13 +86,17 @@ export default function Navigation({ role = 'employee' }: Props) {
           })}
         </nav>
 
-        {/* Rol badge onderin */}
-        <div className="px-5 py-4 border-t border-gray-100">
-          <p className="text-xs text-gray-400">
-            {role === 'company_admin' ? 'Admin' :
-             role === 'manager' ? 'Manager' :
-             role === 'super_admin' ? 'Super Admin' : 'Medewerker'}
-          </p>
+        {/* Rol badge + uitloggen */}
+        <div className="px-3 py-4 border-t border-gray-100 space-y-1">
+          <p className="text-xs text-gray-400 px-3 mb-2">{roleLabel[role]}</p>
+          <button
+            onClick={handleLogout}
+            disabled={loggingOut}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-400 hover:bg-red-50 hover:text-red-500 transition-colors w-full disabled:opacity-50"
+          >
+            <span className="text-base">↩</span>
+            {loggingOut ? 'Uitloggen...' : 'Uitloggen'}
+          </button>
         </div>
       </aside>
 
@@ -98,6 +118,14 @@ export default function Navigation({ role = 'employee' }: Props) {
               </Link>
             )
           })}
+          <button
+            onClick={handleLogout}
+            disabled={loggingOut}
+            className="flex flex-col items-center gap-1 px-3 py-1.5 rounded-xl text-gray-400 transition-colors disabled:opacity-50"
+          >
+            <span className="text-xl">↩</span>
+            <span className="text-xs font-medium">Uitloggen</span>
+          </button>
         </div>
       </nav>
     </>
