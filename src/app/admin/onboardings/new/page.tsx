@@ -1,7 +1,7 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useEffect, useState, Suspense } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 interface Template {
   id: string
@@ -23,12 +23,21 @@ interface Profile {
   name: string
 }
 
-export default function NewOnboardingPage() {
+export default function NewOnboardingPageWrapper() {
+  return (
+    <Suspense>
+      <NewOnboardingPage />
+    </Suspense>
+  )
+}
+
+function NewOnboardingPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [step, setStep] = useState(1)
   const [form, setForm] = useState({
-    employeeName: '',
-    employeeEmail: '',
+    employeeName: searchParams.get('name') ?? '',
+    employeeEmail: searchParams.get('email') ?? '',
     role: '',
     templateId: '',
     managerId: '',

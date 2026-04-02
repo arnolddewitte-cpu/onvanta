@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 
 interface User {
   id: string
@@ -17,6 +18,7 @@ const roleConfig: Record<string, { label: string; color: string }> = {
 }
 
 export default function UsersPage() {
+  const router = useRouter()
   const [users, setUsers] = useState<User[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -112,6 +114,15 @@ export default function UsersPage() {
                     <span className={`text-xs px-2 py-1 rounded-full font-medium flex-shrink-0 ${config.color}`}>
                       {config.label}
                     </span>
+                    <button
+                      onClick={() => {
+                        const params = new URLSearchParams({ name: user.name, email: user.email })
+                        router.push(`/admin/onboardings/new?${params}`)
+                      }}
+                      className="text-xs text-blue-600 hover:text-blue-700 font-medium px-3 py-1.5 rounded-lg hover:bg-blue-50 transition-colors whitespace-nowrap flex-shrink-0"
+                    >
+                      Onboarding starten →
+                    </button>
                   </div>
                 )
               })}
