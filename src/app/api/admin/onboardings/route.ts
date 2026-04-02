@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
+import { getSession } from '@/lib/session'
 import { supabaseAdmin } from '@/lib/supabase'
 import { logAudit } from '@/lib/audit'
 
@@ -7,7 +8,15 @@ const resend = new Resend(process.env.RESEND_API_KEY)
 
 export async function POST(req: NextRequest) {
   try {
-    const { employeeName, employeeEmail, role, templateId, managerId, startDate } = await req.json()
+    const session = await getSession()
+    if (!session || !['company_admin', 'manager', 'super_admin'].includes(session.role)) {
+      return NextResponse.json({ error: 'Geen toegang' }, { status: 403 })
+    }
+
+    const { employeeName, employeeEmail, role, templateId, managerId: rawManagerId, startDate } = await req.json()
+
+    // Managers worden automatisch ingesteld als de verantwoordelijke manager
+    const managerId = session.role === 'manager' ? session.id : (rawManagerId || null)
 
     if (!employeeName?.trim() || !employeeEmail?.trim() || !templateId || !startDate) {
       return NextResponse.json({ error: 'Verplichte velden ontbreken' }, { status: 400 })

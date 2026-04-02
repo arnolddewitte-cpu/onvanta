@@ -48,15 +48,29 @@ export default function ManagerPage() {
   return (
     <main className="min-h-screen bg-gray-50">
       <div className="max-w-4xl mx-auto px-6 py-8">
-        <div className="mb-8">
-          <h1 className="text-2xl font-semibold text-gray-900">Team overzicht</h1>
-          <p className="text-gray-500 mt-1">{team.length} medewerker{team.length !== 1 ? 's' : ''} in onboarding</p>
+        <div className="flex items-start justify-between mb-8">
+          <div>
+            <h1 className="text-2xl font-semibold text-gray-900">Team overzicht</h1>
+            <p className="text-gray-500 mt-1">{team.length} medewerker{team.length !== 1 ? 's' : ''} in onboarding</p>
+          </div>
+          <button
+            onClick={() => router.push('/admin/onboardings/new')}
+            className="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-blue-700 transition-colors whitespace-nowrap"
+          >
+            + Onboarding starten
+          </button>
         </div>
 
         {team.length === 0 ? (
           <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center">
             <div className="text-4xl mb-3">👥</div>
-            <p className="text-gray-500 text-sm">Nog geen medewerkers in onboarding.</p>
+            <p className="text-gray-500 text-sm mb-4">Nog geen medewerkers in onboarding.</p>
+            <button
+              onClick={() => router.push('/admin/onboardings/new')}
+              className="bg-blue-600 text-white px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-blue-700 transition-colors"
+            >
+              + Eerste onboarding starten
+            </button>
           </div>
         ) : (
           <>

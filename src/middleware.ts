@@ -27,8 +27,15 @@ export async function middleware(req: NextRequest) {
     if (path.startsWith('/super') && role !== 'super_admin') {
       return NextResponse.redirect(new URL('/dashboard', req.url))
     }
+    // Managers mogen onboarding starten via /admin/onboardings/new
+    const managerAllowedAdminPaths = ['/admin/onboardings/new']
+    const isManagerAllowedAdminPath = managerAllowedAdminPaths.some(p => path.startsWith(p))
     if (path.startsWith('/admin') && !['super_admin', 'company_admin'].includes(role)) {
-      return NextResponse.redirect(new URL('/dashboard', req.url))
+      if (role === 'manager' && isManagerAllowedAdminPath) {
+        // OK — manager mag deze specifieke admin route gebruiken
+      } else {
+        return NextResponse.redirect(new URL('/dashboard', req.url))
+      }
     }
     if (path.startsWith('/manager') && !['super_admin', 'company_admin', 'manager'].includes(role)) {
       return NextResponse.redirect(new URL('/dashboard', req.url))

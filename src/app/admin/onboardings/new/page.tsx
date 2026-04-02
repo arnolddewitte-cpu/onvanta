@@ -17,6 +17,12 @@ interface Manager {
   email: string
 }
 
+interface Profile {
+  id: string
+  role: string
+  name: string
+}
+
 export default function NewOnboardingPage() {
   const router = useRouter()
   const [step, setStep] = useState(1)
@@ -29,6 +35,7 @@ export default function NewOnboardingPage() {
     startDate: '',
   })
 
+  const [profile, setProfile] = useState<Profile | null>(null)
   const [templates, setTemplates] = useState<Template[]>([])
   const [managers, setManagers] = useState<Manager[]>([])
   const [loadingTemplates, setLoadingTemplates] = useState(true)
@@ -38,10 +45,22 @@ export default function NewOnboardingPage() {
   const [submitError, setSubmitError] = useState('')
   const [done, setDone] = useState(false)
 
+  const isManager = profile?.role === 'manager'
+
   useEffect(() => {
+    fetch('/api/me/profile')
+      .then(r => r.json())
+      .then((p: Profile) => {
+        setProfile(p)
+        // Managers worden automatisch als manager ingesteld
+        if (p.role === 'manager') {
+          setForm(f => ({ ...f, managerId: p.id }))
+        }
+      })
+
     fetch('/api/admin/templates')
       .then(r => r.json())
-      .then(data => setTemplates(Array.isArray(data) ? data.filter((t: Template & { published?: boolean }) => t) : []))
+      .then(data => setTemplates(Array.isArray(data) ? data : []))
       .finally(() => setLoadingTemplates(false))
 
     fetch('/api/admin/users?managers=1')
@@ -51,6 +70,8 @@ export default function NewOnboardingPage() {
   }, [])
 
   const selectedTemplate = templates.find(t => t.id === form.templateId)
+  const selectedManager = managers.find(m => m.id === form.managerId)
+  const backHref = isManager ? '/manager' : '/admin'
 
   async function handleSubmit() {
     setSubmitting(true)
@@ -93,15 +114,15 @@ export default function NewOnboardingPage() {
             <p className="text-gray-400 text-sm mb-8">De link in de mail is 7 dagen geldig.</p>
             <div className="flex gap-3 justify-center">
               <button
-                onClick={() => router.push('/admin')}
+                onClick={() => router.push(backHref)}
                 className="bg-blue-600 text-white px-6 py-3 rounded-xl text-sm font-medium hover:bg-blue-700 transition-colors"
               >
-                Terug naar admin
+                {isManager ? 'Terug naar team' : 'Terug naar admin'}
               </button>
               <button
                 onClick={() => {
                   setStep(1)
-                  setForm({ employeeName: '', employeeEmail: '', role: '', templateId: '', managerId: '', startDate: '' })
+                  setForm(f => ({ employeeName: '', employeeEmail: '', role: '', templateId: '', managerId: isManager ? f.managerId : '', startDate: '' }))
                   setDone(false)
                 }}
                 className="bg-gray-100 text-gray-600 px-6 py-3 rounded-xl text-sm font-medium hover:bg-gray-200 transition-colors"
@@ -118,6 +139,14 @@ export default function NewOnboardingPage() {
   return (
     <main className="min-h-screen bg-gray-50">
       <div className="max-w-2xl mx-auto px-6 py-8">
+
+        {/* Terug link */}
+        <button
+          onClick={() => router.push(backHref)}
+          className="text-sm text-gray-400 hover:text-gray-600 mb-6 transition-colors"
+        >
+          ← {isManager ? 'Terug naar team' : 'Terug naar admin'}
+        </button>
 
         {/* Stappen indicator */}
         <div className="flex items-center gap-2 mb-8">
@@ -255,27 +284,40 @@ export default function NewOnboardingPage() {
         {step === 3 && (
           <div>
             <h1 className="text-2xl font-semibold text-gray-900 mb-2">Details instellen</h1>
-            <p className="text-gray-500 mb-8">Kies de manager en startdatum.</p>
+            <p className="text-gray-500 mb-8">
+              {isManager ? 'Kies de startdatum.' : 'Kies de manager en startdatum.'}
+            </p>
 
             <div className="bg-white rounded-2xl border border-gray-100 p-6 space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Manager</label>
-                {loadingManagers ? (
-                  <div className="text-sm text-gray-400 py-2">Laden...</div>
-                ) : (
-                  <select
-                    value={form.managerId}
-                    onChange={e => setForm({ ...form, managerId: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                    style={{ color: '#0f0f0e' }}
-                  >
-                    <option value="">Selecteer een manager (optioneel)</option>
-                    {managers.map(m => (
-                      <option key={m.id} value={m.id}>{m.name}</option>
-                    ))}
-                  </select>
-                )}
-              </div>
+              {/* Manager veld: verborgen voor managers (automatisch ingesteld) */}
+              {isManager ? (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Manager</label>
+                  <div className="px-4 py-3 rounded-xl border border-gray-100 bg-blue-50 text-sm text-blue-700 font-medium">
+                    {profile?.name} (jij)
+                  </div>
+                </div>
+              ) : (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Manager</label>
+                  {loadingManagers ? (
+                    <div className="text-sm text-gray-400 py-2">Laden...</div>
+                  ) : (
+                    <select
+                      value={form.managerId}
+                      onChange={e => setForm({ ...form, managerId: e.target.value })}
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                      style={{ color: '#0f0f0e' }}
+                    >
+                      <option value="">Selecteer een manager (optioneel)</option>
+                      {managers.map(m => (
+                        <option key={m.id} value={m.id}>{m.name}</option>
+                      ))}
+                    </select>
+                  )}
+                </div>
+              )}
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">Startdatum</label>
                 <input
@@ -303,6 +345,12 @@ export default function NewOnboardingPage() {
                 <div className="flex justify-between">
                   <span className="text-gray-500">Template</span>
                   <span className="font-medium text-gray-900">{selectedTemplate?.name}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-500">Manager</span>
+                  <span className="font-medium text-gray-900">
+                    {isManager ? `${profile?.name} (jij)` : (selectedManager?.name ?? '—')}
+                  </span>
                 </div>
               </div>
             </div>
