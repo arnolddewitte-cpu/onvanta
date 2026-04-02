@@ -97,7 +97,7 @@ export default function StepPage({ params: paramsPromise }: { params: Promise<{ 
   const { step, blocks } = data
 
   return (
-    <main className="min-h-screen bg-gray-50">
+    <main className="min-h-screen bg-gray-50 pb-24 md:pb-0">
       <div className="max-w-2xl mx-auto px-6 py-8">
 
         {/* Stap header */}
