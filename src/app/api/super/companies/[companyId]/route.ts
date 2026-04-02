@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
 import { getSession } from '@/lib/session'
 import { supabaseAdmin } from '@/lib/supabase'
+import { logAudit } from '@/lib/audit'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -129,6 +130,8 @@ export async function PATCH(
     .eq('id', companyId)
 
   if (error) return NextResponse.json({ error: 'Kon niet bijwerken' }, { status: 500 })
+
+  await logAudit('plan_change', session.id, companyId, { updates })
 
   return NextResponse.json({ success: true, updates })
 }

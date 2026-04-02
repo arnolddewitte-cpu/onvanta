@@ -1,6 +1,6 @@
 'use client'
 
-import { use, useEffect, useState } from 'react'
+import { use, useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 
 interface CompanyDetail {
@@ -16,6 +16,12 @@ interface Onboarding {
 interface DetailData {
   company: CompanyDetail; users: User[]; templates: Template[]; onboardings: Onboarding[]
 }
+interface AuditEntry {
+  id: string; action: string; details: Record<string, unknown> | null
+  createdAt: string; userName: string; userEmail: string
+}
+interface Flag { flag: string; enabled: boolean }
+interface StatEntry { date: string; count: number }
 
 const STATUS_OPTIONS = ['trial', 'active', 'paused', 'cancelled'] as const
 const PLAN_OPTIONS = ['starter', 'pro', 'enterprise'] as const
@@ -35,9 +41,33 @@ const ROLE_STYLES: Record<string, string> = {
   manager:       'bg-teal-900/40 text-teal-300',
   employee:      'bg-gray-800 text-gray-400',
 }
+const ACTION_LABELS: Record<string, string> = {
+  login:             'Ingelogd',
+  onboarding_start:  'Onboarding gestart',
+  step_complete:     'Stap afgerond',
+  plan_change:       'Plan gewijzigd',
+  impersonation_start: 'Impersonation gestart',
+}
+const FLAG_LABELS: Record<string, { label: string; desc: string }> = {
+  ai_templates:      { label: 'AI Templates', desc: 'Template generatie via Claude AI' },
+  flashcards:        { label: 'Flashcards', desc: 'Flashcard blokken in onboarding stappen' },
+  manager_approval:  { label: 'Manager goedkeuring', desc: 'Stappen die managergoedkeuring vereisen' },
+}
+
+type Tab = 'users' | 'onboardings' | 'templates' | 'audit' | 'flags' | 'stats'
 
 function fmt(iso: string) {
   return new Date(iso).toLocaleDateString('nl-NL', { day: 'numeric', month: 'short', year: 'numeric' })
+}
+
+function fmtShort(iso: string) {
+  return new Date(iso).toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' })
+}
+
+function fmtTime(iso: string) {
+  const d = new Date(iso)
+  return d.toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' }) + ' ' +
+    d.toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' })
 }
 
 function Input({ label, value, onChange, type = 'text', placeholder }: {
@@ -57,6 +87,55 @@ function Input({ label, value, onChange, type = 'text', placeholder }: {
   )
 }
 
+// Simple bar chart with SVG
+function StepChart({ data }: { data: StatEntry[] }) {
+  const max = Math.max(...data.map(d => d.count), 1)
+  const total = data.reduce((s, d) => s + d.count, 0)
+  const chartWidth = 680
+  const chartHeight = 120
+  const barWidth = Math.floor(chartWidth / data.length) - 2
+
+  return (
+    <div>
+      <div className="flex items-end justify-between mb-2">
+        <p className="text-xs text-gray-500">{total} stappen afgerond (30 dagen)</p>
+        <p className="text-xs text-gray-600">max: {max}/dag</p>
+      </div>
+      <div className="overflow-x-auto">
+        <svg width={chartWidth} height={chartHeight + 24} className="block">
+          {data.map((d, i) => {
+            const barH = max > 0 ? Math.max(2, Math.round((d.count / max) * chartHeight)) : 2
+            const x = i * (barWidth + 2)
+            const y = chartHeight - barH
+            const isLast = i === data.length - 1
+            const isFirst = i === 0
+            const showLabel = isFirst || isLast || i % 5 === 0
+            return (
+              <g key={d.date}>
+                <rect
+                  x={x} y={y} width={barWidth} height={barH}
+                  fill={d.count > 0 ? '#7c3aed' : '#1f2937'}
+                  rx={2}
+                />
+                {d.count > 0 && (
+                  <text x={x + barWidth / 2} y={y - 3} textAnchor="middle" fontSize={9} fill="#9ca3af">
+                    {d.count}
+                  </text>
+                )}
+                {showLabel && (
+                  <text x={x + barWidth / 2} y={chartHeight + 18} textAnchor="middle" fontSize={9} fill="#6b7280">
+                    {fmtShort(d.date)}
+                  </text>
+                )}
+              </g>
+            )
+          })}
+        </svg>
+      </div>
+    </div>
+  )
+}
+
 export default function SuperCompanyPage({ params: pp }: { params: Promise<{ companyId: string }> }) {
   const { companyId } = use(pp)
   const router = useRouter()
@@ -64,7 +143,7 @@ export default function SuperCompanyPage({ params: pp }: { params: Promise<{ com
   const [data, setData] = useState<DetailData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [activeTab, setActiveTab] = useState<'users' | 'onboardings' | 'templates'>('users')
+  const [activeTab, setActiveTab] = useState<Tab>('users')
 
   // Abonnement
   const [planVal, setPlanVal] = useState('')
@@ -82,6 +161,22 @@ export default function SuperCompanyPage({ params: pp }: { params: Promise<{ com
   const [addingUser, setAddingUser] = useState(false)
   const [addUserError, setAddUserError] = useState('')
 
+  // Impersonation
+  const [impersonatingId, setImpersonatingId] = useState<string | null>(null)
+
+  // Audit log
+  const [audit, setAudit] = useState<AuditEntry[] | null>(null)
+  const [auditLoading, setAuditLoading] = useState(false)
+
+  // Feature flags
+  const [flags, setFlags] = useState<Flag[] | null>(null)
+  const [flagsLoading, setFlagsLoading] = useState(false)
+  const [togglingFlag, setTogglingFlag] = useState<string | null>(null)
+
+  // Stats
+  const [stats, setStats] = useState<StatEntry[] | null>(null)
+  const [statsLoading, setStatsLoading] = useState(false)
+
   useEffect(() => {
     fetch(`/api/super/companies/${companyId}`)
       .then(r => r.json())
@@ -93,6 +188,39 @@ export default function SuperCompanyPage({ params: pp }: { params: Promise<{ com
       })
       .finally(() => setLoading(false))
   }, [companyId])
+
+  const loadAudit = useCallback(() => {
+    if (audit !== null) return
+    setAuditLoading(true)
+    fetch(`/api/super/companies/${companyId}/audit`)
+      .then(r => r.json())
+      .then(d => setAudit(Array.isArray(d) ? d : []))
+      .finally(() => setAuditLoading(false))
+  }, [companyId, audit])
+
+  const loadFlags = useCallback(() => {
+    if (flags !== null) return
+    setFlagsLoading(true)
+    fetch(`/api/super/companies/${companyId}/flags`)
+      .then(r => r.json())
+      .then(d => setFlags(Array.isArray(d) ? d : []))
+      .finally(() => setFlagsLoading(false))
+  }, [companyId, flags])
+
+  const loadStats = useCallback(() => {
+    if (stats !== null) return
+    setStatsLoading(true)
+    fetch(`/api/super/companies/${companyId}/stats`)
+      .then(r => r.json())
+      .then(d => setStats(Array.isArray(d) ? d : []))
+      .finally(() => setStatsLoading(false))
+  }, [companyId, stats])
+
+  useEffect(() => {
+    if (activeTab === 'audit') loadAudit()
+    if (activeTab === 'flags') loadFlags()
+    if (activeTab === 'stats') loadStats()
+  }, [activeTab, loadAudit, loadFlags, loadStats])
 
   async function handleSaveSubscription() {
     if (!data || savingSubscription) return
@@ -143,11 +271,38 @@ export default function SuperCompanyPage({ params: pp }: { params: Promise<{ com
     setAddingUser(false)
     if (!res.ok) { setAddUserError(d.error || 'Er ging iets mis'); return }
 
-    // Herlaad gebruikerslijst
     const refreshed = await fetch(`/api/super/companies/${companyId}`).then(r => r.json())
     if (refreshed.users) setData(prev => prev ? { ...prev, users: refreshed.users } : prev)
     setShowUserModal(false)
     setUserForm({ name: '', email: '', role: 'employee' })
+  }
+
+  async function handleImpersonate(userId: string) {
+    setImpersonatingId(userId)
+    const res = await fetch('/api/super/impersonate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId }),
+    })
+    const d = await res.json()
+    if (res.ok && d.redirect) {
+      window.location.href = d.redirect
+    } else {
+      setImpersonatingId(null)
+    }
+  }
+
+  async function handleToggleFlag(flag: string, current: boolean) {
+    setTogglingFlag(flag)
+    const res = await fetch(`/api/super/companies/${companyId}/flags`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ flag, enabled: !current }),
+    })
+    if (res.ok) {
+      setFlags(prev => prev ? prev.map(f => f.flag === flag ? { ...f, enabled: !current } : f) : prev)
+    }
+    setTogglingFlag(null)
   }
 
   if (loading) return (
@@ -164,6 +319,15 @@ export default function SuperCompanyPage({ params: pp }: { params: Promise<{ com
   const { company, users, templates, onboardings } = data
   const statusStyle = STATUS_STYLES[company.status] ?? STATUS_STYLES.trial
   const hasChanges = planVal !== company.plan || statusVal !== company.status
+
+  const TABS: { key: Tab; label: string }[] = [
+    { key: 'users',      label: `Gebruikers (${users.length})` },
+    { key: 'onboardings', label: `Onboardings (${onboardings.length})` },
+    { key: 'templates',  label: `Templates (${templates.length})` },
+    { key: 'audit',      label: 'Audit log' },
+    { key: 'flags',      label: 'Feature flags' },
+    { key: 'stats',      label: 'Statistieken' },
+  ]
 
   return (
     <main className="min-h-screen bg-gray-950 text-gray-100">
@@ -188,13 +352,6 @@ export default function SuperCompanyPage({ params: pp }: { params: Promise<{ com
               </div>
               <p className="text-sm text-gray-500 font-mono">{company.slug}</p>
             </div>
-            <button
-              className="text-sm bg-purple-900/40 text-purple-300 px-4 py-2 rounded-xl font-medium opacity-50 cursor-not-allowed border border-purple-800/40"
-              title="Impersonation — nog niet geïmplementeerd"
-              disabled
-            >
-              👤 Impersoneer
-            </button>
           </div>
 
           {/* Meta */}
@@ -284,26 +441,24 @@ export default function SuperCompanyPage({ params: pp }: { params: Promise<{ com
         </div>
 
         {/* Tabs */}
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex gap-1 bg-gray-900 border border-gray-800 rounded-xl p-1 w-fit">
-            {(['users', 'onboardings', 'templates'] as const).map(tab => (
+        <div className="flex items-center justify-between mb-4 gap-4">
+          <div className="flex gap-1 bg-gray-900 border border-gray-800 rounded-xl p-1 flex-wrap">
+            {TABS.map(tab => (
               <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`text-sm px-4 py-2 rounded-lg font-medium transition-colors ${
-                  activeTab === tab ? 'bg-gray-700 text-white' : 'text-gray-500 hover:text-gray-300'
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key)}
+                className={`text-sm px-3 py-1.5 rounded-lg font-medium transition-colors whitespace-nowrap ${
+                  activeTab === tab.key ? 'bg-gray-700 text-white' : 'text-gray-500 hover:text-gray-300'
                 }`}
               >
-                {tab === 'users' ? `Gebruikers (${users.length})`
-                 : tab === 'onboardings' ? `Onboardings (${onboardings.length})`
-                 : `Templates (${templates.length})`}
+                {tab.label}
               </button>
             ))}
           </div>
           {activeTab === 'users' && (
             <button
               onClick={() => { setShowUserModal(true); setAddUserError(''); setUserForm({ name: '', email: '', role: 'employee' }) }}
-              className="text-sm bg-purple-600 text-white px-4 py-2 rounded-xl font-medium hover:bg-purple-700 transition-colors"
+              className="text-sm bg-purple-600 text-white px-4 py-2 rounded-xl font-medium hover:bg-purple-700 transition-colors whitespace-nowrap"
             >
               + Gebruiker toevoegen
             </button>
@@ -330,6 +485,13 @@ export default function SuperCompanyPage({ params: pp }: { params: Promise<{ com
                       {user.role.replace('_', ' ')}
                     </span>
                     <span className="text-xs text-gray-600">{fmt(user.createdAt)}</span>
+                    <button
+                      onClick={() => handleImpersonate(user.id)}
+                      disabled={impersonatingId === user.id}
+                      className="text-xs text-purple-400 hover:text-purple-300 font-medium px-3 py-1.5 rounded-lg hover:bg-purple-900/30 transition-colors whitespace-nowrap disabled:opacity-40"
+                    >
+                      {impersonatingId === user.id ? 'Bezig...' : '👤 Inloggen als'}
+                    </button>
                   </div>
                 ))}
               </div>
@@ -386,6 +548,101 @@ export default function SuperCompanyPage({ params: pp }: { params: Promise<{ com
                   </div>
                 ))}
               </div>
+            )}
+          </div>
+        )}
+
+        {/* Tab: Audit log */}
+        {activeTab === 'audit' && (
+          <div className="bg-gray-900 rounded-2xl border border-gray-800 overflow-hidden">
+            {auditLoading ? (
+              <p className="text-center py-10 text-gray-600 text-sm">Laden...</p>
+            ) : !audit || audit.length === 0 ? (
+              <p className="text-center py-10 text-gray-600 text-sm">Geen audit logs</p>
+            ) : (
+              <div className="divide-y divide-gray-800">
+                <div className="grid grid-cols-[1fr_1fr_2fr_auto] gap-4 px-5 py-2.5 text-xs font-medium text-gray-600 uppercase tracking-wide border-b border-gray-800">
+                  <span>Actie</span>
+                  <span>Gebruiker</span>
+                  <span>Details</span>
+                  <span>Tijdstip</span>
+                </div>
+                {audit.map(entry => (
+                  <div key={entry.id} className="grid grid-cols-[1fr_1fr_2fr_auto] gap-4 px-5 py-3 items-start">
+                    <span className={`text-xs font-medium px-2 py-0.5 rounded-full w-fit ${
+                      entry.action === 'login' ? 'bg-blue-900/40 text-blue-400' :
+                      entry.action === 'step_complete' ? 'bg-green-900/40 text-green-400' :
+                      entry.action === 'onboarding_start' ? 'bg-purple-900/40 text-purple-400' :
+                      entry.action === 'plan_change' ? 'bg-yellow-900/40 text-yellow-400' :
+                      'bg-gray-800 text-gray-400'
+                    }`}>
+                      {ACTION_LABELS[entry.action] ?? entry.action}
+                    </span>
+                    <div className="min-w-0">
+                      <p className="text-xs text-gray-300 truncate">{entry.userName}</p>
+                      <p className="text-xs text-gray-600 truncate">{entry.userEmail}</p>
+                    </div>
+                    <p className="text-xs text-gray-600 truncate font-mono">
+                      {entry.details ? JSON.stringify(entry.details).slice(0, 80) : '—'}
+                    </p>
+                    <span className="text-xs text-gray-600 whitespace-nowrap">{fmtTime(entry.createdAt)}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Tab: Feature flags */}
+        {activeTab === 'flags' && (
+          <div className="bg-gray-900 rounded-2xl border border-gray-800 overflow-hidden">
+            {flagsLoading ? (
+              <p className="text-center py-10 text-gray-600 text-sm">Laden...</p>
+            ) : !flags || flags.length === 0 ? (
+              <p className="text-center py-10 text-gray-600 text-sm">Geen flags beschikbaar</p>
+            ) : (
+              <div className="divide-y divide-gray-800">
+                {flags.map(f => {
+                  const info = FLAG_LABELS[f.flag] ?? { label: f.flag, desc: '' }
+                  return (
+                    <div key={f.flag} className="flex items-center gap-4 px-5 py-4">
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-white">{info.label}</p>
+                        <p className="text-xs text-gray-500 mt-0.5">{info.desc}</p>
+                        <p className="text-xs text-gray-700 font-mono mt-0.5">{f.flag}</p>
+                      </div>
+                      <button
+                        onClick={() => handleToggleFlag(f.flag, f.enabled)}
+                        disabled={togglingFlag === f.flag}
+                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none disabled:opacity-50 ${
+                          f.enabled ? 'bg-purple-600' : 'bg-gray-700'
+                        }`}
+                      >
+                        <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                          f.enabled ? 'translate-x-6' : 'translate-x-1'
+                        }`} />
+                      </button>
+                      <span className={`text-xs w-12 text-right ${f.enabled ? 'text-green-400' : 'text-gray-600'}`}>
+                        {f.enabled ? 'Aan' : 'Uit'}
+                      </span>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Tab: Statistieken */}
+        {activeTab === 'stats' && (
+          <div className="bg-gray-900 rounded-2xl border border-gray-800 p-6">
+            <p className="text-sm font-medium text-white mb-4">Voltooide stappen per dag</p>
+            {statsLoading ? (
+              <p className="text-center py-10 text-gray-600 text-sm">Laden...</p>
+            ) : !stats || stats.length === 0 ? (
+              <p className="text-center py-10 text-gray-600 text-sm">Geen data beschikbaar</p>
+            ) : (
+              <StepChart data={stats} />
             )}
           </div>
         )}

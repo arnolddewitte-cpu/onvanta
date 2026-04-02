@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSession } from '@/lib/session'
 import { supabaseAdmin } from '@/lib/supabase'
+import { logAudit } from '@/lib/audit'
 
 export async function GET(
   _req: NextRequest,
@@ -133,6 +134,19 @@ export async function POST(
     .from('OnboardingInstance')
     .update({ progressPct })
     .eq('id', instance.id)
+
+  // Log step completion (fire-and-forget, get companyId from instance)
+  const { data: inst } = await supabaseAdmin
+    .from('OnboardingInstance')
+    .select('companyId')
+    .eq('id', instance.id)
+    .single()
+
+  await logAudit('step_complete', session.id, inst?.companyId ?? null, {
+    stepId,
+    instanceId: instance.id,
+    progressPct,
+  })
 
   return NextResponse.json({ success: true, progressPct })
 }

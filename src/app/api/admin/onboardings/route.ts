@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
 import { supabaseAdmin } from '@/lib/supabase'
+import { logAudit } from '@/lib/audit'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -103,6 +104,13 @@ export async function POST(req: NextRequest) {
         loginUrl,
         role: role?.trim() || null,
       }),
+    })
+
+    await logAudit('onboarding_start', employeeId, template.companyId, {
+      instanceId: instance.id,
+      templateId,
+      templateName: template.name,
+      employeeEmail: email,
     })
 
     return NextResponse.json({ id: instance.id }, { status: 201 })

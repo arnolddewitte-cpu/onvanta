@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
 import { SignJWT } from 'jose'
+import { logAudit } from '@/lib/audit'
 
 export async function GET(req: NextRequest) {
   const token = req.nextUrl.searchParams.get('token')
@@ -46,6 +47,9 @@ export async function GET(req: NextRequest) {
     .setIssuedAt()
     .setExpirationTime('30d')
     .sign(secret)
+
+  // 4b. Log login
+  await logAudit('login', user.id, user.companyId, { email: user.email, role: user.role })
 
   // 5. Redirect op basis van rol
   const redirectMap: Record<string, string> = {
