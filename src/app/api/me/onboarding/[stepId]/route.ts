@@ -148,11 +148,16 @@ export async function POST(
     return NextResponse.json({ error: 'Kon voortgang niet opslaan' }, { status: 500 })
   }
 
-  // Herbereken progressPct
-  const { data: allSteps } = await supabaseAdmin
-    .from('TemplateStep')
-    .select('id, phase:TemplatePhase!inner(templateId)')
-    .eq('phase.templateId', instance.templateId)
+  // Herbereken progressPct — apart ophalen om nested join filter problemen te vermijden
+  const { data: templatePhases } = await supabaseAdmin
+    .from('TemplatePhase')
+    .select('id')
+    .eq('templateId', instance.templateId)
+
+  const phaseIds = (templatePhases ?? []).map(p => p.id)
+  const { data: allSteps } = phaseIds.length > 0
+    ? await supabaseAdmin.from('TemplateStep').select('id').in('phaseId', phaseIds)
+    : { data: [] }
 
   const { data: progress } = await supabaseAdmin
     .from('StepProgress')
@@ -163,6 +168,8 @@ export async function POST(
   const totalSteps = allSteps?.length ?? 0
   const completedCount = progress?.length ?? 0
   const progressPct = totalSteps > 0 ? Math.round((completedCount / totalSteps) * 100) : 0
+
+  console.log('[step complete] progressPct:', { phaseIds: phaseIds.length, totalSteps, completedCount, progressPct })
 
   await supabaseAdmin
     .from('OnboardingInstance')
