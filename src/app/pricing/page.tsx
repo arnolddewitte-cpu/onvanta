@@ -68,11 +68,21 @@ export default function PricingPage() {
 
   return (
     <main style={{ background: '#faf9f6', fontFamily: 'DM Sans, system-ui, sans-serif', minHeight: '100vh' }}>
+      <style>{`
+        .pr-plans { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
+        @media (max-width: 768px) {
+          .pr-plans { grid-template-columns: 1fr !important; }
+          .pr-hero { padding: 48px 20px 32px !important; }
+          .pr-plans-wrap { padding: 0 20px !important; margin-bottom: 48px !important; }
+          .pr-faq { padding: 0 20px !important; }
+          .pr-cta { padding: 60px 20px !important; }
+        }
+      `}</style>
 
       <MarketingNav activePage="Pricing" />
 
       {/* Hero */}
-      <div style={{ textAlign: 'center', padding: '80px 40px 56px', maxWidth: 700, margin: '0 auto' }}>
+      <div className="pr-hero" style={{ textAlign: 'center', padding: '80px 40px 56px', maxWidth: 700, margin: '0 auto' }}>
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontSize: 12, fontWeight: 500, letterSpacing: '.8px', textTransform: 'uppercase', color: '#1a5fd4', background: '#e8f0fc', padding: '5px 12px', borderRadius: 20, marginBottom: 20 }}>
           Simple pricing
         </div>
@@ -93,7 +103,8 @@ export default function PricingPage() {
       </div>
 
       {/* Plans */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20, maxWidth: 1000, margin: '0 auto 80px', padding: '0 40px' }}>
+      <div className="pr-plans-wrap" style={{ maxWidth: 1000, margin: '0 auto 80px', padding: '0 40px' }}>
+      <div className="pr-plans">
         {plans.map((plan, i) => (
           <div key={i} style={{ background: 'white', border: plan.featured ? '2px solid #1a5fd4' : '1px solid #e8e7e2', borderRadius: 16, padding: 28, display: 'flex', flexDirection: 'column', position: 'relative' }}>
             {plan.featured && (
@@ -135,9 +146,10 @@ export default function PricingPage() {
           </div>
         ))}
       </div>
+      </div>
 
       {/* FAQ */}
-      <div style={{ maxWidth: 700, margin: '0 auto 80px', padding: '0 40px' }}>
+      <div className="pr-faq" style={{ maxWidth: 700, margin: '0 auto 80px', padding: '0 40px' }}>
         <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 'clamp(28px, 4vw, 40px)', fontWeight: 400, color: '#0f0f0e', marginBottom: 40, textAlign: 'center' }}>
           Common <em style={{ fontStyle: 'italic', color: '#1a5fd4' }}>questions.</em>
         </h2>
@@ -155,7 +167,7 @@ export default function PricingPage() {
       </div>
 
       {/* CTA */}
-      <section style={{ background: '#1a5fd4', padding: '80px 40px', textAlign: 'center' }}>
+      <section className="pr-cta" style={{ background: '#1a5fd4', padding: '80px 40px', textAlign: 'center' }}>
         <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 'clamp(32px, 4vw, 48px)', fontWeight: 400, color: 'white', marginBottom: 16 }}>Start your free trial today.</h2>
         <p style={{ fontSize: 18, color: 'rgba(255,255,255,.8)', fontWeight: 300, maxWidth: 440, margin: '0 auto 32px' }}>14 days, full Pro access, no credit card required.</p>
         <Link href="/signup" style={{ fontSize: 16, fontWeight: 500, color: '#1a5fd4', background: 'white', padding: '14px 28px', borderRadius: 12, textDecoration: 'none', display: 'inline-block' }}>

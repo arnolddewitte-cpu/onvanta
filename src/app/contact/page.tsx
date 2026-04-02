@@ -32,10 +32,16 @@ export default function ContactPage() {
 
   return (
     <main style={{ background: '#faf9f6', fontFamily: 'DM Sans, system-ui, sans-serif', minHeight: '100vh' }}>
+      <style>{`
+        .ct-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start; }
+        @media (max-width: 768px) {
+          .ct-grid { grid-template-columns: 1fr !important; gap: 40px !important; padding: 40px 20px !important; }
+        }
+      `}</style>
 
       <MarketingNav activePage="Contact" />
 
-      <div style={{ maxWidth: 1000, margin: '0 auto', padding: '80px 40px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 80, alignItems: 'start' }}>
+      <div className="ct-grid" style={{ maxWidth: 1000, margin: '0 auto', padding: '80px 40px' }}>
 
         {/* Left */}
         <div>

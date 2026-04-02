@@ -7,10 +7,24 @@ export default function HomePage() {
   return (
     <main className="min-h-screen" style={{ background: '#faf9f6', fontFamily: 'DM Sans, system-ui, sans-serif' }}>
 
+      <style>{`
+        .hp-hero { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+        .hp-dashboard-preview { display: block; }
+        .hp-features-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; }
+        .hp-pricing-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; }
+        .hp-hero-btns { flex-wrap: wrap; }
+        @media (max-width: 768px) {
+          .hp-hero { grid-template-columns: 1fr !important; gap: 40px !important; }
+          .hp-dashboard-preview { display: none !important; }
+          .hp-features-grid { grid-template-columns: 1fr !important; }
+          .hp-pricing-grid { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
+
       <MarketingNav activePage="Home" />
 
       {/* Hero */}
-      <section style={{ maxWidth: 1100, margin: '0 auto', padding: '100px 40px 80px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 80, alignItems: 'center' }}>
+      <section className="hp-hero" style={{ maxWidth: 1100, margin: '0 auto', padding: '60px 20px 60px' }}>
         <div>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontSize: 12, fontWeight: 500, letterSpacing: '.8px', textTransform: 'uppercase', color: '#1a5fd4', background: '#e8f0fc', padding: '5px 12px', borderRadius: 20, marginBottom: 24 }}>
             <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#1a5fd4' }} />
@@ -41,7 +55,7 @@ export default function HomePage() {
         </div>
 
         {/* Dashboard preview */}
-        <div style={{ background: 'white', border: '1px solid #e8e7e2', borderRadius: 16, overflow: 'hidden', boxShadow: '0 4px 40px rgba(0,0,0,.06)' }}>
+        <div className="hp-dashboard-preview" style={{ background: 'white', border: '1px solid #e8e7e2', borderRadius: 16, overflow: 'hidden', boxShadow: '0 4px 40px rgba(0,0,0,.06)' }}>
           <div style={{ background: 'white', borderBottom: '1px solid #e8e7e2', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 10 }}>
             <div style={{ display: 'flex', gap: 5 }}>
               {['#f87171', '#fbbf24', '#4ade80'].map((c, i) => <div key={i} style={{ width: 9, height: 9, borderRadius: '50%', background: c }} />)}
@@ -71,12 +85,12 @@ export default function HomePage() {
       </section>
 
       {/* Features */}
-      <section id="features" style={{ background: '#f2f1ed', padding: '80px 40px' }}>
+      <section id="features" style={{ background: '#f2f1ed', padding: '60px 20px' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto', textAlign: 'center' }}>
           <div style={{ fontSize: 12, fontWeight: 500, letterSpacing: '.8px', textTransform: 'uppercase', color: '#1a5fd4', marginBottom: 16 }}>Features</div>
           <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 'clamp(32px, 4vw, 48px)', fontWeight: 400, color: '#0f0f0e', marginBottom: 16 }}>Everything your team needs<br /><em style={{ fontStyle: 'italic', color: '#1a5fd4' }}>to onboard well.</em></h2>
           <p style={{ fontSize: 18, color: '#3a3a38', fontWeight: 300, maxWidth: 560, margin: '0 auto 56px' }}>Not a generic LMS. Not a HRIS. Built specifically for employee onboarding and knowledge retention.</p>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
+          <div className="hp-features-grid">
             {[
               { icon: '📋', title: 'Structured onboarding', desc: 'Build templates with phases, steps, and content blocks. Every new hire gets the same solid experience.' },
               { icon: '🃏', title: 'Spaced repetition', desc: 'ANKI-style flashcards built into onboarding. Knowledge sticks because it\'s reviewed at the right intervals.' },
@@ -96,12 +110,12 @@ export default function HomePage() {
       </section>
 
       {/* Pricing */}
-      <section id="pricing" style={{ padding: '80px 40px', textAlign: 'center' }}>
+      <section id="pricing" style={{ padding: '60px 20px', textAlign: 'center' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
           <div style={{ fontSize: 12, fontWeight: 500, letterSpacing: '.8px', textTransform: 'uppercase', color: '#1a5fd4', marginBottom: 16 }}>Pricing</div>
           <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 'clamp(32px, 4vw, 48px)', fontWeight: 400, color: '#0f0f0e', marginBottom: 16 }}>Simple pricing,<br /><em style={{ fontStyle: 'italic', color: '#1a5fd4' }}>no surprises.</em></h2>
           <p style={{ fontSize: 18, color: '#3a3a38', fontWeight: 300, maxWidth: 520, margin: '0 auto 48px' }}>Per active onboardee. Only pay when someone is actively being onboarded. Managers and admins are always free.</p>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24, maxWidth: 860, margin: '0 auto' }}>
+          <div className="hp-pricing-grid" style={{ maxWidth: 860, margin: '0 auto' }}>
             {[
               { name: 'Starter', desc: 'Small teams, up to 10 onboardees', price: '€7', unit: '/seat/mo', featured: false, features: ['All block types', 'Spaced repetition', 'Employee + manager dashboards'] },
               { name: 'Pro', desc: 'Growing teams, unlimited onboardees', price: '€12', unit: '/seat/mo', featured: true, features: ['Everything in Starter', 'Advanced reporting', 'Custom branding', 'Priority support'] },
@@ -132,7 +146,7 @@ export default function HomePage() {
       </section>
 
       {/* CTA */}
-      <section style={{ background: '#1a5fd4', padding: '80px 40px', textAlign: 'center' }}>
+      <section style={{ background: '#1a5fd4', padding: '60px 20px', textAlign: 'center' }}>
         <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 'clamp(32px, 4vw, 48px)', fontWeight: 400, color: 'white', marginBottom: 16 }}>Ready to onboard smarter?</h2>
         <p style={{ fontSize: 18, color: 'rgba(255,255,255,.8)', fontWeight: 300, maxWidth: 520, margin: '0 auto 32px' }}>Start your free 14-day trial. Full Pro access, no credit card required.</p>
         <Link href="/signup" style={{ fontSize: 16, fontWeight: 500, color: '#1a5fd4', background: 'white', padding: '14px 28px', borderRadius: 12, textDecoration: 'none', display: 'inline-block' }}>

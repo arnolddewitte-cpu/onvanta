@@ -5,11 +5,22 @@ import CookieBanner from '@/components/cookie-banner'
 export default function AboutPage() {
   return (
     <main style={{ background: '#faf9f6', fontFamily: 'DM Sans, system-ui, sans-serif', minHeight: '100vh' }}>
+      <style>{`
+        .ab-values-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; }
+        @media (max-width: 768px) {
+          .ab-values-grid { grid-template-columns: 1fr !important; }
+          .ab-hero { padding: 48px 20px 40px !important; }
+          .ab-story { padding: 0 20px 48px !important; }
+          .ab-story-card { padding: 28px 24px !important; }
+          .ab-values-section { padding: 48px 20px !important; }
+          .ab-cta { padding: 60px 20px !important; }
+        }
+      `}</style>
 
       <MarketingNav activePage="About" />
 
       {/* Hero */}
-      <section style={{ maxWidth: 760, margin: '0 auto', padding: '80px 40px 64px', textAlign: 'center' }}>
+      <section className="ab-hero" style={{ maxWidth: 760, margin: '0 auto', padding: '80px 40px 64px', textAlign: 'center' }}>
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontSize: 12, fontWeight: 500, letterSpacing: '.8px', textTransform: 'uppercase', color: '#1a5fd4', background: '#e8f0fc', padding: '5px 12px', borderRadius: 20, marginBottom: 20 }}>
           Our story
         </div>
@@ -22,8 +33,8 @@ export default function AboutPage() {
       </section>
 
       {/* Story */}
-      <section style={{ maxWidth: 760, margin: '0 auto', padding: '0 40px 80px' }}>
-        <div style={{ background: 'white', borderRadius: 20, border: '1px solid #e8e7e2', padding: '48px 56px', marginBottom: 32 }}>
+      <section className="ab-story" style={{ maxWidth: 760, margin: '0 auto', padding: '0 40px 80px' }}>
+        <div className="ab-story-card" style={{ background: 'white', borderRadius: 20, border: '1px solid #e8e7e2', padding: '48px 56px', marginBottom: 32 }}>
           <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 28, fontWeight: 400, color: '#0f0f0e', marginBottom: 16 }}>The problem we kept seeing</h2>
           <p style={{ fontSize: 16, color: '#3a3a38', lineHeight: 1.7, fontWeight: 300, marginBottom: 16 }}>
             New customer service reps telling customers tampon printing can do full-colour photos. Sales people quoting zeefdruk jobs without counting logo colours. Operators guessing at procedures because the knowledge lived in one person's head.
@@ -33,7 +44,7 @@ export default function AboutPage() {
           </p>
         </div>
 
-        <div style={{ background: 'white', borderRadius: 20, border: '1px solid #e8e7e2', padding: '48px 56px', marginBottom: 32 }}>
+        <div className="ab-story-card" style={{ background: 'white', borderRadius: 20, border: '1px solid #e8e7e2', padding: '48px 56px', marginBottom: 32 }}>
           <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 28, fontWeight: 400, color: '#0f0f0e', marginBottom: 16 }}>Why we built Onvanta</h2>
           <p style={{ fontSize: 16, color: '#3a3a38', lineHeight: 1.7, fontWeight: 300, marginBottom: 16 }}>
             We wanted something that combined structured onboarding with actual knowledge retention. Not just "here's a checklist" — but a system that makes sure knowledge actually sticks, using spaced repetition the way language learning apps do.
@@ -43,7 +54,7 @@ export default function AboutPage() {
           </p>
         </div>
 
-        <div style={{ background: 'white', borderRadius: 20, border: '1px solid #e8e7e2', padding: '48px 56px' }}>
+        <div className="ab-story-card" style={{ background: 'white', borderRadius: 20, border: '1px solid #e8e7e2', padding: '48px 56px' }}>
           <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 28, fontWeight: 400, color: '#0f0f0e', marginBottom: 16 }}>Who we're building for</h2>
           <p style={{ fontSize: 16, color: '#3a3a38', lineHeight: 1.7, fontWeight: 300, marginBottom: 16 }}>
             Right now: print-on-demand companies with 10–50 people. We know this world deeply and our templates reflect that — real druktechnieken knowledge, real klantcommunicatie scenarios, real procedures.
@@ -55,14 +66,14 @@ export default function AboutPage() {
       </section>
 
       {/* Values */}
-      <section style={{ background: '#f2f1ed', padding: '80px 40px' }}>
+      <section className="ab-values-section" style={{ background: '#f2f1ed', padding: '80px 40px' }}>
         <div style={{ maxWidth: 1000, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 48 }}>
             <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 'clamp(28px, 4vw, 40px)', fontWeight: 400, color: '#0f0f0e' }}>
               What we believe <em style={{ fontStyle: 'italic', color: '#1a5fd4' }}>in.</em>
             </h2>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
+          <div className="ab-values-grid">
             {[
               { icon: '🎯', title: 'Specificity beats generality', desc: 'A template built for POD customer service is worth more than a generic onboarding checklist. We build for specific roles, specific industries.' },
               { icon: '🧠', title: 'Knowledge has to stick', desc: 'Reading something once is not learning. Spaced repetition is not a nice-to-have — it\'s the difference between knowing and forgetting.' },
@@ -79,7 +90,7 @@ export default function AboutPage() {
       </section>
 
       {/* CTA */}
-      <section style={{ background: '#1a5fd4', padding: '80px 40px', textAlign: 'center' }}>
+      <section className="ab-cta" style={{ background: '#1a5fd4', padding: '80px 40px', textAlign: 'center' }}>
         <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 'clamp(32px, 4vw, 48px)', fontWeight: 400, color: 'white', marginBottom: 16 }}>Ready to onboard smarter?</h2>
         <p style={{ fontSize: 18, color: 'rgba(255,255,255,.8)', fontWeight: 300, maxWidth: 440, margin: '0 auto 32px' }}>14 days free. Full Pro access. No credit card required.</p>
         <a href="/signup" style={{ fontSize: 16, fontWeight: 500, color: '#1a5fd4', background: 'white', padding: '14px 28px', borderRadius: 12, textDecoration: 'none', display: 'inline-block' }}>

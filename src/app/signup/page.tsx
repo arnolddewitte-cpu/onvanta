@@ -75,9 +75,18 @@ export default function SignupPage() {
 
   return (
     <main style={{ background: '#faf9f6', fontFamily: 'DM Sans, system-ui, sans-serif', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <style>{`
+        .su-left { display: flex; }
+        .su-grid { display: grid; grid-template-columns: 1fr 1fr; }
+        @media (max-width: 768px) {
+          .su-left { display: none !important; }
+          .su-grid { grid-template-columns: 1fr !important; }
+          .su-right { padding: 32px 24px !important; align-items: flex-start !important; }
+        }
+      `}</style>
 
       {/* Nav */}
-      <nav style={{ padding: '0 40px', height: 60, display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #e8e7e2', background: 'white' }}>
+      <nav style={{ padding: '0 20px', height: 60, display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #e8e7e2', background: 'white' }}>
         <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
           <div style={{ width: 28, height: 28, background: '#1a5fd4', borderRadius: 7, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: 14, fontStyle: 'italic', fontFamily: 'Georgia, serif' }}>O</div>
           <span style={{ fontSize: 16, fontWeight: 500, color: '#0f0f0e' }}>Onvanta</span>
@@ -88,10 +97,10 @@ export default function SignupPage() {
       </nav>
 
       {/* Page */}
-      <div style={{ flex: 1, display: 'grid', gridTemplateColumns: '1fr 1fr', minHeight: 'calc(100vh - 60px)' }}>
+      <div className="su-grid" style={{ flex: 1, minHeight: 'calc(100vh - 60px)' }}>
 
         {/* Left panel */}
-        <div style={{ background: '#0f0f0e', padding: '64px 56px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+        <div className="su-left" style={{ background: '#0f0f0e', padding: '64px 56px', flexDirection: 'column', justifyContent: 'space-between' }}>
           <div>
             <div style={{ fontSize: 11, fontWeight: 500, letterSpacing: '.8px', textTransform: 'uppercase', color: 'rgba(255,255,255,.4)', marginBottom: 32 }}>Start free trial</div>
             <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 36, color: 'white', lineHeight: 1.2, marginBottom: 16, fontWeight: 400 }}>
@@ -129,7 +138,7 @@ export default function SignupPage() {
         </div>
 
         {/* Right panel */}
-        <div style={{ background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '48px 56px' }}>
+        <div className="su-right" style={{ background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '48px 56px' }}>
           <div style={{ maxWidth: 380, width: '100%' }}>
 
             {step === 1 && (
