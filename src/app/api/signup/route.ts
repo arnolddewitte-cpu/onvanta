@@ -75,7 +75,8 @@ export async function POST(req: NextRequest) {
     })
 
     // 5. Stuur welkomstmail met magic link
-    const loginUrl = `${process.env.NEXTAUTH_URL}/api/auth/verify?token=${token}`
+    const baseUrl = process.env.NEXTAUTH_URL ?? (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://onvanta.io')
+  const loginUrl = `${baseUrl}/api/auth/verify?token=${token}`
 
     await resend.emails.send({
       from: 'Onvanta <noreply@onvanta.io>',

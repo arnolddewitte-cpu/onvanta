@@ -13,14 +13,14 @@ export async function GET(req: NextRequest) {
   const url = new URL(req.url)
   const managersOnly = url.searchParams.get('managers') === '1'
 
-  const query = supabaseAdmin
+  let query = supabaseAdmin
     .from('User')
     .select('id, name, email, role, createdAt')
     .eq('companyId', session.companyId)
     .order('createdAt', { ascending: false })
 
   if (managersOnly) {
-    query.in('role', ['manager', 'company_admin'])
+    query = query.in('role', ['manager', 'company_admin'])
   }
 
   const { data: users, error } = await query
@@ -98,7 +98,9 @@ export async function POST(req: NextRequest) {
     used: false,
   })
 
-  const loginUrl = `${process.env.NEXTAUTH_URL}/api/auth/verify?token=${token}`
+  const baseUrl = process.env.NEXTAUTH_URL
+    ?? (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://onvanta.io')
+  const loginUrl = `${baseUrl}/api/auth/verify?token=${token}`
   const roleLabel: Record<string, string> = {
     employee: 'Medewerker',
     manager: 'Manager',

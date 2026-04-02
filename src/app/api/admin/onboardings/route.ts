@@ -89,7 +89,8 @@ export async function POST(req: NextRequest) {
     })
 
     // 5. Stuur uitnodigingsmail
-    const loginUrl = `${process.env.NEXTAUTH_URL}/api/auth/verify?token=${token}`
+    const baseUrl = process.env.NEXTAUTH_URL ?? (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://onvanta.io')
+  const loginUrl = `${baseUrl}/api/auth/verify?token=${token}`
     const managerName = managerId ? await getManagerName(managerId) : null
 
     await resend.emails.send({

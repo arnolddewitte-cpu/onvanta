@@ -205,7 +205,8 @@ export async function POST(
     used: false,
   })
 
-  const loginUrl = `${process.env.NEXTAUTH_URL}/api/auth/verify?token=${token}`
+  const baseUrl = process.env.NEXTAUTH_URL ?? (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://onvanta.io')
+  const loginUrl = `${baseUrl}/api/auth/verify?token=${token}`
   const roleLabel: Record<string, string> = {
     employee: 'Medewerker',
     manager: 'Manager',
