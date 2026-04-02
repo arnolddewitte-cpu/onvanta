@@ -1,7 +1,21 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+
+interface Template {
+  id: string
+  name: string
+  description: string
+  phaseCount: number
+  stepCount: number
+}
+
+interface Manager {
+  id: string
+  name: string
+  email: string
+}
 
 export default function NewOnboardingPage() {
   const router = useRouter()
@@ -10,58 +24,119 @@ export default function NewOnboardingPage() {
     employeeName: '',
     employeeEmail: '',
     role: '',
-    template: '',
-    manager: '',
+    templateId: '',
+    managerId: '',
     startDate: '',
   })
 
-  const templates = [
-    { id: '1', title: 'Customer Service Medewerker', description: 'Productkennis, klantcommunicatie, systemen', phases: 4, steps: 12 },
-    { id: '2', title: 'Sales Medewerker', description: 'Offertes, klantcontact, druktechnieken', phases: 4, steps: 10 },
-    { id: '3', title: 'Operator', description: 'Machines, kwaliteitscontrole, productieplanning', phases: 3, steps: 8 },
-  ]
+  const [templates, setTemplates] = useState<Template[]>([])
+  const [managers, setManagers] = useState<Manager[]>([])
+  const [loadingTemplates, setLoadingTemplates] = useState(true)
+  const [loadingManagers, setLoadingManagers] = useState(true)
 
-  const managers = [
-    { id: '1', name: 'Arnold de Witte' },
-    { id: '2', name: 'Sarah Bakker' },
-  ]
+  const [submitting, setSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState('')
+  const [done, setDone] = useState(false)
 
-  function handleNext() {
-    setStep(step + 1)
+  useEffect(() => {
+    fetch('/api/admin/templates')
+      .then(r => r.json())
+      .then(data => setTemplates(Array.isArray(data) ? data.filter((t: Template & { published?: boolean }) => t) : []))
+      .finally(() => setLoadingTemplates(false))
+
+    fetch('/api/admin/users')
+      .then(r => r.json())
+      .then(data => setManagers(Array.isArray(data) ? data : []))
+      .finally(() => setLoadingManagers(false))
+  }, [])
+
+  const selectedTemplate = templates.find(t => t.id === form.templateId)
+
+  async function handleSubmit() {
+    setSubmitting(true)
+    setSubmitError('')
+
+    const res = await fetch('/api/admin/onboardings', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        employeeName: form.employeeName,
+        employeeEmail: form.employeeEmail,
+        role: form.role,
+        templateId: form.templateId,
+        managerId: form.managerId || null,
+        startDate: form.startDate,
+      }),
+    })
+
+    const data = await res.json()
+    setSubmitting(false)
+
+    if (!res.ok) {
+      setSubmitError(data.error || 'Er ging iets mis')
+      return
+    }
+
+    setDone(true)
   }
 
-  function handleBack() {
-    setStep(step - 1)
-  }
-
-  function handleSubmit() {
-    setStep(4)
+  if (done) {
+    return (
+      <main className="min-h-screen bg-gray-50">
+        <div className="max-w-2xl mx-auto px-6 py-8">
+          <div className="text-center py-12">
+            <div className="text-6xl mb-4">🎉</div>
+            <h1 className="text-2xl font-semibold text-gray-900 mb-2">Onboarding gestart!</h1>
+            <p className="text-gray-500 mb-2">
+              {form.employeeName} ontvangt een uitnodigingsmail op {form.employeeEmail}.
+            </p>
+            <p className="text-gray-400 text-sm mb-8">De link in de mail is 7 dagen geldig.</p>
+            <div className="flex gap-3 justify-center">
+              <button
+                onClick={() => router.push('/admin')}
+                className="bg-blue-600 text-white px-6 py-3 rounded-xl text-sm font-medium hover:bg-blue-700 transition-colors"
+              >
+                Terug naar admin
+              </button>
+              <button
+                onClick={() => {
+                  setStep(1)
+                  setForm({ employeeName: '', employeeEmail: '', role: '', templateId: '', managerId: '', startDate: '' })
+                  setDone(false)
+                }}
+                className="bg-gray-100 text-gray-600 px-6 py-3 rounded-xl text-sm font-medium hover:bg-gray-200 transition-colors"
+              >
+                Nog een starten
+              </button>
+            </div>
+          </div>
+        </div>
+      </main>
+    )
   }
 
   return (
     <main className="min-h-screen bg-gray-50">
-
       <div className="max-w-2xl mx-auto px-6 py-8">
+
         {/* Stappen indicator */}
-        {step < 4 && (
-          <div className="flex items-center gap-2 mb-8">
-            {[1, 2, 3].map(s => (
-              <div key={s} className="flex items-center gap-2">
-                <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold ${
-                  s < step ? 'bg-blue-600 text-white' :
-                  s === step ? 'bg-blue-600 text-white' :
-                  'bg-gray-200 text-gray-400'
-                }`}>
-                  {s < step ? '✓' : s}
-                </div>
-                <span className={`text-sm ${s === step ? 'text-gray-900 font-medium' : 'text-gray-400'}`}>
-                  {s === 1 ? 'Medewerker' : s === 2 ? 'Template' : 'Details'}
-                </span>
-                {s < 3 && <div className={`w-8 h-0.5 ${s < step ? 'bg-blue-600' : 'bg-gray-200'}`} />}
+        <div className="flex items-center gap-2 mb-8">
+          {[1, 2, 3].map(s => (
+            <div key={s} className="flex items-center gap-2">
+              <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold ${
+                s < step ? 'bg-blue-600 text-white' :
+                s === step ? 'bg-blue-600 text-white' :
+                'bg-gray-200 text-gray-400'
+              }`}>
+                {s < step ? '✓' : s}
               </div>
-            ))}
-          </div>
-        )}
+              <span className={`text-sm ${s === step ? 'text-gray-900 font-medium' : 'text-gray-400'}`}>
+                {s === 1 ? 'Medewerker' : s === 2 ? 'Template' : 'Details'}
+              </span>
+              {s < 3 && <div className={`w-8 h-0.5 ${s < step ? 'bg-blue-600' : 'bg-gray-200'}`} />}
+            </div>
+          ))}
+        </div>
 
         {/* Stap 1 — Medewerker gegevens */}
         {step === 1 && (
@@ -78,6 +153,7 @@ export default function NewOnboardingPage() {
                   onChange={e => setForm({ ...form, employeeName: e.target.value })}
                   placeholder="Jan de Vries"
                   className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  style={{ color: '#0f0f0e' }}
                 />
               </div>
               <div>
@@ -88,6 +164,7 @@ export default function NewOnboardingPage() {
                   onChange={e => setForm({ ...form, employeeEmail: e.target.value })}
                   placeholder="jan@jouwbedrijf.nl"
                   className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  style={{ color: '#0f0f0e' }}
                 />
               </div>
               <div>
@@ -98,14 +175,15 @@ export default function NewOnboardingPage() {
                   onChange={e => setForm({ ...form, role: e.target.value })}
                   placeholder="Customer Service Medewerker"
                   className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  style={{ color: '#0f0f0e' }}
                 />
               </div>
             </div>
 
             <div className="mt-6 flex justify-end">
               <button
-                onClick={handleNext}
-                disabled={!form.employeeName || !form.employeeEmail}
+                onClick={() => setStep(2)}
+                disabled={!form.employeeName.trim() || !form.employeeEmail.trim()}
                 className="bg-blue-600 text-white px-6 py-3 rounded-xl text-sm font-medium hover:bg-blue-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 Volgende →
@@ -120,43 +198,51 @@ export default function NewOnboardingPage() {
             <h1 className="text-2xl font-semibold text-gray-900 mb-2">Kies een template</h1>
             <p className="text-gray-500 mb-8">Welk onboarding template past bij {form.employeeName}?</p>
 
-            <div className="space-y-3 mb-6">
-              {templates.map(template => (
-                <div
-                  key={template.id}
-                  onClick={() => setForm({ ...form, template: template.id })}
-                  className={`bg-white rounded-2xl border p-5 cursor-pointer transition-all ${
-                    form.template === template.id
-                      ? 'border-blue-500 ring-2 ring-blue-100'
-                      : 'border-gray-100 hover:border-gray-200'
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-semibold text-gray-900">{template.title}</p>
-                      <p className="text-sm text-gray-500 mt-0.5">{template.description}</p>
+            {loadingTemplates ? (
+              <div className="text-center py-8 text-gray-400 text-sm">Templates laden...</div>
+            ) : templates.length === 0 ? (
+              <div className="text-center py-8 text-gray-400 text-sm">
+                Nog geen templates. <a href="/admin/templates" className="text-blue-600 hover:underline">Maak er eerst een aan.</a>
+              </div>
+            ) : (
+              <div className="space-y-3 mb-6">
+                {templates.map(template => (
+                  <div
+                    key={template.id}
+                    onClick={() => setForm({ ...form, templateId: template.id })}
+                    className={`bg-white rounded-2xl border p-5 cursor-pointer transition-all ${
+                      form.templateId === template.id
+                        ? 'border-blue-500 ring-2 ring-blue-100'
+                        : 'border-gray-100 hover:border-gray-200'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-semibold text-gray-900">{template.name}</p>
+                        <p className="text-sm text-gray-500 mt-0.5">{template.description}</p>
+                      </div>
+                      <div className={`w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center ${
+                        form.templateId === template.id ? 'bg-blue-600 border-blue-600' : 'border-gray-300'
+                      }`}>
+                        {form.templateId === template.id && <span className="text-white text-xs">✓</span>}
+                      </div>
                     </div>
-                    <div className={`w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center ${
-                      form.template === template.id ? 'bg-blue-600 border-blue-600' : 'border-gray-300'
-                    }`}>
-                      {form.template === template.id && <span className="text-white text-xs">✓</span>}
+                    <div className="flex gap-4 mt-3 text-xs text-gray-400">
+                      <span>{template.phaseCount} fases</span>
+                      <span>{template.stepCount} stappen</span>
                     </div>
                   </div>
-                  <div className="flex gap-4 mt-3 text-xs text-gray-400">
-                    <span>{template.phases} fases</span>
-                    <span>{template.steps} stappen</span>
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
 
             <div className="flex justify-between">
-              <button onClick={handleBack} className="text-gray-500 px-6 py-3 rounded-xl text-sm font-medium hover:bg-gray-100 transition-colors">
+              <button onClick={() => setStep(1)} className="text-gray-500 px-6 py-3 rounded-xl text-sm font-medium hover:bg-gray-100 transition-colors">
                 ← Terug
               </button>
               <button
-                onClick={handleNext}
-                disabled={!form.template}
+                onClick={() => setStep(3)}
+                disabled={!form.templateId}
                 className="bg-blue-600 text-white px-6 py-3 rounded-xl text-sm font-medium hover:bg-blue-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 Volgende →
@@ -174,16 +260,21 @@ export default function NewOnboardingPage() {
             <div className="bg-white rounded-2xl border border-gray-100 p-6 space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">Manager</label>
-                <select
-                  value={form.manager}
-                  onChange={e => setForm({ ...form, manager: e.target.value })}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                >
-                  <option value="">Selecteer een manager</option>
-                  {managers.map(m => (
-                    <option key={m.id} value={m.id}>{m.name}</option>
-                  ))}
-                </select>
+                {loadingManagers ? (
+                  <div className="text-sm text-gray-400 py-2">Laden...</div>
+                ) : (
+                  <select
+                    value={form.managerId}
+                    onChange={e => setForm({ ...form, managerId: e.target.value })}
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                    style={{ color: '#0f0f0e' }}
+                  >
+                    <option value="">Selecteer een manager (optioneel)</option>
+                    {managers.map(m => (
+                      <option key={m.id} value={m.id}>{m.name}</option>
+                    ))}
+                  </select>
+                )}
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">Startdatum</label>
@@ -192,6 +283,7 @@ export default function NewOnboardingPage() {
                   value={form.startDate}
                   onChange={e => setForm({ ...form, startDate: e.target.value })}
                   className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  style={{ color: '#0f0f0e' }}
                 />
               </div>
             </div>
@@ -210,51 +302,37 @@ export default function NewOnboardingPage() {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-500">Template</span>
-                  <span className="font-medium text-gray-900">{templates.find(t => t.id === form.template)?.title}</span>
+                  <span className="font-medium text-gray-900">{selectedTemplate?.name}</span>
                 </div>
               </div>
             </div>
 
+            {submitError && (
+              <p className="mt-3 text-sm text-red-500">{submitError}</p>
+            )}
+
             <div className="flex justify-between mt-6">
-              <button onClick={handleBack} className="text-gray-500 px-6 py-3 rounded-xl text-sm font-medium hover:bg-gray-100 transition-colors">
+              <button onClick={() => setStep(2)} className="text-gray-500 px-6 py-3 rounded-xl text-sm font-medium hover:bg-gray-100 transition-colors">
                 ← Terug
               </button>
               <button
                 onClick={handleSubmit}
-                disabled={!form.manager || !form.startDate}
-                className="bg-blue-600 text-white px-6 py-3 rounded-xl text-sm font-medium hover:bg-blue-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                disabled={submitting || !form.startDate}
+                className="bg-blue-600 text-white px-6 py-3 rounded-xl text-sm font-medium hover:bg-blue-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2"
               >
-                🚀 Onboarding starten
+                {submitting ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    Bezig...
+                  </>
+                ) : (
+                  '🚀 Onboarding starten'
+                )}
               </button>
             </div>
           </div>
         )}
 
-        {/* Stap 4 — Bevestiging */}
-        {step === 4 && (
-          <div className="text-center py-12">
-            <div className="text-6xl mb-4">🎉</div>
-            <h1 className="text-2xl font-semibold text-gray-900 mb-2">Onboarding gestart!</h1>
-            <p className="text-gray-500 mb-2">
-              {form.employeeName} ontvangt een uitnodigingsmail op {form.employeeEmail}.
-            </p>
-            <p className="text-gray-400 text-sm mb-8">De onboarding start op {form.startDate}.</p>
-            <div className="flex gap-3 justify-center">
-              <button
-                onClick={() => router.push('/admin')}
-                className="bg-blue-600 text-white px-6 py-3 rounded-xl text-sm font-medium hover:bg-blue-700 transition-colors"
-              >
-                Terug naar admin
-              </button>
-              <button
-                onClick={() => { setStep(1); setForm({ employeeName: '', employeeEmail: '', role: '', template: '', manager: '', startDate: '' }) }}
-                className="bg-gray-100 text-gray-600 px-6 py-3 rounded-xl text-sm font-medium hover:bg-gray-200 transition-colors"
-              >
-                Nog een starten
-              </button>
-            </div>
-          </div>
-        )}
       </div>
     </main>
   )
