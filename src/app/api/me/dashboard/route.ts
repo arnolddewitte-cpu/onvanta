@@ -30,18 +30,32 @@ export async function GET() {
     return NextResponse.json({ instance: null })
   }
 
-  // 2. Haal alle fases + stappen op voor dit template
+  // 2. Fases (apart ophalen)
   const { data: phases } = await supabaseAdmin
     .from('TemplatePhase')
-    .select('id, title, order, steps:TemplateStep(id, title, order)')
+    .select('id, title, order')
     .eq('templateId', instance.template.id)
     .order('order')
 
-  const allSteps = (phases ?? []).flatMap(p =>
-    (p.steps as { id: string; title: string; order: number }[]).map(s => ({ ...s, phaseId: p.id, phaseTitle: p.title }))
-  )
+  // 3. Stappen per fase (apart ophalen om nested join problemen te vermijden)
+  const phaseIds = (phases ?? []).map(p => p.id)
+  const { data: stepsRaw } = phaseIds.length > 0
+    ? await supabaseAdmin
+        .from('TemplateStep')
+        .select('id, title, order, phaseId')
+        .in('phaseId', phaseIds)
+        .order('order')
+    : { data: [] }
 
-  // 3. Haal voortgang op
+  // Enriched stappen met phaseTitle
+  const phaseById = Object.fromEntries((phases ?? []).map(p => [p.id, p]))
+  const allSteps = (stepsRaw ?? []).map(s => ({
+    ...s,
+    phaseTitle: phaseById[s.phaseId]?.title ?? '',
+    phaseOrder: phaseById[s.phaseId]?.order ?? 0,
+  })).sort((a, b) => a.phaseOrder - b.phaseOrder || a.order - b.order)
+
+  // 4. Voortgang
   const { data: progress } = await supabaseAdmin
     .from('StepProgress')
     .select('stepId, completed')
@@ -55,10 +69,10 @@ export async function GET() {
   const completedCount = allSteps.filter(s => completedStepIds.has(s.id)).length
   const progressPct = totalSteps > 0 ? Math.round((completedCount / totalSteps) * 100) : 0
 
-  // 4. Huidige fase = eerste fase met onvoltooide stappen
+  // 5. Huidige fase = eerste fase met onvoltooide stappen
   let currentPhaseTitle = phases?.[0]?.title ?? ''
   for (const phase of phases ?? []) {
-    const phaseSteps = (phase.steps as { id: string }[])
+    const phaseSteps = allSteps.filter(s => s.phaseId === phase.id)
     const hasIncomplete = phaseSteps.some(s => !completedStepIds.has(s.id))
     if (hasIncomplete) {
       currentPhaseTitle = phase.title
@@ -66,12 +80,11 @@ export async function GET() {
     }
   }
 
-  // 5. Taken vandaag = eerste 5 onvoltooide stappen
+  // 6. Taken vandaag = eerste 5 onvoltooide stappen
   const todoSteps = allSteps
     .filter(s => !completedStepIds.has(s.id))
     .slice(0, 5)
 
-  // Haal bloktypen op voor deze stappen
   const todoStepIds = todoSteps.map(s => s.id)
   const { data: blocks } = todoStepIds.length > 0
     ? await supabaseAdmin
@@ -95,12 +108,15 @@ export async function GET() {
     done: false,
   }))
 
-  // 6. Flashcards — stappen met flashcard blokken die nog niet voltooid zijn
-  const { data: flashcardBlocks } = await supabaseAdmin
-    .from('StepBlock')
-    .select('stepId, config, title')
-    .eq('type', 'flashcards')
-    .in('stepId', allSteps.map(s => s.id))
+  // 7. Flashcards — stappen met flashcard blokken
+  const allStepIds = allSteps.map(s => s.id)
+  const { data: flashcardBlocks } = allStepIds.length > 0
+    ? await supabaseAdmin
+        .from('StepBlock')
+        .select('stepId, config, title')
+        .eq('type', 'flashcards')
+        .in('stepId', allStepIds)
+    : { data: [] }
 
   const flashcardSteps = (flashcardBlocks ?? [])
     .filter(b => !completedStepIds.has(b.stepId))

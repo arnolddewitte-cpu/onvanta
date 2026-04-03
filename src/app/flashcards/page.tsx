@@ -1,22 +1,32 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+
+interface Card {
+  question: string
+  answer: string
+  setTitle: string
+}
 
 export default function FlashcardsPage() {
+  const [cards, setCards] = useState<Card[]>([])
+  const [loading, setLoading] = useState(true)
+  const [noInstance, setNoInstance] = useState(false)
+
   const [currentIndex, setCurrentIndex] = useState(0)
   const [flipped, setFlipped] = useState(false)
   const [done, setDone] = useState(false)
   const [results, setResults] = useState<string[]>([])
 
-  const cards = [
-    { front: 'Wat is sublimatie?', back: 'Een druktechniek die alleen werkt op polyester. Geschikt voor foto\'s en kleurrijke afbeeldingen. De inkt wordt verhit en gaat direct in de stof.' },
-    { front: 'Wat is het verschil tussen PMS en CMYK?', back: 'PMS zijn exacte spot inktkleuren (consistent, duurder). CMYK is een mix van 4 inkten (approximatie, voor digitaal). PMS is cruciaal voor merkidentiteit.' },
-    { front: 'Waarom kan tampondruk geen foto\'s printen?', back: 'Tampondruk werkt met spot kleuren — maximaal 4-5 kleuren per druk. Foto\'s hebben duizenden kleurtinten nodig (CMYK). Tampondruk is bedoeld voor logo\'s op onregelmatige oppervlakken.' },
-    { front: 'Wat is DTG?', back: 'Direct to Garment — inkt wordt direct op de stof geprint. Geschikt voor volkleur en foto\'s op textiel. Geen setupkosten, ideaal voor kleine aantallen.' },
-    { front: 'Waarom moet een logo gevectoriseerd zijn?', back: 'JPG bestaat uit pixels — wordt wazig bij vergroten. Een vector (AI, EPS, SVG) is wiskundig opgebouwd en schaalbaar zonder kwaliteitsverlies. Altijd vragen om vector bij aanlevering.' },
-  ]
-
-  const currentCard = cards[currentIndex]
+  useEffect(() => {
+    fetch('/api/me/flashcards')
+      .then(r => r.json())
+      .then(d => {
+        if (d.instance === null) { setNoInstance(true); return }
+        setCards(Array.isArray(d.cards) ? d.cards : [])
+      })
+      .finally(() => setLoading(false))
+  }, [])
 
   function handleResult(result: 'correct' | 'doubt' | 'wrong') {
     const newResults = [...results, result]
@@ -36,10 +46,41 @@ export default function FlashcardsPage() {
     setResults([])
   }
 
+  if (loading) {
+    return (
+      <main className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <p className="text-gray-400 text-sm">Laden...</p>
+      </main>
+    )
+  }
+
+  if (noInstance) {
+    return (
+      <main className="min-h-screen bg-gray-50">
+        <div className="max-w-md mx-auto px-6 py-16 text-center">
+          <div className="text-4xl mb-4">🃏</div>
+          <p className="text-gray-500 text-sm">Geen actieve onboarding gevonden.</p>
+        </div>
+      </main>
+    )
+  }
+
+  if (cards.length === 0) {
+    return (
+      <main className="min-h-screen bg-gray-50">
+        <div className="max-w-md mx-auto px-6 py-16 text-center">
+          <div className="text-4xl mb-4">🃏</div>
+          <h1 className="text-xl font-semibold text-gray-900 mb-2">Geen flashcards</h1>
+          <p className="text-gray-500 text-sm">Er zijn nog geen flashcards toegevoegd aan jouw onboarding.</p>
+        </div>
+      </main>
+    )
+  }
+
   if (done) {
     const correct = results.filter(r => r === 'correct').length
-    const doubt = results.filter(r => r === 'doubt').length
-    const wrong = results.filter(r => r === 'wrong').length
+    const doubt   = results.filter(r => r === 'doubt').length
+    const wrong   = results.filter(r => r === 'wrong').length
 
     return (
       <main className="min-h-screen bg-gray-50">
@@ -72,6 +113,8 @@ export default function FlashcardsPage() {
     )
   }
 
+  const currentCard = cards[currentIndex]
+
   return (
     <main className="min-h-screen bg-gray-50">
       <div className="max-w-md mx-auto px-6 py-8">
@@ -79,10 +122,16 @@ export default function FlashcardsPage() {
           <span className="text-sm text-gray-500">{currentIndex + 1} / {cards.length}</span>
           <div className="flex gap-1">
             {cards.map((_, i) => (
-              <div key={i} className={`h-1.5 w-8 rounded-full ${i < currentIndex ? 'bg-blue-600' : i === currentIndex ? 'bg-blue-300' : 'bg-gray-200'}`} />
+              <div key={i} className={`h-1.5 w-8 rounded-full ${
+                i < currentIndex ? 'bg-blue-600' : i === currentIndex ? 'bg-blue-300' : 'bg-gray-200'
+              }`} />
             ))}
           </div>
         </div>
+
+        {currentCard.setTitle && (
+          <p className="text-xs text-gray-400 mb-3 text-center">{currentCard.setTitle}</p>
+        )}
 
         <div
           onClick={() => setFlipped(!flipped)}
@@ -91,13 +140,13 @@ export default function FlashcardsPage() {
           {!flipped ? (
             <div className="text-center">
               <p className="text-xs text-gray-400 mb-4 uppercase tracking-wide">Vraag</p>
-              <p className="text-lg font-semibold text-gray-900">{currentCard.front}</p>
+              <p className="text-lg font-semibold text-gray-900">{currentCard.question}</p>
               <p className="text-xs text-gray-400 mt-6">Klik om het antwoord te zien</p>
             </div>
           ) : (
             <div className="text-center">
               <p className="text-xs text-gray-400 mb-4 uppercase tracking-wide">Antwoord</p>
-              <p className="text-sm text-gray-700 leading-relaxed">{currentCard.back}</p>
+              <p className="text-sm text-gray-700 leading-relaxed">{currentCard.answer}</p>
             </div>
           )}
         </div>
