@@ -86,12 +86,10 @@ export default function TemplatesPage() {
     setCreating(true)
     setCreateError('')
 
-    const companyId = templates[0]?.companyId ?? null
-
     const res = await fetch('/api/admin/templates', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: form.name, description: form.description, companyId }),
+      body: JSON.stringify({ name: form.name, description: form.description }),
     })
     const data = await res.json()
     setCreating(false)
@@ -109,12 +107,10 @@ export default function TemplatesPage() {
     setAiGenerating(true)
     setAiError('')
 
-    const companyId = templates[0]?.companyId ?? null
-
     const res = await fetch('/api/admin/templates/generate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ role: aiForm.role, context: aiForm.context, companyId }),
+      body: JSON.stringify({ role: aiForm.role, context: aiForm.context }),
     })
     const data = await res.json()
     setAiGenerating(false)
@@ -149,6 +145,21 @@ export default function TemplatesPage() {
               + Nieuw template
             </button>
           </div>
+        </div>
+
+        {/* Tabs */}
+        <div className="flex gap-1 mb-8 border-b border-gray-200">
+          <button
+            className="px-4 py-2.5 text-sm font-medium text-blue-600 border-b-2 border-blue-600 -mb-px"
+          >
+            Mijn templates
+          </button>
+          <button
+            onClick={() => router.push('/admin/templates/library')}
+            className="px-4 py-2.5 text-sm font-medium text-gray-500 hover:text-gray-700 transition-colors"
+          >
+            Bibliotheek
+          </button>
         </div>
 
         {loading && (

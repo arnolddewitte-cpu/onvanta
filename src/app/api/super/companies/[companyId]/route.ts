@@ -37,7 +37,7 @@ export async function GET(
 
     supabaseAdmin
       .from('Template')
-      .select('id, name, published, createdAt')
+      .select('id, name, published, isGlobal, createdAt')
       .eq('companyId', companyId)
       .order('createdAt', { ascending: false }),
 

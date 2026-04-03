@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
+import { getSession } from '@/lib/session'
 import { supabaseAdmin } from '@/lib/supabase'
 
 const anthropic = new Anthropic()
@@ -42,7 +43,12 @@ function buildBlockConfig(block: GeneratedBlock): Record<string, unknown> {
 
 export async function POST(req: NextRequest) {
   try {
-    const { role, context, companyId } = await req.json()
+    const session = await getSession()
+    if (!session || !['company_admin', 'manager', 'super_admin'].includes(session.role)) {
+      return NextResponse.json({ error: 'Geen toegang' }, { status: 403 })
+    }
+
+    const { role, context } = await req.json()
 
     if (!role?.trim()) {
       return NextResponse.json({ error: 'Functietitel is verplicht' }, { status: 400 })
@@ -112,28 +118,15 @@ Regels:
       return NextResponse.json({ error: 'AI kon geen geldig template genereren' }, { status: 500 })
     }
 
-    // 2. Bepaal companyId
-    let resolvedCompanyId = companyId
-    if (!resolvedCompanyId) {
-      const { data: company } = await supabaseAdmin
-        .from('Company')
-        .select('id')
-        .limit(1)
-        .single()
-      if (!company) {
-        return NextResponse.json({ error: 'Geen company gevonden' }, { status: 500 })
-      }
-      resolvedCompanyId = company.id
-    }
-
-    // 3. Maak het Template aan
+    // 2. Maak het Template aan
     const { data: template, error: templateError } = await supabaseAdmin
       .from('Template')
       .insert({
         name: generated.name,
         description: generated.description,
-        companyId: resolvedCompanyId,
+        companyId: session.companyId,
         published: false,
+        isGlobal: false,
       })
       .select()
       .single()

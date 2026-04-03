@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { getSession } from '@/lib/session'
 import { supabaseAdmin } from '@/lib/supabase'
 
@@ -8,20 +8,17 @@ export async function GET() {
     return NextResponse.json({ error: 'Geen toegang' }, { status: 403 })
   }
 
-  // Alleen eigen templates (niet globale — die zitten in /library)
   const { data: templates, error } = await supabaseAdmin
     .from('Template')
-    .select('id, name, description, published, updatedAt, companyId, isGlobal')
-    .eq('companyId', session.companyId)
-    .eq('isGlobal', false)
-    .order('updatedAt', { ascending: false })
+    .select('id, name, description, published, updatedAt, isGlobal')
+    .eq('isGlobal', true)
+    .order('name')
 
   if (error) {
-    console.error('Templates fetch error:', error)
-    return NextResponse.json({ error: 'Kon templates niet ophalen' }, { status: 500 })
+    console.error('Library fetch error:', error)
+    return NextResponse.json({ error: 'Kon bibliotheek niet ophalen' }, { status: 500 })
   }
 
-  // Tel fases en stappen via afzonderlijke queries
   const templateIds = (templates ?? []).map(t => t.id)
 
   const { data: phases } = templateIds.length > 0
@@ -49,45 +46,9 @@ export async function GET() {
     id: t.id,
     name: t.name,
     description: t.description,
-    published: t.published,
-    updatedAt: t.updatedAt,
-    companyId: t.companyId,
-    isGlobal: t.isGlobal,
     phaseCount: phasesByTemplate[t.id] ?? 0,
     stepCount: stepsByTemplate[t.id] ?? 0,
   }))
 
   return NextResponse.json(result)
-}
-
-export async function POST(req: NextRequest) {
-  const session = await getSession()
-  if (!session || !['company_admin', 'manager', 'super_admin'].includes(session.role)) {
-    return NextResponse.json({ error: 'Geen toegang' }, { status: 403 })
-  }
-
-  const { name, description } = await req.json()
-
-  if (!name?.trim()) {
-    return NextResponse.json({ error: 'Naam is verplicht' }, { status: 400 })
-  }
-
-  const { data: template, error } = await supabaseAdmin
-    .from('Template')
-    .insert({
-      name: name.trim(),
-      description: description?.trim() ?? '',
-      companyId: session.companyId,
-      published: false,
-      isGlobal: false,
-    })
-    .select()
-    .single()
-
-  if (error || !template) {
-    console.error('Template create error:', error)
-    return NextResponse.json({ error: 'Kon template niet aanmaken', detail: error?.message }, { status: 500 })
-  }
-
-  return NextResponse.json(template, { status: 201 })
 }

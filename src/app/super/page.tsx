@@ -3,6 +3,15 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 
+interface GlobalTemplate {
+  id: string
+  name: string
+  description: string
+  isGlobal: boolean
+  phaseCount: number
+  stepCount: number
+}
+
 interface Company {
   id: string
   name: string
@@ -44,12 +53,50 @@ export default function SuperPage() {
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
 
+  const [globalTemplates, setGlobalTemplates] = useState<GlobalTemplate[]>([])
+  const [templatesLoading, setTemplatesLoading] = useState(true)
+  const [togglingId, setTogglingId] = useState<string | null>(null)
+  const [newTemplateName, setNewTemplateName] = useState('')
+  const [creatingTemplate, setCreatingTemplate] = useState(false)
+
   useEffect(() => {
     fetch('/api/super/companies')
       .then(r => r.json())
       .then(data => setCompanies(Array.isArray(data) ? data : []))
       .finally(() => setLoading(false))
+
+    fetch('/api/super/templates')
+      .then(r => r.json())
+      .then(data => setGlobalTemplates(Array.isArray(data) ? data : []))
+      .finally(() => setTemplatesLoading(false))
   }, [])
+
+  async function toggleGlobal(templateId: string, current: boolean) {
+    setTogglingId(templateId)
+    await fetch(`/api/super/templates/${templateId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ isGlobal: !current }),
+    })
+    setGlobalTemplates(prev => prev.map(t => t.id === templateId ? { ...t, isGlobal: !current } : t))
+    setTogglingId(null)
+  }
+
+  async function createGlobalTemplate() {
+    if (!newTemplateName.trim()) return
+    setCreatingTemplate(true)
+    const res = await fetch('/api/super/templates', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: newTemplateName.trim() }),
+    })
+    const data = await res.json()
+    setCreatingTemplate(false)
+    if (res.ok) {
+      setNewTemplateName('')
+      router.push(`/admin/templates/${data.id}/edit`)
+    }
+  }
 
   const filtered = companies.filter(c =>
     c.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -157,6 +204,81 @@ export default function SuperPage() {
             </div>
           )}
         </div>
+
+        {/* Globale templates */}
+        <div className="mt-12">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h2 className="text-lg font-semibold text-white">Globale templates</h2>
+              <p className="text-gray-500 text-sm mt-0.5">Zichtbaar voor alle bedrijven in de bibliotheek.</p>
+            </div>
+          </div>
+
+          {/* Nieuw globaal template */}
+          <div className="bg-gray-900 rounded-2xl border border-gray-800 p-4 mb-4 flex gap-3">
+            <input
+              type="text"
+              value={newTemplateName}
+              onChange={e => setNewTemplateName(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && createGlobalTemplate()}
+              placeholder="Naam nieuw globaal template..."
+              style={{ color: '#f3f4f6' }}
+              className="flex-1 px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder-gray-600"
+            />
+            <button
+              onClick={createGlobalTemplate}
+              disabled={creatingTemplate || !newTemplateName.trim()}
+              className="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-purple-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap"
+            >
+              {creatingTemplate ? 'Aanmaken...' : '+ Nieuw globaal template'}
+            </button>
+          </div>
+
+          <div className="bg-gray-900 rounded-2xl border border-gray-800 overflow-hidden">
+            {templatesLoading ? (
+              <div className="text-center py-10 text-gray-600 text-sm">Laden...</div>
+            ) : globalTemplates.length === 0 ? (
+              <div className="text-center py-10 text-gray-600 text-sm">Geen templates gevonden</div>
+            ) : (
+              <div className="divide-y divide-gray-800">
+                <div className="grid grid-cols-[2fr_1fr_1fr_auto] gap-4 px-5 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide border-b border-gray-800">
+                  <span>Template</span>
+                  <span>Inhoud</span>
+                  <span>Status</span>
+                  <span>Globaal</span>
+                </div>
+                {globalTemplates.map(t => (
+                  <div key={t.id} className="grid grid-cols-[2fr_1fr_1fr_auto] gap-4 px-5 py-3.5 items-center hover:bg-gray-800/50 transition-colors">
+                    <div>
+                      <p className="text-sm font-medium text-white">{t.name}</p>
+                      {t.description && <p className="text-xs text-gray-500 mt-0.5 truncate">{t.description}</p>}
+                    </div>
+                    <span className="text-xs text-gray-400">
+                      {t.phaseCount} fases · {t.stepCount} stappen
+                    </span>
+                    <span className={`text-xs px-2 py-0.5 rounded-full w-fit ${
+                      t.isGlobal ? 'bg-blue-900/40 text-blue-300' : 'bg-gray-800 text-gray-500'
+                    }`}>
+                      {t.isGlobal ? 'Globaal' : 'Privé'}
+                    </span>
+                    <button
+                      onClick={() => toggleGlobal(t.id, t.isGlobal)}
+                      disabled={togglingId === t.id}
+                      className={`relative w-10 h-5 rounded-full transition-colors flex-shrink-0 ${
+                        t.isGlobal ? 'bg-blue-600' : 'bg-gray-700'
+                      } ${togglingId === t.id ? 'opacity-50' : ''}`}
+                    >
+                      <span className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${
+                        t.isGlobal ? 'translate-x-5' : 'translate-x-0.5'
+                      }`} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
       </div>
     </main>
   )

@@ -2,28 +2,24 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getSession } from '@/lib/session'
 import { supabaseAdmin } from '@/lib/supabase'
 
+// GET: alle globale templates voor super admin beheer
 export async function GET() {
   const session = await getSession()
-  if (!session || !['company_admin', 'manager', 'super_admin'].includes(session.role)) {
+  if (!session || session.role !== 'super_admin') {
     return NextResponse.json({ error: 'Geen toegang' }, { status: 403 })
   }
 
-  // Alleen eigen templates (niet globale — die zitten in /library)
   const { data: templates, error } = await supabaseAdmin
     .from('Template')
-    .select('id, name, description, published, updatedAt, companyId, isGlobal')
-    .eq('companyId', session.companyId)
-    .eq('isGlobal', false)
-    .order('updatedAt', { ascending: false })
+    .select('id, name, description, published, isGlobal, companyId, updatedAt')
+    .order('isGlobal', { ascending: false })
+    .order('name')
 
   if (error) {
-    console.error('Templates fetch error:', error)
     return NextResponse.json({ error: 'Kon templates niet ophalen' }, { status: 500 })
   }
 
-  // Tel fases en stappen via afzonderlijke queries
   const templateIds = (templates ?? []).map(t => t.id)
-
   const { data: phases } = templateIds.length > 0
     ? await supabaseAdmin.from('TemplatePhase').select('id, templateId').in('templateId', templateIds)
     : { data: [] }
@@ -45,32 +41,27 @@ export async function GET() {
     if (tid) stepsByTemplate[tid] = (stepsByTemplate[tid] ?? 0) + 1
   }
 
-  const result = (templates ?? []).map(t => ({
+  return NextResponse.json((templates ?? []).map(t => ({
     id: t.id,
     name: t.name,
     description: t.description,
     published: t.published,
-    updatedAt: t.updatedAt,
-    companyId: t.companyId,
     isGlobal: t.isGlobal,
+    companyId: t.companyId,
     phaseCount: phasesByTemplate[t.id] ?? 0,
     stepCount: stepsByTemplate[t.id] ?? 0,
-  }))
-
-  return NextResponse.json(result)
+  })))
 }
 
+// POST: maak een nieuw globaal template aan (super admin)
 export async function POST(req: NextRequest) {
   const session = await getSession()
-  if (!session || !['company_admin', 'manager', 'super_admin'].includes(session.role)) {
+  if (!session || session.role !== 'super_admin') {
     return NextResponse.json({ error: 'Geen toegang' }, { status: 403 })
   }
 
   const { name, description } = await req.json()
-
-  if (!name?.trim()) {
-    return NextResponse.json({ error: 'Naam is verplicht' }, { status: 400 })
-  }
+  if (!name?.trim()) return NextResponse.json({ error: 'Naam is verplicht' }, { status: 400 })
 
   const { data: template, error } = await supabaseAdmin
     .from('Template')
@@ -79,15 +70,14 @@ export async function POST(req: NextRequest) {
       description: description?.trim() ?? '',
       companyId: session.companyId,
       published: false,
-      isGlobal: false,
+      isGlobal: true,
     })
-    .select()
+    .select('id')
     .single()
 
   if (error || !template) {
-    console.error('Template create error:', error)
-    return NextResponse.json({ error: 'Kon template niet aanmaken', detail: error?.message }, { status: 500 })
+    return NextResponse.json({ error: 'Kon template niet aanmaken' }, { status: 500 })
   }
 
-  return NextResponse.json(template, { status: 201 })
+  return NextResponse.json({ id: template.id }, { status: 201 })
 }

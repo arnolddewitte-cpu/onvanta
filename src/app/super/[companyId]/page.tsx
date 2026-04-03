@@ -8,7 +8,7 @@ interface CompanyDetail {
   createdAt: string; trialEndsAt: string | null; stripeCustomerId: string | null
 }
 interface User { id: string; name: string; email: string; role: string; createdAt: string }
-interface Template { id: string; name: string; published: boolean; createdAt: string }
+interface Template { id: string; name: string; published: boolean; isGlobal: boolean; createdAt: string }
 interface Onboarding {
   id: string; status: string; progressPct: number; startDate: string
   employeeName: string; employeeEmail: string; templateName: string
@@ -177,6 +177,9 @@ export default function SuperCompanyPage({ params: pp }: { params: Promise<{ com
   const [stats, setStats] = useState<StatEntry[] | null>(null)
   const [statsLoading, setStatsLoading] = useState(false)
 
+  // Template isGlobal toggle
+  const [togglingTemplateId, setTogglingTemplateId] = useState<string | null>(null)
+
   useEffect(() => {
     fetch(`/api/super/companies/${companyId}`)
       .then(r => r.json())
@@ -290,6 +293,20 @@ export default function SuperCompanyPage({ params: pp }: { params: Promise<{ com
     } else {
       setImpersonatingId(null)
     }
+  }
+
+  async function handleToggleGlobal(templateId: string, current: boolean) {
+    setTogglingTemplateId(templateId)
+    await fetch(`/api/super/templates/${templateId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ isGlobal: !current }),
+    })
+    setData(prev => prev ? {
+      ...prev,
+      templates: prev.templates.map(t => t.id === templateId ? { ...t, isGlobal: !current } : t),
+    } : prev)
+    setTogglingTemplateId(null)
   }
 
   async function handleToggleFlag(flag: string, current: boolean) {
@@ -536,15 +553,36 @@ export default function SuperCompanyPage({ params: pp }: { params: Promise<{ com
               <p className="text-center py-10 text-gray-600 text-sm">Geen templates</p>
             ) : (
               <div className="divide-y divide-gray-800">
+                <div className="grid grid-cols-[2fr_auto_auto_auto] gap-4 px-5 py-2.5 text-xs font-medium text-gray-600 uppercase tracking-wide border-b border-gray-800">
+                  <span>Template</span>
+                  <span>Status</span>
+                  <span>Aangemaakt</span>
+                  <span>Globaal</span>
+                </div>
                 {templates.map(t => (
-                  <div key={t.id} className="flex items-center gap-4 px-5 py-3.5">
-                    <div className="flex-1 min-w-0">
+                  <div key={t.id} className="grid grid-cols-[2fr_auto_auto_auto] gap-4 px-5 py-3.5 items-center">
+                    <div className="flex items-center gap-2 min-w-0">
                       <p className="text-sm font-medium text-white truncate">{t.name}</p>
+                      {t.isGlobal && (
+                        <span className="text-xs bg-blue-900/40 text-blue-300 px-2 py-0.5 rounded-full flex-shrink-0">Globaal</span>
+                      )}
                     </div>
                     <span className={`text-xs px-2 py-0.5 rounded-full ${t.published ? 'bg-green-900/40 text-green-400' : 'bg-yellow-900/40 text-yellow-500'}`}>
                       {t.published ? 'Gepubliceerd' : 'Concept'}
                     </span>
                     <span className="text-xs text-gray-600">{fmt(t.createdAt)}</span>
+                    <button
+                      onClick={() => handleToggleGlobal(t.id, t.isGlobal)}
+                      disabled={togglingTemplateId === t.id}
+                      title={t.isGlobal ? 'Verwijder uit bibliotheek' : 'Voeg toe aan bibliotheek'}
+                      className={`relative w-10 h-5 rounded-full transition-colors ${
+                        t.isGlobal ? 'bg-blue-600' : 'bg-gray-700'
+                      } ${togglingTemplateId === t.id ? 'opacity-50' : ''}`}
+                    >
+                      <span className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${
+                        t.isGlobal ? 'translate-x-5' : 'translate-x-0.5'
+                      }`} />
+                    </button>
                   </div>
                 ))}
               </div>
