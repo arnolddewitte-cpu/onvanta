@@ -209,8 +209,8 @@ export default function SuperPage() {
         <div className="mt-12">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h2 className="text-lg font-semibold text-white">Globale templates</h2>
-              <p className="text-gray-500 text-sm mt-0.5">Zichtbaar voor alle bedrijven in de bibliotheek.</p>
+              <h2 className="text-lg font-semibold text-white">Templates bibliotheek</h2>
+              <p className="text-gray-500 text-sm mt-0.5">Globale templates zijn zichtbaar voor alle bedrijven. Privé templates zijn bedrijfsspecifiek.</p>
             </div>
           </div>
 

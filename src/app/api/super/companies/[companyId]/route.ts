@@ -55,10 +55,36 @@ export async function GET(
 
   if (!company) return NextResponse.json({ error: 'Company niet gevonden' }, { status: 404 })
 
+  // Bereken fase- en staptelling per template
+  const templateIds = (templates ?? []).map(t => t.id)
+  const { data: phases } = templateIds.length > 0
+    ? await supabaseAdmin.from('TemplatePhase').select('id, templateId').in('templateId', templateIds)
+    : { data: [] }
+  const phaseIds = (phases ?? []).map(p => p.id)
+  const { data: steps } = phaseIds.length > 0
+    ? await supabaseAdmin.from('TemplateStep').select('id, phaseId').in('phaseId', phaseIds)
+    : { data: [] }
+
+  const phasesByTemplate: Record<string, number> = {}
+  const phaseToTemplate: Record<string, string> = {}
+  for (const p of phases ?? []) {
+    phasesByTemplate[p.templateId] = (phasesByTemplate[p.templateId] ?? 0) + 1
+    phaseToTemplate[p.id] = p.templateId
+  }
+  const stepsByTemplate: Record<string, number> = {}
+  for (const s of steps ?? []) {
+    const tid = phaseToTemplate[s.phaseId]
+    if (tid) stepsByTemplate[tid] = (stepsByTemplate[tid] ?? 0) + 1
+  }
+
   return NextResponse.json({
     company,
     users: users ?? [],
-    templates: templates ?? [],
+    templates: (templates ?? []).map(t => ({
+      ...t,
+      phaseCount: phasesByTemplate[t.id] ?? 0,
+      stepCount: stepsByTemplate[t.id] ?? 0,
+    })),
     onboardings: (onboardings ?? []).map(o => {
       const emp = o.employee as unknown as { name: string; email: string } | null
       const tpl = o.template as unknown as { name: string } | null

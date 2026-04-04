@@ -8,7 +8,7 @@ interface CompanyDetail {
   createdAt: string; trialEndsAt: string | null; stripeCustomerId: string | null
 }
 interface User { id: string; name: string; email: string; role: string; createdAt: string }
-interface Template { id: string; name: string; published: boolean; isGlobal: boolean; createdAt: string }
+interface Template { id: string; name: string; published: boolean; isGlobal: boolean; createdAt: string; phaseCount: number; stepCount: number }
 interface Onboarding {
   id: string; status: string; progressPct: number; startDate: string
   employeeName: string; employeeEmail: string; templateName: string
@@ -553,20 +553,19 @@ export default function SuperCompanyPage({ params: pp }: { params: Promise<{ com
               <p className="text-center py-10 text-gray-600 text-sm">Geen templates</p>
             ) : (
               <div className="divide-y divide-gray-800">
-                <div className="grid grid-cols-[2fr_auto_auto_auto] gap-4 px-5 py-2.5 text-xs font-medium text-gray-600 uppercase tracking-wide border-b border-gray-800">
+                <div className="grid grid-cols-[2fr_1fr_auto_auto_auto] gap-4 px-5 py-2.5 text-xs font-medium text-gray-600 uppercase tracking-wide border-b border-gray-800">
                   <span>Template</span>
+                  <span>Inhoud</span>
                   <span>Status</span>
                   <span>Aangemaakt</span>
                   <span>Globaal</span>
                 </div>
                 {templates.map(t => (
-                  <div key={t.id} className="grid grid-cols-[2fr_auto_auto_auto] gap-4 px-5 py-3.5 items-center">
-                    <div className="flex items-center gap-2 min-w-0">
-                      <p className="text-sm font-medium text-white truncate">{t.name}</p>
-                      {t.isGlobal && (
-                        <span className="text-xs bg-blue-900/40 text-blue-300 px-2 py-0.5 rounded-full flex-shrink-0">Globaal</span>
-                      )}
-                    </div>
+                  <div key={t.id} className="grid grid-cols-[2fr_1fr_auto_auto_auto] gap-4 px-5 py-3.5 items-center">
+                    <p className="text-sm font-medium text-white truncate">{t.name}</p>
+                    <span className="text-xs text-gray-400">
+                      {t.phaseCount} fases · {t.stepCount} stappen
+                    </span>
                     <span className={`text-xs px-2 py-0.5 rounded-full ${t.published ? 'bg-green-900/40 text-green-400' : 'bg-yellow-900/40 text-yellow-500'}`}>
                       {t.published ? 'Gepubliceerd' : 'Concept'}
                     </span>
