@@ -1,125 +1,283 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 
-export default function SettingsPage() {
-  const [company, setCompany] = useState({
-    name: 'Onvanta Test',
-    website: 'https://onvanta.io',
-    industry: 'Print-on-demand',
-    size: '10-50',
-  })
+interface Company {
+  id: string
+  name: string
+  plan: string
+  status: string
+  trialEndsAt: string | null
+  stripeCustomerId: string | null
+}
 
+type Interval = 'monthly' | 'yearly'
+
+const PLANS = [
+  {
+    key: 'starter',
+    label: 'Starter',
+    monthlyPrice: '€9',
+    yearlyPrice: '€7',
+    description: 'Max 10 onboardees',
+    priceMonthly: 'starter_monthly',
+    priceYearly: 'starter_yearly',
+  },
+  {
+    key: 'pro',
+    label: 'Pro',
+    monthlyPrice: '€15',
+    yearlyPrice: '€12',
+    description: 'Onbeperkt',
+    priceMonthly: 'pro_monthly',
+    priceYearly: 'pro_yearly',
+    recommended: true,
+  },
+]
+
+function SettingsContent() {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const successParam = searchParams.get('success')
+
+  const [company, setCompany] = useState<Company | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [companyName, setCompanyName] = useState('')
   const [saved, setSaved] = useState(false)
+  const [interval, setInterval] = useState<Interval>('monthly')
+  const [checkingOut, setCheckingOut] = useState<string | null>(null)
+  const [openingPortal, setOpeningPortal] = useState(false)
+  const [showSuccess, setShowSuccess] = useState(successParam === 'true')
 
-  function handleSave() {
+  useEffect(() => {
+    if (showSuccess) {
+      // Verwijder ?success=true uit de URL
+      router.replace('/admin/settings')
+      const t = setTimeout(() => setShowSuccess(false), 6000)
+      return () => clearTimeout(t)
+    }
+  }, [showSuccess, router])
+
+  useEffect(() => {
+    fetch('/api/admin/company')
+      .then(r => r.json())
+      .then(data => {
+        if (!data.error) {
+          setCompany(data)
+          setCompanyName(data.name)
+        }
+      })
+      .finally(() => setLoading(false))
+  }, [])
+
+  async function handleSave() {
+    if (!company) return
+    await fetch('/api/admin/company', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: companyName }),
+    })
+    setCompany({ ...company, name: companyName })
     setSaved(true)
     setTimeout(() => setSaved(false), 2000)
   }
 
+  async function handleCheckout(priceKey: string) {
+    setCheckingOut(priceKey)
+    const res = await fetch('/api/billing/checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ priceKey }),
+    })
+    const data = await res.json()
+    if (data.url) {
+      window.location.href = data.url
+    } else {
+      setCheckingOut(null)
+    }
+  }
+
+  async function handlePortal() {
+    setOpeningPortal(true)
+    const res = await fetch('/api/billing/portal', { method: 'POST' })
+    const data = await res.json()
+    if (data.url) {
+      window.location.href = data.url
+    } else {
+      setOpeningPortal(false)
+    }
+  }
+
+  const trialDaysLeft = company?.trialEndsAt
+    ? Math.max(0, Math.ceil((new Date(company.trialEndsAt).getTime() - Date.now()) / 86400000))
+    : null
+
+  const trialPct = trialDaysLeft !== null
+    ? Math.round(((14 - trialDaysLeft) / 14) * 100)
+    : 0
+
+  const isActive = company?.status === 'active'
+  const isTrial = company?.status === 'trial'
+
   return (
     <main className="min-h-screen bg-gray-50">
-
       <div className="max-w-3xl mx-auto px-6 py-8">
+
         <div className="mb-8">
           <h1 className="text-2xl font-semibold text-gray-900">Instellingen</h1>
           <p className="text-gray-500 mt-1">Beheer je bedrijfsinstellingen en abonnement.</p>
         </div>
 
+        {/* Succesmelding */}
+        {showSuccess && (
+          <div className="mb-6 bg-green-50 border border-green-200 rounded-2xl p-4 flex items-center gap-3">
+            <span className="text-green-600 text-lg">✓</span>
+            <div>
+              <p className="text-sm font-semibold text-green-800">Betaling geslaagd!</p>
+              <p className="text-sm text-green-700">Je abonnement is geactiveerd. Bedankt!</p>
+            </div>
+          </div>
+        )}
+
         {/* Bedrijfsgegevens */}
         <div className="bg-white rounded-2xl border border-gray-100 p-6 mb-6">
           <h2 className="font-semibold text-gray-900 mb-5">Bedrijfsgegevens</h2>
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">Bedrijfsnaam</label>
-              <input
-                type="text"
-                value={company.name}
-                onChange={e => setCompany({ ...company, name: e.target.value })}
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">Website</label>
-              <input
-                type="text"
-                value={company.website}
-                onChange={e => setCompany({ ...company, website: e.target.value })}
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
+          {loading ? (
+            <div className="h-12 bg-gray-100 rounded-xl animate-pulse" />
+          ) : (
+            <>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Branche</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">Bedrijfsnaam</label>
                 <input
                   type="text"
-                  value={company.industry}
-                  onChange={e => setCompany({ ...company, industry: e.target.value })}
+                  value={companyName}
+                  onChange={e => setCompanyName(e.target.value)}
                   className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Teamgrootte</label>
-                <select
-                  value={company.size}
-                  onChange={e => setCompany({ ...company, size: e.target.value })}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                >
-                  <option value="1-10">1-10</option>
-                  <option value="10-50">10-50</option>
-                  <option value="50-100">50-100</option>
-                  <option value="100+">100+</option>
-                </select>
-              </div>
-            </div>
-          </div>
-          <button
-            onClick={handleSave}
-            className={`mt-5 px-5 py-2.5 rounded-xl text-sm font-medium transition-colors ${
-              saved ? 'bg-green-500 text-white' : 'bg-blue-600 text-white hover:bg-blue-700'
-            }`}
-          >
-            {saved ? '✓ Opgeslagen!' : 'Wijzigingen opslaan'}
-          </button>
+              <button
+                onClick={handleSave}
+                className={`mt-5 px-5 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+                  saved ? 'bg-green-500 text-white' : 'bg-blue-600 text-white hover:bg-blue-700'
+                }`}
+              >
+                {saved ? '✓ Opgeslagen!' : 'Wijzigingen opslaan'}
+              </button>
+            </>
+          )}
         </div>
 
         {/* Abonnement */}
         <div className="bg-white rounded-2xl border border-gray-100 p-6 mb-6">
           <div className="flex items-center justify-between mb-5">
             <h2 className="font-semibold text-gray-900">Abonnement</h2>
-            <span className="text-xs bg-blue-50 text-blue-600 px-3 py-1 rounded-full font-medium">Pro — Trial</span>
+            {company && (
+              <span className="text-xs bg-blue-50 text-blue-600 px-3 py-1 rounded-full font-medium capitalize">
+                {company.plan} — {company.status === 'trial' ? 'Trial' : company.status === 'active' ? 'Actief' : company.status}
+              </span>
+            )}
           </div>
-          <div className="bg-blue-50 rounded-xl p-4 mb-4">
-            <div className="flex items-center justify-between mb-1">
-              <p className="text-sm font-medium text-blue-900">Trial periode</p>
-              <p className="text-sm font-bold text-blue-900">8 dagen resterend</p>
+
+          {/* Trial balk */}
+          {isTrial && trialDaysLeft !== null && (
+            <div className="bg-blue-50 rounded-xl p-4 mb-5">
+              <div className="flex items-center justify-between mb-1">
+                <p className="text-sm font-medium text-blue-900">Trial periode</p>
+                <p className="text-sm font-bold text-blue-900">{trialDaysLeft} dagen resterend</p>
+              </div>
+              <div className="w-full bg-blue-200 rounded-full h-1.5 mt-2">
+                <div className="bg-blue-600 h-1.5 rounded-full transition-all" style={{ width: `${trialPct}%` }} />
+              </div>
             </div>
-            <div className="w-full bg-blue-200 rounded-full h-1.5 mt-2">
-              <div className="bg-blue-600 h-1.5 rounded-full" style={{ width: '43%' }}></div>
+          )}
+
+          {/* Actief abonnement: portal knop */}
+          {isActive && company?.stripeCustomerId && (
+            <div className="bg-green-50 rounded-xl p-4 mb-5 flex items-center justify-between">
+              <div>
+                <p className="text-sm font-semibold text-green-800">Abonnement actief</p>
+                <p className="text-sm text-green-700">Beheer je facturen, betaalmethode of opzegging via de portal.</p>
+              </div>
+              <button
+                onClick={handlePortal}
+                disabled={openingPortal}
+                className="ml-4 bg-white border border-green-300 text-green-700 px-4 py-2 rounded-xl text-sm font-medium hover:bg-green-50 transition-colors disabled:opacity-60 whitespace-nowrap"
+              >
+                {openingPortal ? 'Laden...' : 'Beheer abonnement →'}
+              </button>
             </div>
+          )}
+
+          {/* Interval toggle */}
+          <div className="flex items-center gap-2 mb-4">
+            <button
+              onClick={() => setInterval('monthly')}
+              className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                interval === 'monthly' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              Maandelijks
+            </button>
+            <button
+              onClick={() => setInterval('yearly')}
+              className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                interval === 'yearly' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              Jaarlijks
+              <span className="ml-1.5 text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full">-20%</span>
+            </button>
           </div>
+
           <div className="grid grid-cols-2 gap-3">
-            <div className="border border-gray-200 rounded-xl p-4">
-              <p className="text-sm font-semibold text-gray-900">Starter</p>
-              <p className="text-2xl font-bold text-gray-900 mt-1">€9 <span className="text-sm font-normal text-gray-500">/seat/maand</span></p>
-              <p className="text-xs text-gray-500 mt-1">Max 10 onboardees</p>
-              <button className="mt-3 w-full bg-gray-100 text-gray-600 py-2 rounded-lg text-xs font-medium hover:bg-gray-200 transition-colors">
-                Kiezen
-              </button>
-            </div>
-            <div className="border-2 border-blue-500 rounded-xl p-4 relative">
-              <span className="absolute -top-2 left-3 text-xs bg-blue-600 text-white px-2 py-0.5 rounded-full">Aanbevolen</span>
-              <p className="text-sm font-semibold text-gray-900">Pro</p>
-              <p className="text-2xl font-bold text-gray-900 mt-1">€15 <span className="text-sm font-normal text-gray-500">/seat/maand</span></p>
-              <p className="text-xs text-gray-500 mt-1">Onbeperkt</p>
-              <button className="mt-3 w-full bg-blue-600 text-white py-2 rounded-lg text-xs font-medium hover:bg-blue-700 transition-colors">
-                Upgraden
-              </button>
-            </div>
+            {PLANS.map(plan => {
+              const priceKey = interval === 'monthly' ? plan.priceMonthly : plan.priceYearly
+              const isCurrentPlan = company?.plan === plan.key && isActive
+              const loading = checkingOut === priceKey
+
+              return (
+                <div
+                  key={plan.key}
+                  className={`border rounded-xl p-4 relative ${
+                    plan.recommended ? 'border-2 border-blue-500' : 'border border-gray-200'
+                  }`}
+                >
+                  {plan.recommended && (
+                    <span className="absolute -top-2 left-3 text-xs bg-blue-600 text-white px-2 py-0.5 rounded-full">
+                      Aanbevolen
+                    </span>
+                  )}
+                  <p className="text-sm font-semibold text-gray-900">{plan.label}</p>
+                  <p className="text-2xl font-bold text-gray-900 mt-1">
+                    {interval === 'monthly' ? plan.monthlyPrice : plan.yearlyPrice}
+                    <span className="text-sm font-normal text-gray-500"> /seat/maand</span>
+                  </p>
+                  <p className="text-xs text-gray-500 mt-1">{plan.description}</p>
+                  {isCurrentPlan ? (
+                    <div className="mt-3 w-full bg-green-50 text-green-700 py-2 rounded-lg text-xs font-medium text-center">
+                      ✓ Huidig plan
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => handleCheckout(priceKey)}
+                      disabled={!!checkingOut}
+                      className={`mt-3 w-full py-2 rounded-lg text-xs font-medium transition-colors disabled:opacity-60 ${
+                        plan.recommended
+                          ? 'bg-blue-600 text-white hover:bg-blue-700'
+                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      }`}
+                    >
+                      {loading ? 'Laden...' : isActive ? 'Overstappen' : 'Upgraden'}
+                    </button>
+                  )}
+                </div>
+              )
+            })}
           </div>
         </div>
 
-        {/* Gevaar zone */}
+        {/* Gevarenzone */}
         <div className="bg-white rounded-2xl border border-red-100 p-6">
           <h2 className="font-semibold text-red-600 mb-4">Gevarenzone</h2>
           <div className="space-y-3">
@@ -143,7 +301,16 @@ export default function SettingsPage() {
             </div>
           </div>
         </div>
+
       </div>
     </main>
+  )
+}
+
+export default function SettingsPage() {
+  return (
+    <Suspense>
+      <SettingsContent />
+    </Suspense>
   )
 }

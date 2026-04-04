@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
 import { supabaseAdmin } from '@/lib/supabase'
+import { stripe } from '@/lib/stripe'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -30,6 +31,15 @@ export async function POST(req: NextRequest) {
       .replace(/-+/g, '-')
       .replace(/^-|-$/g, '')
 
+    // Maak Stripe customer aan
+    const stripeCustomer = await stripe.customers.create({
+      name: company,
+      email: email.toLowerCase().trim(),
+      metadata: { slug: `${slug}-${Date.now()}` },
+    })
+
+    const trialEndsAt = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString()
+
     const { data: newCompany, error: companyError } = await supabaseAdmin
       .from('Company')
       .insert({
@@ -37,6 +47,8 @@ export async function POST(req: NextRequest) {
         slug: `${slug}-${Date.now()}`,
         status: 'trial',
         plan: 'pro',
+        stripeCustomerId: stripeCustomer.id,
+        trialEndsAt,
       })
       .select()
       .single()
