@@ -95,7 +95,7 @@ Geef ALLEEN geldige JSON, geen markdown, geen uitleg:
 }`
 
   const msg = await anthropic.messages.create({
-    model: 'claude-opus-4-6',
+    model: 'claude-haiku-4-5-20251001',
     max_tokens: 4000,
     messages: [{ role: 'user', content: prompt }],
   })
@@ -192,7 +192,7 @@ Geef ALLEEN geldige JSON, geen markdown, geen uitleg:
   let msg
   try {
     msg = await anthropic.messages.create({
-      model: 'claude-opus-4-6',
+      model: 'claude-haiku-4-5-20251001',
       max_tokens: maxTokens,
       messages: [{ role: 'user', content: prompt }],
     })
@@ -318,7 +318,7 @@ function logStats(tmpl: TemplateFull, id: string) {
 
 async function main() {
   console.log('🌱 Seed-templates gestart (twee-pass strategie)\n')
-  console.log(`📦 ${TEMPLATES_TO_GENERATE.length} templates · model: claude-opus-4-6`)
+  console.log(`📦 ${TEMPLATES_TO_GENERATE.length} templates · model: claude-haiku-4-5-20251001`)
   console.log('⏱  Verwachte duur: 15–25 minuten\n')
 
   const { data: company, error: companyErr } = await supabase
