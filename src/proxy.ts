@@ -3,7 +3,7 @@ import { jwtVerify } from 'jose'
 
 const protectedRoutes = ['/dashboard', '/onboarding', '/tasks', '/flashcards', '/manager', '/admin', '/super']
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const path = req.nextUrl.pathname
   const isProtected = protectedRoutes.some(route => path.startsWith(route))
 
@@ -22,7 +22,7 @@ export async function middleware(req: NextRequest) {
     const { payload } = await jwtVerify(sessionToken, secret)
 
     const role = payload.role as string
-    
+
     // Role-based toegang
     if (path.startsWith('/super') && role !== 'super_admin') {
       return NextResponse.redirect(new URL('/dashboard', req.url))
