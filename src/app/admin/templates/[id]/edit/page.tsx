@@ -30,6 +30,7 @@ export default function TemplateEditPage({ params: paramsPromise }: { params: Pr
   const [loadError, setLoadError] = useState('')
   const [saved, setSaved] = useState(false)
   const [savingStepId, setSavingStepId] = useState<string | null>(null)
+  const [movingId, setMovingId] = useState<string | null>(null)
 
   // Laad echte data uit Supabase
   useEffect(() => {
@@ -136,6 +137,53 @@ export default function TemplateEditPage({ params: paramsPromise }: { params: Pr
     } : null)
   }
 
+  async function movePhase(phaseId: string, direction: 'up' | 'down') {
+    if (!template || movingId) return
+    setMovingId(phaseId)
+
+    const idx = template.phases.findIndex(p => p.id === phaseId)
+    const swapIdx = direction === 'up' ? idx - 1 : idx + 1
+    if (swapIdx < 0 || swapIdx >= template.phases.length) { setMovingId(null); return }
+
+    // Optimistische update
+    const newPhases = [...template.phases]
+    ;[newPhases[idx], newPhases[swapIdx]] = [newPhases[swapIdx], newPhases[idx]]
+    setTemplate({ ...template, phases: newPhases })
+
+    await fetch(`/api/admin/phases/${phaseId}/order`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ direction }),
+    })
+    setMovingId(null)
+  }
+
+  async function moveStep(phaseId: string, stepId: string, direction: 'up' | 'down') {
+    if (!template || movingId) return
+    setMovingId(stepId)
+
+    const phase = template.phases.find(p => p.id === phaseId)
+    if (!phase) { setMovingId(null); return }
+    const idx = phase.steps.findIndex(s => s.id === stepId)
+    const swapIdx = direction === 'up' ? idx - 1 : idx + 1
+    if (swapIdx < 0 || swapIdx >= phase.steps.length) { setMovingId(null); return }
+
+    // Optimistische update
+    const newSteps = [...phase.steps]
+    ;[newSteps[idx], newSteps[swapIdx]] = [newSteps[swapIdx], newSteps[idx]]
+    setTemplate({
+      ...template,
+      phases: template.phases.map(p => p.id === phaseId ? { ...p, steps: newSteps } : p),
+    })
+
+    await fetch(`/api/admin/steps/${stepId}/order`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ direction }),
+    })
+    setMovingId(null)
+  }
+
   function handleSave() {
     setSaved(true)
     setTimeout(() => setSaved(false), 2000)
@@ -210,12 +258,30 @@ export default function TemplateEditPage({ params: paramsPromise }: { params: Pr
                   onChange={e => updatePhaseTitle(phase.id, e.target.value)}
                   className="flex-1 bg-transparent text-sm font-semibold text-gray-900 focus:outline-none"
                 />
-                <button
-                  onClick={() => deletePhase(phase.id)}
-                  className="text-gray-400 hover:text-red-500 transition-colors text-lg"
-                >
-                  ×
-                </button>
+                <div className="flex items-center gap-0.5">
+                  <button
+                    onClick={() => movePhase(phase.id, 'up')}
+                    disabled={i === 0 || movingId === phase.id}
+                    className="p-1 text-gray-400 hover:text-gray-600 disabled:opacity-20 disabled:cursor-not-allowed transition-colors"
+                    title="Omhoog"
+                  >
+                    ▲
+                  </button>
+                  <button
+                    onClick={() => movePhase(phase.id, 'down')}
+                    disabled={i === template.phases.length - 1 || movingId === phase.id}
+                    className="p-1 text-gray-400 hover:text-gray-600 disabled:opacity-20 disabled:cursor-not-allowed transition-colors"
+                    title="Omlaag"
+                  >
+                    ▼
+                  </button>
+                  <button
+                    onClick={() => deletePhase(phase.id)}
+                    className="p-1 text-gray-400 hover:text-red-500 transition-colors text-lg ml-1"
+                  >
+                    ×
+                  </button>
+                </div>
               </div>
 
               <div className="divide-y divide-gray-50">
@@ -240,6 +306,24 @@ export default function TemplateEditPage({ params: paramsPromise }: { params: Pr
                     ) : (
                       <span className="text-xs text-gray-300 px-2 whitespace-nowrap">Blokken →</span>
                     )}
+                    <div className="flex items-center gap-0">
+                      <button
+                        onClick={() => moveStep(phase.id, step.id, 'up')}
+                        disabled={j === 0 || movingId === step.id}
+                        className="p-1 text-gray-300 hover:text-gray-500 disabled:opacity-20 disabled:cursor-not-allowed transition-colors text-xs"
+                        title="Omhoog"
+                      >
+                        ▲
+                      </button>
+                      <button
+                        onClick={() => moveStep(phase.id, step.id, 'down')}
+                        disabled={j === phase.steps.length - 1 || movingId === step.id}
+                        className="p-1 text-gray-300 hover:text-gray-500 disabled:opacity-20 disabled:cursor-not-allowed transition-colors text-xs"
+                        title="Omlaag"
+                      >
+                        ▼
+                      </button>
+                    </div>
                     <button
                       onClick={() => deleteStep(phase.id, step.id)}
                       className="text-gray-300 hover:text-red-400 transition-colors"
