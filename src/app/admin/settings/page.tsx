@@ -85,15 +85,21 @@ function SettingsContent() {
 
   async function handleCheckout(priceKey: string) {
     setCheckingOut(priceKey)
-    const res = await fetch('/api/billing/checkout', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ priceKey }),
-    })
-    const data = await res.json()
-    if (data.url) {
-      window.location.href = data.url
-    } else {
+    try {
+      const res = await fetch('/api/billing/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ priceKey }),
+      })
+      const data = await res.json()
+      if (data.url) {
+        window.location.href = data.url
+      } else {
+        console.error('Checkout error:', data.error)
+        setCheckingOut(null)
+      }
+    } catch (err) {
+      console.error('Checkout fetch error:', err)
       setCheckingOut(null)
     }
   }
