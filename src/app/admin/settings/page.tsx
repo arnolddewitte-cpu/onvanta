@@ -22,6 +22,7 @@ function SettingsContent() {
   const [companyName, setCompanyName] = useState('')
   const [saved, setSaved] = useState(false)
   const [checkingOut, setCheckingOut] = useState(false)
+  const [checkoutError, setCheckoutError] = useState<string | null>(null)
   const [openingPortal, setOpeningPortal] = useState(false)
   const [showSuccess, setShowSuccess] = useState(successParam === 'true')
 
@@ -59,6 +60,7 @@ function SettingsContent() {
 
   async function handleCheckout() {
     setCheckingOut(true)
+    setCheckoutError(null)
     try {
       const res = await fetch('/api/billing/checkout', {
         method: 'POST',
@@ -69,10 +71,12 @@ function SettingsContent() {
         window.location.href = data.url
       } else {
         console.error('Checkout error:', data.error)
+        setCheckoutError(data.error ?? 'Er ging iets mis. Probeer het opnieuw.')
         setCheckingOut(false)
       }
     } catch (err) {
       console.error('Checkout fetch error:', err)
+      setCheckoutError('Kan geen verbinding maken. Controleer je internetverbinding.')
       setCheckingOut(false)
     }
   }
@@ -200,6 +204,12 @@ function SettingsContent() {
             </div>
           </div>
 
+          {/* Uitleg metered billing */}
+          <div className="bg-gray-50 rounded-xl p-4 mb-4 text-xs text-gray-500 leading-relaxed">
+            <p className="font-medium text-gray-700 mb-1">Hoe werkt de facturering?</p>
+            <p>Je betaalt achteraf op basis van het aantal actieve onboardees. Aan het einde van elke maand tellen we automatisch hoeveel medewerkers actief bezig zijn met hun onboarding — en Stripe stuurt de factuur. Geen actieve onboardees = geen kosten.</p>
+          </div>
+
           {/* Actief abonnement: portal knop */}
           {isActive && company?.stripeCustomerId ? (
             <button
@@ -210,13 +220,18 @@ function SettingsContent() {
               {openingPortal ? 'Laden...' : 'Beheer abonnement →'}
             </button>
           ) : (
-            <button
-              onClick={handleCheckout}
-              disabled={checkingOut}
-              className="w-full bg-blue-600 text-white px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-blue-700 transition-colors disabled:opacity-60"
-            >
-              {checkingOut ? 'Laden...' : isTrial ? 'Activeer abonnement' : 'Start free trial'}
-            </button>
+            <>
+              <button
+                onClick={handleCheckout}
+                disabled={checkingOut}
+                className="w-full bg-blue-600 text-white px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-blue-700 transition-colors disabled:opacity-60"
+              >
+                {checkingOut ? 'Laden...' : isTrial ? 'Activeer abonnement' : 'Start free trial'}
+              </button>
+              {checkoutError && (
+                <p className="mt-2 text-xs text-red-600 text-center">{checkoutError}</p>
+              )}
+            </>
           )}
         </div>
 
