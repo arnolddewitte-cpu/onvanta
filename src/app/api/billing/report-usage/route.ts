@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
-import { stripe, METER_ID } from '@/lib/stripe'
+import { stripe } from '@/lib/stripe'
 
 // Beveiligd met een geheime cron token zodat alleen Vercel Cron dit mag aanroepen
 function isAuthorized(req: NextRequest): boolean {
