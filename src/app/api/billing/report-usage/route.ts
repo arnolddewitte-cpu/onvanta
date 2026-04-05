@@ -15,6 +15,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Ongeautoriseerd' }, { status: 401 })
   }
 
+  // Alleen uitvoeren op de 1e van de maand
+  const today = new Date()
+  if (today.getUTCDate() !== 1) {
+    return NextResponse.json({ skipped: true, message: `Niet de 1e van de maand (vandaag: ${today.getUTCDate()})` })
+  }
+
   // Haal alle actieve bedrijven op met een Stripe customer
   const { data: companies } = await supabaseAdmin
     .from('Company')
