@@ -1,18 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSession } from '@/lib/session'
 import { supabaseAdmin } from '@/lib/supabase'
-import { stripe, PRICE_IDS, PriceKey } from '@/lib/stripe'
+import { stripe, PRICE_METERED } from '@/lib/stripe'
 
-export async function POST(req: NextRequest) {
+export async function POST(_req: NextRequest) {
   try {
     const session = await getSession()
     if (!session || !['company_admin', 'super_admin'].includes(session.role)) {
       return NextResponse.json({ error: 'Geen toegang' }, { status: 403 })
-    }
-
-    const { priceKey } = await req.json()
-    if (!priceKey || !(priceKey in PRICE_IDS)) {
-      return NextResponse.json({ error: 'Ongeldig plan' }, { status: 400 })
     }
 
     const { data: company } = await supabaseAdmin
@@ -31,7 +26,7 @@ export async function POST(req: NextRequest) {
         .select('email, name')
         .eq('companyId', session.companyId)
         .eq('role', 'company_admin')
-        .single()
+        .maybeSingle()
 
       const customer = await stripe.customers.create({
         name: company.name,
@@ -51,14 +46,14 @@ export async function POST(req: NextRequest) {
     const checkoutSession = await stripe.checkout.sessions.create({
       customer: customerId,
       mode: 'subscription',
-      line_items: [{ price: PRICE_IDS[priceKey as PriceKey], quantity: 1 }],
+      line_items: [{ price: PRICE_METERED }],
       success_url: `${baseUrl}/admin/settings?success=true`,
       cancel_url: `${baseUrl}/admin/settings`,
       metadata: { companyId: session.companyId },
       subscription_data: {
         metadata: { companyId: session.companyId },
+        trial_period_days: 14,
       },
-      allow_promotion_codes: true,
     })
 
     return NextResponse.json({ url: checkoutSession.url })

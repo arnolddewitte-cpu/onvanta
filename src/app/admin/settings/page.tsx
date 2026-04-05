@@ -12,30 +12,6 @@ interface Company {
   stripeCustomerId: string | null
 }
 
-type Interval = 'monthly' | 'yearly'
-
-const PLANS = [
-  {
-    key: 'starter',
-    label: 'Starter',
-    monthlyPrice: '€9',
-    yearlyPrice: '€7',
-    description: 'Max 10 onboardees',
-    priceMonthly: 'starter_monthly',
-    priceYearly: 'starter_yearly',
-  },
-  {
-    key: 'pro',
-    label: 'Pro',
-    monthlyPrice: '€15',
-    yearlyPrice: '€12',
-    description: 'Onbeperkt',
-    priceMonthly: 'pro_monthly',
-    priceYearly: 'pro_yearly',
-    recommended: true,
-  },
-]
-
 function SettingsContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -45,14 +21,12 @@ function SettingsContent() {
   const [loading, setLoading] = useState(true)
   const [companyName, setCompanyName] = useState('')
   const [saved, setSaved] = useState(false)
-  const [interval, setInterval] = useState<Interval>('monthly')
-  const [checkingOut, setCheckingOut] = useState<string | null>(null)
+  const [checkingOut, setCheckingOut] = useState(false)
   const [openingPortal, setOpeningPortal] = useState(false)
   const [showSuccess, setShowSuccess] = useState(successParam === 'true')
 
   useEffect(() => {
     if (showSuccess) {
-      // Verwijder ?success=true uit de URL
       router.replace('/admin/settings')
       const t = setTimeout(() => setShowSuccess(false), 6000)
       return () => clearTimeout(t)
@@ -83,24 +57,23 @@ function SettingsContent() {
     setTimeout(() => setSaved(false), 2000)
   }
 
-  async function handleCheckout(priceKey: string) {
-    setCheckingOut(priceKey)
+  async function handleCheckout() {
+    setCheckingOut(true)
     try {
       const res = await fetch('/api/billing/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ priceKey }),
       })
       const data = await res.json()
       if (data.url) {
         window.location.href = data.url
       } else {
         console.error('Checkout error:', data.error)
-        setCheckingOut(null)
+        setCheckingOut(false)
       }
     } catch (err) {
       console.error('Checkout fetch error:', err)
-      setCheckingOut(null)
+      setCheckingOut(false)
     }
   }
 
@@ -180,7 +153,7 @@ function SettingsContent() {
             <h2 className="font-semibold text-gray-900">Abonnement</h2>
             {company && (
               <span className="text-xs bg-blue-50 text-blue-600 px-3 py-1 rounded-full font-medium capitalize">
-                {company.plan} — {company.status === 'trial' ? 'Trial' : company.status === 'active' ? 'Actief' : company.status}
+                {company.status === 'trial' ? 'Trial' : company.status === 'active' ? 'Actief' : company.status}
               </span>
             )}
           </div>
@@ -198,89 +171,43 @@ function SettingsContent() {
             </div>
           )}
 
-          {/* Actief abonnement: portal knop */}
-          {isActive && company?.stripeCustomerId && (
-            <div className="bg-green-50 rounded-xl p-4 mb-5 flex items-center justify-between">
+          {/* Pricing card */}
+          <div className="border border-gray-200 rounded-xl p-5 mb-4">
+            <div className="flex items-center justify-between mb-3">
               <div>
-                <p className="text-sm font-semibold text-green-800">Abonnement actief</p>
-                <p className="text-sm text-green-700">Beheer je facturen, betaalmethode of opzegging via de portal.</p>
+                <p className="text-sm font-semibold text-gray-900">Per actieve onboardee</p>
+                <p className="text-xs text-gray-500 mt-0.5">Managers en admins altijd gratis</p>
               </div>
-              <button
-                onClick={handlePortal}
-                disabled={openingPortal}
-                className="ml-4 bg-white border border-green-300 text-green-700 px-4 py-2 rounded-xl text-sm font-medium hover:bg-green-50 transition-colors disabled:opacity-60 whitespace-nowrap"
-              >
-                {openingPortal ? 'Laden...' : 'Beheer abonnement →'}
-              </button>
+              <div className="text-right">
+                <span className="text-2xl font-bold text-gray-900">€24,99</span>
+                <span className="text-xs text-gray-500 ml-1">/maand</span>
+              </div>
             </div>
+            <ul className="space-y-1.5 text-xs text-gray-500">
+              <li className="flex items-center gap-2"><span className="text-green-600">✓</span> Alle features inbegrepen</li>
+              <li className="flex items-center gap-2"><span className="text-green-600">✓</span> Betaal alleen voor actieve onboardees</li>
+              <li className="flex items-center gap-2"><span className="text-green-600">✓</span> 14 dagen gratis proberen</li>
+            </ul>
+          </div>
+
+          {/* Actief abonnement: portal knop */}
+          {isActive && company?.stripeCustomerId ? (
+            <button
+              onClick={handlePortal}
+              disabled={openingPortal}
+              className="w-full bg-white border border-gray-200 text-gray-700 px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors disabled:opacity-60"
+            >
+              {openingPortal ? 'Laden...' : 'Beheer abonnement →'}
+            </button>
+          ) : (
+            <button
+              onClick={handleCheckout}
+              disabled={checkingOut}
+              className="w-full bg-blue-600 text-white px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-blue-700 transition-colors disabled:opacity-60"
+            >
+              {checkingOut ? 'Laden...' : isTrial ? 'Activeer abonnement' : 'Start free trial'}
+            </button>
           )}
-
-          {/* Interval toggle */}
-          <div className="flex items-center gap-2 mb-4">
-            <button
-              onClick={() => setInterval('monthly')}
-              className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                interval === 'monthly' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
-            >
-              Maandelijks
-            </button>
-            <button
-              onClick={() => setInterval('yearly')}
-              className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                interval === 'yearly' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
-            >
-              Jaarlijks
-              <span className="ml-1.5 text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full">-20%</span>
-            </button>
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            {PLANS.map(plan => {
-              const priceKey = interval === 'monthly' ? plan.priceMonthly : plan.priceYearly
-              const isCurrentPlan = company?.plan === plan.key && isActive
-              const loading = checkingOut === priceKey
-
-              return (
-                <div
-                  key={plan.key}
-                  className={`border rounded-xl p-4 relative ${
-                    plan.recommended ? 'border-2 border-blue-500' : 'border border-gray-200'
-                  }`}
-                >
-                  {plan.recommended && (
-                    <span className="absolute -top-2 left-3 text-xs bg-blue-600 text-white px-2 py-0.5 rounded-full">
-                      Aanbevolen
-                    </span>
-                  )}
-                  <p className="text-sm font-semibold text-gray-900">{plan.label}</p>
-                  <p className="text-2xl font-bold text-gray-900 mt-1">
-                    {interval === 'monthly' ? plan.monthlyPrice : plan.yearlyPrice}
-                    <span className="text-sm font-normal text-gray-500"> /seat/maand</span>
-                  </p>
-                  <p className="text-xs text-gray-500 mt-1">{plan.description}</p>
-                  {isCurrentPlan ? (
-                    <div className="mt-3 w-full bg-green-50 text-green-700 py-2 rounded-lg text-xs font-medium text-center">
-                      ✓ Huidig plan
-                    </div>
-                  ) : (
-                    <button
-                      onClick={() => handleCheckout(priceKey)}
-                      disabled={!!checkingOut}
-                      className={`mt-3 w-full py-2 rounded-lg text-xs font-medium transition-colors disabled:opacity-60 ${
-                        plan.recommended
-                          ? 'bg-blue-600 text-white hover:bg-blue-700'
-                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                      }`}
-                    >
-                      {loading ? 'Laden...' : isActive ? 'Overstappen' : 'Upgraden'}
-                    </button>
-                  )}
-                </div>
-              )
-            })}
-          </div>
         </div>
 
         {/* Gevarenzone */}
