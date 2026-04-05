@@ -11,13 +11,11 @@ export default function HomePage() {
         .hp-hero { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
         .hp-dashboard-preview { display: block; }
         .hp-features-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; }
-        .hp-pricing-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; }
         .hp-hero-btns { flex-wrap: wrap; }
         @media (max-width: 768px) {
           .hp-hero { grid-template-columns: 1fr !important; gap: 40px !important; }
           .hp-dashboard-preview { display: none !important; }
           .hp-features-grid { grid-template-columns: 1fr !important; }
-          .hp-pricing-grid { grid-template-columns: 1fr !important; }
         }
       `}</style>
 
@@ -115,32 +113,41 @@ export default function HomePage() {
           <div style={{ fontSize: 12, fontWeight: 500, letterSpacing: '.8px', textTransform: 'uppercase', color: '#1a5fd4', marginBottom: 16 }}>Pricing</div>
           <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 'clamp(32px, 4vw, 48px)', fontWeight: 400, color: '#0f0f0e', marginBottom: 16 }}>Simple pricing,<br /><em style={{ fontStyle: 'italic', color: '#1a5fd4' }}>no surprises.</em></h2>
           <p style={{ fontSize: 18, color: '#3a3a38', fontWeight: 300, maxWidth: 520, margin: '0 auto 48px' }}>Per active onboardee. Only pay when someone is actively being onboarded. Managers and admins are always free.</p>
-          <div className="hp-pricing-grid" style={{ maxWidth: 860, margin: '0 auto' }}>
-            {[
-              { name: 'Starter', desc: 'Small teams, up to 10 onboardees', price: '€7', unit: '/seat/mo', featured: false, features: ['All block types', 'Spaced repetition', 'Employee + manager dashboards'] },
-              { name: 'Pro', desc: 'Growing teams, unlimited onboardees', price: '€12', unit: '/seat/mo', featured: true, features: ['Everything in Starter', 'Advanced reporting', 'Custom branding', 'Priority support'] },
-              { name: 'Enterprise', desc: 'Large orgs, compliance, SSO', price: 'Custom', unit: '', featured: false, features: ['Everything in Pro', 'SSO / SAML', 'Dedicated CSM', 'Custom SLA'] },
-            ].map((p, i) => (
-              <div key={i} style={{ background: 'white', borderRadius: 16, padding: 28, border: p.featured ? '2px solid #1a5fd4' : '1px solid #e8e7e2', position: 'relative' }}>
-                {p.featured && <div style={{ position: 'absolute', top: -12, left: '50%', transform: 'translateX(-50%)', background: '#1a5fd4', color: 'white', fontSize: 11, fontWeight: 500, padding: '3px 12px', borderRadius: 20 }}>Most popular</div>}
-                <div style={{ fontSize: 16, fontWeight: 500, color: '#0f0f0e', marginBottom: 4 }}>{p.name}</div>
-                <div style={{ fontSize: 13, color: '#7a7a78', marginBottom: 12 }}>{p.desc}</div>
-                <div style={{ marginBottom: 16 }}>
-                  <span style={{ fontSize: 36, fontWeight: 500, color: '#0f0f0e' }}>{p.price}</span>
-                  <span style={{ fontSize: 14, color: '#7a7a78' }}>{p.unit}</span>
-                </div>
-                <div style={{ borderTop: '1px solid #e8e7e2', paddingTop: 16, marginBottom: 20 }}>
-                  {p.features.map((f, j) => (
-                    <div key={j} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: '#3a3a38', marginBottom: 8, textAlign: 'left' }}>
-                      <span style={{ color: '#1a5fd4' }}>✓</span> {f}
-                    </div>
-                  ))}
-                </div>
-                <Link href="/signup" style={{ display: 'block', textAlign: 'center', padding: '10px 20px', borderRadius: 10, fontSize: 14, fontWeight: 500, textDecoration: 'none', background: p.featured ? '#1a5fd4' : '#f2f1ed', color: p.featured ? 'white' : '#0f0f0e' }}>
-                  {p.name === 'Enterprise' ? 'Contact sales' : 'Start free trial'}
-                </Link>
+
+          <div style={{ maxWidth: 460, margin: '0 auto' }}>
+            <div style={{ background: 'white', border: '2px solid #1a5fd4', borderRadius: 20, padding: '36px 32px', textAlign: 'center', boxShadow: '0 4px 32px rgba(26,95,212,.10)' }}>
+              <div style={{ display: 'inline-block', background: '#1a5fd4', color: 'white', fontSize: 11, fontWeight: 500, padding: '4px 16px', borderRadius: 20, marginBottom: 20 }}>
+                14 dagen gratis · geen creditcard
               </div>
-            ))}
+              <div style={{ marginBottom: 4 }}>
+                <span style={{ fontFamily: 'Georgia, serif', fontSize: 60, fontWeight: 400, color: '#0f0f0e', lineHeight: 1 }}>€24,99</span>
+              </div>
+              <div style={{ fontSize: 14, color: '#7a7a78', marginBottom: 24 }}>per actieve onboardee / maand (excl. BTW)</div>
+
+              {/* Voorbeeldberekeningen */}
+              <div style={{ background: '#f2f1ed', borderRadius: 12, padding: '14px 18px', marginBottom: 24, textAlign: 'left' }}>
+                {[
+                  { n: 5, price: '€124,95' },
+                  { n: 10, price: '€249,90' },
+                  { n: 20, price: '€499,80' },
+                ].map(({ n, price }) => (
+                  <div key={n} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: '#3a3a38', padding: '4px 0' }}>
+                    <span>{n} nieuwe medewerkers</span>
+                    <span style={{ fontWeight: 600, color: '#0f0f0e' }}>{price}/maand</span>
+                  </div>
+                ))}
+                <div style={{ fontSize: 11, color: '#b8b8b5', marginTop: 8 }}>Managers en admins tellen nooit mee</div>
+              </div>
+
+              <Link href="/signup" style={{ display: 'block', textAlign: 'center', padding: '13px', borderRadius: 12, fontSize: 15, fontWeight: 500, textDecoration: 'none', background: '#1a5fd4', color: 'white', marginBottom: 16 }}>
+                Start free trial →
+              </Link>
+              <div style={{ display: 'flex', justifyContent: 'center', gap: 16, fontSize: 12, color: '#7a7a78' }}>
+                <span>✓ Alle features</span>
+                <span>✓ Geen vaste kosten</span>
+                <span>✓ Opzegbaar per maand</span>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -148,11 +155,11 @@ export default function HomePage() {
       {/* CTA */}
       <section style={{ background: '#1a5fd4', padding: '60px 20px', textAlign: 'center' }}>
         <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 'clamp(32px, 4vw, 48px)', fontWeight: 400, color: 'white', marginBottom: 16 }}>Ready to onboard smarter?</h2>
-        <p style={{ fontSize: 18, color: 'rgba(255,255,255,.8)', fontWeight: 300, maxWidth: 520, margin: '0 auto 32px' }}>Start your free 14-day trial. Full Pro access, no credit card required.</p>
+        <p style={{ fontSize: 18, color: 'rgba(255,255,255,.8)', fontWeight: 300, maxWidth: 520, margin: '0 auto 32px' }}>Start your free 14-day trial. No credit card required.</p>
         <Link href="/signup" style={{ fontSize: 16, fontWeight: 500, color: '#1a5fd4', background: 'white', padding: '14px 28px', borderRadius: 12, textDecoration: 'none', display: 'inline-block' }}>
           Start free trial →
         </Link>
-        <div style={{ fontSize: 13, color: 'rgba(255,255,255,.6)', marginTop: 16 }}>14-day free trial · Full Pro access · No credit card required</div>
+        <div style={{ fontSize: 13, color: 'rgba(255,255,255,.6)', marginTop: 16 }}>14-day free trial · No credit card required</div>
       </section>
 
       <MarketingFooter />

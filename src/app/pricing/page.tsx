@@ -16,6 +16,13 @@ const FEATURES = [
   'Onbeperkte managers en admins',
 ]
 
+const EXAMPLES = [
+  { n: 3, price: '€74,97' },
+  { n: 5, price: '€124,95' },
+  { n: 10, price: '€249,90' },
+  { n: 20, price: '€499,80' },
+]
+
 export default function PricingPage() {
   return (
     <main style={{ background: '#faf9f6', fontFamily: 'DM Sans, system-ui, sans-serif', minHeight: '100vh' }}>
@@ -72,6 +79,18 @@ export default function PricingPage() {
               </div>
               <strong>Managers en admins altijd gratis</strong>
             </div>
+          </div>
+
+          {/* Voorbeeldberekeningen */}
+          <div style={{ background: '#f2f1ed', borderRadius: 12, padding: '16px 20px', marginBottom: 28, textAlign: 'left' }}>
+            <p style={{ fontSize: 11, fontWeight: 500, color: '#7a7a78', textTransform: 'uppercase', letterSpacing: '.6px', marginBottom: 10 }}>Voorbeelden</p>
+            {EXAMPLES.map(({ n, price }) => (
+              <div key={n} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 14, color: '#3a3a38', padding: '5px 0', borderBottom: '1px solid #e8e7e2' }}>
+                <span>{n} nieuwe medewerkers</span>
+                <span style={{ fontWeight: 600, color: '#0f0f0e' }}>{price}/maand</span>
+              </div>
+            ))}
+            <p style={{ fontSize: 11, color: '#b8b8b5', marginTop: 10 }}>Excl. BTW. Managers en admins tellen nooit mee.</p>
           </div>
 
           <Link href="/signup" style={{ display: 'block', textAlign: 'center', padding: '14px', borderRadius: 12, fontSize: 15, fontWeight: 500, textDecoration: 'none', background: '#1a5fd4', color: 'white' }}>

@@ -186,8 +186,18 @@ function SettingsContent() {
             <ul className="space-y-1.5 text-xs text-gray-500">
               <li className="flex items-center gap-2"><span className="text-green-600">✓</span> Alle features inbegrepen</li>
               <li className="flex items-center gap-2"><span className="text-green-600">✓</span> Betaal alleen voor actieve onboardees</li>
+              <li className="flex items-center gap-2"><span className="text-green-600">✓</span> Managers en admins altijd gratis</li>
               <li className="flex items-center gap-2"><span className="text-green-600">✓</span> 14 dagen gratis proberen</li>
             </ul>
+            <div className="mt-3 pt-3 border-t border-gray-100 space-y-1.5">
+              {([[3, '€74,97'], [5, '€124,95'], [10, '€249,90']] as [number, string][]).map(([n, price]) => (
+                <div key={n} className="flex justify-between text-xs">
+                  <span className="text-gray-500">{n} actieve onboardees</span>
+                  <span className="font-medium text-gray-700">{price}/maand</span>
+                </div>
+              ))}
+              <p className="text-xs text-gray-400 pt-0.5">Excl. BTW</p>
+            </div>
           </div>
 
           {/* Actief abonnement: portal knop */}
