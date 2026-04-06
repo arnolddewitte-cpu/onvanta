@@ -11,6 +11,7 @@
 
 import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@supabase/supabase-js'
+import { jsonrepair } from 'jsonrepair'
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 const supabase = createClient(
@@ -87,6 +88,13 @@ const TEMPLATES_TO_GENERATE = [
   },
 ]
 
+// ─── JSON repair via jsonrepair library ──────────────────────────────────────
+// Herstelt ontsnapte controlletekens, onafgesloten strings, losse aanhalingstekens etc.
+
+function repairJson(raw: string): string {
+  return jsonrepair(raw)
+}
+
 // ─── Pass 1: Genereer structuur ───────────────────────────────────────────────
 
 async function generateStructure(name: string, context: string): Promise<TemplateStructure> {
@@ -123,7 +131,7 @@ Geef ALLEEN geldige JSON, geen markdown, geen uitleg:
 
   const raw = (msg.content[0] as { type: string; text: string }).text.trim()
   const json = raw.startsWith('```') ? raw.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '').trim() : raw
-  return JSON.parse(json) as TemplateStructure
+  return JSON.parse(repairJson(json)) as TemplateStructure
 }
 
 // ─── Pass 2: Genereer blokken per fase ───────────────────────────────────────
@@ -153,11 +161,13 @@ Fase ${phaseIndex + 1}: "${phase.title}"
 Stappen in deze fase:
 ${stepsJson}
 
-Maak voor elke stap uitgebreide blokken met ECHTE logistieke vakinhoud.
-Gebruik specifieke normen, regelgeving, systemen en procedures uit de logistiek: ADR-klassen, CMR-bepalingen, WMS-workflows, rijbewijsregels, douanecodes, veiligheidsreglementen (VCA, ARBO), rijtijdenwetgeving, sjorringsnormen etc.
+Maak voor elke stap blokken met ECHTE logistieke vakinhoud.
+Gebruik specifieke normen, regelgeving, systemen en procedures: ADR-klassen, CMR-bepalingen, WMS-workflows, rijbewijsregels, douanecodes, VCA/ARBO, rijtijdenwetgeving, sjorringsnormen etc.
+
+KRITISCH: Gebruik NOOIT aanhalingstekens (") in tekst-waarden van de JSON. Gebruik apostrofs (') of herformuleer de zin.
 
 VEREISTEN PER STAP:
-1. Altijd 1 "text" blok met MINIMAAL 100 woorden echte vakkennis (concrete normen, waarden, procedures, regelgeving)
+1. Altijd 1 "text" blok met 60-80 woorden echte vakkennis (concrete normen, waarden, procedures)
 2. Altijd 1 "task" blok of 1 "acknowledgement" blok
 ${reqs.flashcards > 0 ? `3. Verspreid ${reqs.flashcards} flashcards over de stappen in deze fase (in 1-2 flashcard blokken, elke flashcard met een echte logistieke vraag en specifiek antwoord met concrete waarden/normen)` : ''}
 ${reqs.needsQuiz ? `4. Voeg 1 "questionnaire" blok toe met 4 meerkeuzevragen over logistieke regelgeving of vakkennis (4 opties per vraag, 1 correct)` : ''}
@@ -208,7 +218,8 @@ Geef ALLEEN geldige JSON, geen markdown, geen uitleg:
 
   process.stdout.write(`    Fase ${phaseIndex + 1} "${phase.title}"${attempt > 1 ? ` (poging ${attempt})` : ''}...`)
 
-  const maxTokens = phaseIndex === 2 ? 12000 : 8000
+  // Alle fases krijgen ruim budget; logistieke content is rijker dan POD
+  const maxTokens = 16000
 
   let msg
   try {
@@ -229,7 +240,7 @@ Geef ALLEEN geldige JSON, geen markdown, geen uitleg:
 
   const raw = (msg.content[0] as { type: string; text: string }).text.trim()
   const json = raw.startsWith('```') ? raw.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '').trim() : raw
-  const result = JSON.parse(json) as PhaseFull
+  const result = JSON.parse(repairJson(json)) as PhaseFull
 
   let flashcards = 0, quiz = 0, approval = 0
   for (const s of result.steps) {
