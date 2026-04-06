@@ -160,7 +160,8 @@ model OnboardingInstance {
   status     InstanceStatus @default(active)
   startDate  DateTime       @default(now())
   endDate    DateTime?
-  progressPct Int           @default(0)
+  progressPct      Int      @default(0)
+  atRiskNotifiedAt DateTime?
   createdAt  DateTime       @default(now())
   updatedAt  DateTime       @updatedAt
 
