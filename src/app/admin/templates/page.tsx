@@ -36,6 +36,8 @@ export default function TemplatesPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
+  const [search, setSearch] = useState('')
+
   const [modal, setModal] = useState<ModalMode>('none')
   const [form, setForm] = useState({ name: '', description: '' })
   const [creating, setCreating] = useState(false)
@@ -123,6 +125,11 @@ export default function TemplatesPage() {
     router.push(`/admin/templates/${data.id}/edit`)
   }
 
+  const filteredTemplates = templates.filter(t => {
+    const q = search.toLowerCase()
+    return t.name.toLowerCase().includes(q) || (t.description ?? '').toLowerCase().includes(q)
+  })
+
   return (
     <main className="min-h-screen bg-gray-50">
       <div className="max-w-4xl mx-auto px-6 py-8">
@@ -185,8 +192,28 @@ export default function TemplatesPage() {
           </div>
         )}
 
+        {/* Zoekbalk */}
+        {!loading && !error && templates.length > 0 && (
+          <div className="relative mb-6">
+            <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm">🔍</span>
+            <input
+              type="text"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Zoek op naam of omschrijving..."
+              className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            />
+          </div>
+        )}
+
+        {!loading && !error && templates.length > 0 && filteredTemplates.length === 0 && (
+          <div className="text-center py-12 text-gray-400 text-sm">
+            Geen templates gevonden voor &ldquo;{search}&rdquo;
+          </div>
+        )}
+
         <div className="space-y-4">
-          {templates.map(template => (
+          {filteredTemplates.map(template => (
             <div
               key={template.id}
               className="bg-white rounded-2xl border border-gray-100 p-6 hover:shadow-sm transition-shadow"

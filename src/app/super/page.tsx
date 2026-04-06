@@ -58,6 +58,7 @@ export default function SuperPage() {
   const [togglingId, setTogglingId] = useState<string | null>(null)
   const [newTemplateName, setNewTemplateName] = useState('')
   const [creatingTemplate, setCreatingTemplate] = useState(false)
+  const [templateSearch, setTemplateSearch] = useState('')
 
   useEffect(() => {
     fetch('/api/super/companies')
@@ -102,6 +103,11 @@ export default function SuperPage() {
     c.name.toLowerCase().includes(search.toLowerCase()) ||
     c.slug.toLowerCase().includes(search.toLowerCase())
   )
+
+  const filteredTemplates = globalTemplates.filter(t => {
+    const q = templateSearch.toLowerCase()
+    return t.name.toLowerCase().includes(q) || (t.description ?? '').toLowerCase().includes(q)
+  })
 
   const totalUsers = companies.reduce((acc, c) => acc + c.userCount, 0)
   const trials = companies.filter(c => c.status === 'trial').length
@@ -214,6 +220,20 @@ export default function SuperPage() {
             </div>
           </div>
 
+          {/* Zoekbalk + nieuw template */}
+          <div className="flex gap-3 mb-4">
+            <div className="relative flex-1">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">🔍</span>
+              <input
+                type="text"
+                value={templateSearch}
+                onChange={e => setTemplateSearch(e.target.value)}
+                placeholder="Zoek op naam of omschrijving..."
+                className="w-full pl-9 pr-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              />
+            </div>
+          </div>
+
           {/* Nieuw globaal template */}
           <div className="bg-gray-900 rounded-2xl border border-gray-800 p-4 mb-4 flex gap-3">
             <input
@@ -237,8 +257,10 @@ export default function SuperPage() {
           <div className="bg-gray-900 rounded-2xl border border-gray-800 overflow-hidden">
             {templatesLoading ? (
               <div className="text-center py-10 text-gray-600 text-sm">Laden...</div>
-            ) : globalTemplates.length === 0 ? (
-              <div className="text-center py-10 text-gray-600 text-sm">Geen templates gevonden</div>
+            ) : filteredTemplates.length === 0 ? (
+              <div className="text-center py-10 text-gray-600 text-sm">
+                {templateSearch ? `Geen templates gevonden voor "${templateSearch}"` : 'Geen templates gevonden'}
+              </div>
             ) : (
               <div className="divide-y divide-gray-800">
                 <div className="grid grid-cols-[2fr_1fr_1fr_auto] gap-4 px-5 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide border-b border-gray-800">
@@ -247,7 +269,7 @@ export default function SuperPage() {
                   <span>Status</span>
                   <span>Globaal</span>
                 </div>
-                {globalTemplates.map(t => (
+                {filteredTemplates.map(t => (
                   <div key={t.id} className="grid grid-cols-[2fr_1fr_1fr_auto] gap-4 px-5 py-3.5 items-center hover:bg-gray-800/50 transition-colors">
                     <div>
                       <p className="text-sm font-medium text-white">{t.name}</p>
