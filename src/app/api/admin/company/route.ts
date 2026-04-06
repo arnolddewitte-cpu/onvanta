@@ -10,7 +10,7 @@ export async function GET() {
 
   const { data: company } = await supabaseAdmin
     .from('Company')
-    .select('id, name, slug, plan, status, trialEndsAt, stripeCustomerId')
+    .select('id, name, slug, plan, status, trialEndsAt, stripeCustomerId, logoUrl, senderName, welcomeMessage, brandColor')
     .eq('id', session.companyId)
     .single()
 
@@ -26,7 +26,7 @@ export async function PATCH(req: NextRequest) {
   }
 
   const body = await req.json()
-  const allowed = ['name'] // alleen naam aanpasbaar door admin
+  const allowed = ['name', 'senderName', 'welcomeMessage', 'brandColor', 'logoUrl']
   const updates: Record<string, unknown> = {}
   for (const key of allowed) {
     if (body[key] !== undefined) updates[key] = body[key]

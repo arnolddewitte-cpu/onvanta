@@ -3,6 +3,7 @@ import { Resend } from 'resend'
 import { getSession } from '@/lib/session'
 import { supabaseAdmin } from '@/lib/supabase'
 import { logAudit } from '@/lib/audit'
+import { buildEmailHeader, buildWelcomeBlock, buildCtaButton, resolveColor, resolveSender, type CompanyBranding } from '@/lib/email-branding'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -24,7 +25,7 @@ export async function POST(req: NextRequest) {
 
     const email = employeeEmail.toLowerCase().trim()
 
-    // 1. Haal companyId op van het template
+    // 1. Haal template + company branding op
     const { data: template, error: templateError } = await supabaseAdmin
       .from('Template')
       .select('id, name, companyId')
@@ -34,6 +35,12 @@ export async function POST(req: NextRequest) {
     if (templateError || !template) {
       return NextResponse.json({ error: 'Template niet gevonden' }, { status: 404 })
     }
+
+    const { data: company } = await supabaseAdmin
+      .from('Company')
+      .select('name, logoUrl, senderName, welcomeMessage, brandColor')
+      .eq('id', template.companyId)
+      .single()
 
     // 2. Maak employee aan of vind bestaande user
     let employeeId: string
@@ -97,13 +104,21 @@ export async function POST(req: NextRequest) {
       used: false,
     })
 
-    // 5. Stuur uitnodigingsmail
+    // 5. Stuur uitnodigingsmail met huisstijl
     const baseUrl = process.env.NEXTAUTH_URL ?? (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://onvanta.io')
-  const loginUrl = `${baseUrl}/api/auth/verify?token=${token}`
+    const loginUrl = `${baseUrl}/api/auth/verify?token=${token}`
     const managerName = managerId ? await getManagerName(managerId) : null
 
+    const branding: CompanyBranding = {
+      companyName: company?.name ?? template.name,
+      logoUrl: company?.logoUrl,
+      senderName: company?.senderName,
+      welcomeMessage: company?.welcomeMessage,
+      brandColor: company?.brandColor,
+    }
+
     await resend.emails.send({
-      from: 'Onvanta <noreply@onvanta.io>',
+      from: `${resolveSender(branding)} <noreply@onvanta.io>`,
       to: email,
       subject: `Welkom bij ${template.name} — start je onboarding`,
       html: buildInviteEmail({
@@ -113,6 +128,7 @@ export async function POST(req: NextRequest) {
         startDate,
         loginUrl,
         role: role?.trim() || null,
+        branding,
       }),
     })
 
@@ -147,6 +163,7 @@ function buildInviteEmail({
   startDate,
   loginUrl,
   role,
+  branding,
 }: {
   employeeName: string
   templateName: string
@@ -154,10 +171,12 @@ function buildInviteEmail({
   startDate: string
   loginUrl: string
   role: string | null
+  branding: CompanyBranding
 }) {
   const formattedDate = new Date(startDate).toLocaleDateString('nl-NL', {
     weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
   })
+  const color = resolveColor(branding)
 
   return `
 <!DOCTYPE html>
@@ -168,17 +187,11 @@ function buildInviteEmail({
     <tr><td align="center">
       <table width="560" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:16px;overflow:hidden;border:1px solid #e5e7eb;">
 
-        <!-- Header -->
-        <tr>
-          <td style="background:#2563eb;padding:32px 40px;">
-            <p style="margin:0;color:#ffffff;font-size:22px;font-weight:700;">Onvanta</p>
-            <p style="margin:8px 0 0;color:#bfdbfe;font-size:14px;">Jouw onboarding staat klaar</p>
-          </td>
-        </tr>
+        ${buildEmailHeader(branding)}
 
         <!-- Body -->
         <tr>
-          <td style="padding:40px;">
+          <td style="padding:40px 40px 24px;">
             <p style="margin:0 0 16px;font-size:16px;color:#111827;">Hallo ${employeeName},</p>
             <p style="margin:0 0 16px;font-size:15px;color:#374151;line-height:1.6;">
               Welkom! Je onboarding programma <strong>${templateName}</strong> staat voor je klaar${role ? ` voor je functie als <strong>${role}</strong>` : ''}.
@@ -188,19 +201,10 @@ function buildInviteEmail({
               Je startdatum is <strong>${formattedDate}</strong>.
             </p>
 
-            <!-- CTA -->
-            <table cellpadding="0" cellspacing="0" style="margin:0 0 32px;">
-              <tr>
-                <td style="background:#2563eb;border-radius:10px;">
-                  <a href="${loginUrl}" style="display:inline-block;padding:14px 28px;color:#ffffff;font-size:15px;font-weight:600;text-decoration:none;">
-                    Start je onboarding →
-                  </a>
-                </td>
-              </tr>
-            </table>
+            ${buildCtaButton('Start je onboarding →', loginUrl, color)}
 
             <p style="margin:0 0 8px;font-size:13px;color:#9ca3af;">
-              Deze link is 7 dagen geldig. Daarna kun je een nieuwe inloglink aanvragen op <a href="${process.env.NEXTAUTH_URL}/login" style="color:#2563eb;">onvanta.io/login</a>.
+              Deze link is 7 dagen geldig. Daarna kun je een nieuwe inloglink aanvragen op <a href="${process.env.NEXTAUTH_URL ?? 'https://onvanta.io'}/login" style="color:${color};">onvanta.io/login</a>.
             </p>
             <p style="margin:0;font-size:13px;color:#9ca3af;">
               Als je dit niet verwachtte, kun je deze e-mail negeren.
@@ -208,10 +212,12 @@ function buildInviteEmail({
           </td>
         </tr>
 
+        ${buildWelcomeBlock(branding)}
+
         <!-- Footer -->
         <tr>
           <td style="background:#f9fafb;padding:20px 40px;border-top:1px solid #e5e7eb;">
-            <p style="margin:0;font-size:12px;color:#9ca3af;">© ${new Date().getFullYear()} Onvanta · Alle rechten voorbehouden</p>
+            <p style="margin:0;font-size:12px;color:#9ca3af;">© ${new Date().getFullYear()} ${branding.companyName} · Verzonden via Onvanta</p>
           </td>
         </tr>
 

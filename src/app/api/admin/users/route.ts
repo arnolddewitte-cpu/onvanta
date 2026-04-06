@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
 import { getSession } from '@/lib/session'
 import { supabaseAdmin } from '@/lib/supabase'
+import { buildEmailHeader, buildWelcomeBlock, buildCtaButton, resolveColor, resolveSender, type CompanyBranding } from '@/lib/email-branding'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -52,7 +53,7 @@ export async function POST(req: NextRequest) {
 
   const { data: company } = await supabaseAdmin
     .from('Company')
-    .select('name')
+    .select('name, logoUrl, senderName, welcomeMessage, brandColor')
     .eq('id', session.companyId)
     .single()
 
@@ -107,8 +108,18 @@ export async function POST(req: NextRequest) {
     company_admin: 'Beheerder',
   }
 
+  const branding: CompanyBranding = {
+    companyName: company.name,
+    logoUrl: company.logoUrl,
+    senderName: company.senderName,
+    welcomeMessage: company.welcomeMessage,
+    brandColor: company.brandColor,
+  }
+  const color = resolveColor(branding)
+  const sender = resolveSender(branding)
+
   const { error: mailError } = await resend.emails.send({
-    from: 'Onvanta <noreply@onvanta.io>',
+    from: `${sender} <noreply@onvanta.io>`,
     to: normalizedEmail,
     subject: `Je bent uitgenodigd voor ${company.name} op Onvanta`,
     html: `
@@ -118,25 +129,18 @@ export async function POST(req: NextRequest) {
   <table width="100%" cellpadding="0" cellspacing="0" style="padding:40px 20px;">
     <tr><td align="center">
       <table width="540" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:16px;border:1px solid #e8e7e2;overflow:hidden;">
-        <tr><td style="background:#1a5fd4;padding:28px 36px;">
-          <p style="margin:0;color:#fff;font-size:20px;font-weight:600;">Onvanta</p>
-        </td></tr>
+        ${buildEmailHeader(branding)}
         <tr><td style="padding:36px;">
           <p style="margin:0 0 16px;font-size:16px;color:#0f0f0e;">Hallo ${name.trim()},</p>
           <p style="margin:0 0 16px;font-size:15px;color:#3a3a38;line-height:1.6;">
             Je bent uitgenodigd om deel te nemen aan <strong>${company.name}</strong> op Onvanta als <strong>${roleLabel[role]}</strong>.
           </p>
-          <table cellpadding="0" cellspacing="0" style="margin:0 0 32px;">
-            <tr><td style="background:#1a5fd4;border-radius:10px;">
-              <a href="${loginUrl}" style="display:inline-block;padding:14px 28px;color:#fff;font-size:15px;font-weight:600;text-decoration:none;">
-                Inloggen bij Onvanta →
-              </a>
-            </td></tr>
-          </table>
+          ${buildCtaButton('Inloggen bij Onvanta →', loginUrl, color)}
           <p style="margin:0;font-size:13px;color:#9ca3af;">Deze link is 7 dagen geldig.</p>
         </td></tr>
+        ${buildWelcomeBlock(branding) ? `<tr><td style="padding:0 36px 24px;">${branding.welcomeMessage?.trim() ? `<div style="background:#f8f9fa;border-left:4px solid ${color};border-radius:4px;padding:16px 20px;"><p style="margin:0;font-size:14px;color:#374151;line-height:1.7;font-style:italic;">${branding.welcomeMessage.trim()}</p></div>` : ''}</td></tr>` : ''}
         <tr><td style="background:#f9fafb;padding:16px 36px;border-top:1px solid #e8e7e2;">
-          <p style="margin:0;font-size:12px;color:#9ca3af;">© ${new Date().getFullYear()} Onvanta</p>
+          <p style="margin:0;font-size:12px;color:#9ca3af;">© ${new Date().getFullYear()} ${company.name}</p>
         </td></tr>
       </table>
     </td></tr>

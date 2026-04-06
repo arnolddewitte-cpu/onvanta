@@ -67,6 +67,9 @@ model Company {
   name                 String
   slug                 String        @unique
   logoUrl              String?
+  senderName           String?
+  welcomeMessage       String?
+  brandColor           String?
   plan                 PlanType      @default(starter)
   status               CompanyStatus @default(trial)
   trialEndsAt          DateTime?
