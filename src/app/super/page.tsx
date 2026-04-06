@@ -280,9 +280,9 @@ export default function SuperPage() {
                 <tbody className="divide-y divide-gray-800">
                   {filteredTemplates.map(t => (
                     <tr key={t.id} className="hover:bg-gray-800/50 transition-colors">
-                      <td className="px-5 py-3.5 min-w-0">
-                        <p className="text-sm font-medium text-white truncate">{t.name}</p>
-                        {t.description && <p className="text-xs text-gray-500 mt-0.5 truncate">{t.description}</p>}
+                      <td className="px-5 py-3.5 overflow-hidden">
+                        <p className="text-sm font-medium text-white truncate overflow-hidden text-ellipsis whitespace-nowrap">{t.name}</p>
+                        {t.description && <p className="text-xs text-gray-500 mt-0.5 truncate overflow-hidden text-ellipsis whitespace-nowrap">{t.description}</p>}
                       </td>
                       <td className="px-5 py-3.5">
                         <span className="text-xs text-gray-400">{t.phaseCount} fases · {t.stepCount} stappen</span>
