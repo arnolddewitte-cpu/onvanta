@@ -262,41 +262,55 @@ export default function SuperPage() {
                 {templateSearch ? `Geen templates gevonden voor "${templateSearch}"` : 'Geen templates gevonden'}
               </div>
             ) : (
-              <div className="divide-y divide-gray-800">
-                <div className="grid grid-cols-[2fr_1fr_1fr_auto] gap-4 px-5 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide border-b border-gray-800">
-                  <span>Template</span>
-                  <span>Inhoud</span>
-                  <span>Status</span>
-                  <span>Globaal</span>
-                </div>
-                {filteredTemplates.map(t => (
-                  <div key={t.id} className="grid grid-cols-[2fr_1fr_1fr_auto] gap-4 px-5 py-3.5 items-center hover:bg-gray-800/50 transition-colors">
-                    <div>
-                      <p className="text-sm font-medium text-white">{t.name}</p>
-                      {t.description && <p className="text-xs text-gray-500 mt-0.5 truncate">{t.description}</p>}
-                    </div>
-                    <span className="text-xs text-gray-400">
-                      {t.phaseCount} fases · {t.stepCount} stappen
-                    </span>
-                    <span className={`text-xs px-2 py-0.5 rounded-full w-fit ${
-                      t.isGlobal ? 'bg-blue-900/40 text-blue-300' : 'bg-gray-800 text-gray-500'
-                    }`}>
-                      {t.isGlobal ? 'Globaal' : 'Privé'}
-                    </span>
-                    <button
-                      onClick={() => toggleGlobal(t.id, t.isGlobal)}
-                      disabled={togglingId === t.id}
-                      className={`relative w-10 h-5 rounded-full transition-colors flex-shrink-0 ${
-                        t.isGlobal ? 'bg-blue-600' : 'bg-gray-700'
-                      } ${togglingId === t.id ? 'opacity-50' : ''}`}
-                    >
-                      <span className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${
-                        t.isGlobal ? 'translate-x-5' : 'translate-x-0.5'
-                      }`} />
-                    </button>
-                  </div>
-                ))}
-              </div>
+              <table className="w-full table-fixed">
+                <colgroup>
+                  <col className="w-1/2" />
+                  <col className="w-1/6" />
+                  <col className="w-1/6" />
+                  <col className="w-1/6" />
+                </colgroup>
+                <thead>
+                  <tr className="border-b border-gray-800">
+                    <th className="px-5 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">Template</th>
+                    <th className="px-5 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">Inhoud</th>
+                    <th className="px-5 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">Status</th>
+                    <th className="px-5 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">Globaal</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-800">
+                  {filteredTemplates.map(t => (
+                    <tr key={t.id} className="hover:bg-gray-800/50 transition-colors">
+                      <td className="px-5 py-3.5 min-w-0">
+                        <p className="text-sm font-medium text-white truncate">{t.name}</p>
+                        {t.description && <p className="text-xs text-gray-500 mt-0.5 truncate">{t.description}</p>}
+                      </td>
+                      <td className="px-5 py-3.5">
+                        <span className="text-xs text-gray-400">{t.phaseCount} fases · {t.stepCount} stappen</span>
+                      </td>
+                      <td className="px-5 py-3.5">
+                        <span className={`text-xs px-2 py-0.5 rounded-full ${
+                          t.isGlobal ? 'bg-blue-900/40 text-blue-300' : 'bg-gray-800 text-gray-500'
+                        }`}>
+                          {t.isGlobal ? 'Globaal' : 'Privé'}
+                        </span>
+                      </td>
+                      <td className="px-5 py-3.5">
+                        <button
+                          onClick={() => toggleGlobal(t.id, t.isGlobal)}
+                          disabled={togglingId === t.id}
+                          className={`relative w-10 h-5 rounded-full transition-colors flex-shrink-0 ${
+                            t.isGlobal ? 'bg-blue-600' : 'bg-gray-700'
+                          } ${togglingId === t.id ? 'opacity-50' : ''}`}
+                        >
+                          <span className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${
+                            t.isGlobal ? 'translate-x-5' : 'translate-x-0.5'
+                          }`} />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             )}
           </div>
         </div>
