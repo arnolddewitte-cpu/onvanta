@@ -136,6 +136,7 @@ export async function POST(
   if (!instance) return NextResponse.json({ error: 'Geen actieve onboarding' }, { status: 404 })
 
   // Upsert StepProgress
+  console.log('[step complete] upserting StepProgress:', { instanceId: instance.id, stepId })
   const { error } = await supabaseAdmin
     .from('StepProgress')
     .upsert(
@@ -144,9 +145,10 @@ export async function POST(
     )
 
   if (error) {
-    console.error('StepProgress upsert error:', error)
-    return NextResponse.json({ error: 'Kon voortgang niet opslaan' }, { status: 500 })
+    console.error('[step complete] StepProgress upsert error:', JSON.stringify(error))
+    return NextResponse.json({ error: 'Kon voortgang niet opslaan', detail: error.message }, { status: 500 })
   }
+  console.log('[step complete] StepProgress upsert OK')
 
   // Herbereken progressPct — apart ophalen om nested join filter problemen te vermijden
   const { data: templatePhases } = await supabaseAdmin

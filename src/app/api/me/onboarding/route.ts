@@ -49,12 +49,14 @@ export async function GET() {
   }
 
   // Voortgang
-  const { data: progress } = await supabaseAdmin
+  const { data: progress, error: progressError } = await supabaseAdmin
     .from('StepProgress')
     .select('stepId, completed')
     .eq('instanceId', instance.id)
 
+  console.log('[onboarding] progress fetch error:', progressError)
   console.log('[onboarding] progress records:', progress?.length)
+  console.log('[onboarding] progress raw:', JSON.stringify(progress))
 
   const completedStepIds = new Set(
     (progress ?? []).filter(p => p.completed).map(p => p.stepId)
@@ -69,11 +71,22 @@ export async function GET() {
 
   console.log('[onboarding] progress calc:', { totalSteps, completedCount, progressPct })
 
-  // Phases unlock sequentially: phase 1 is always active, phase N unlocks when phase N-1 is completed
+  // Controleer of step IDs overeenkomen (type check)
+  if (allSteps.length > 0 && completedStepIds.size > 0) {
+    const sampleTemplateStepId = allSteps[0].id
+    const sampleProgressStepId = [...completedStepIds][0]
+    console.log('[onboarding] ID type check — templateStep.id type:', typeof sampleTemplateStepId, 'value:', sampleTemplateStepId)
+    console.log('[onboarding] ID type check — StepProgress.stepId type:', typeof sampleProgressStepId, 'value:', sampleProgressStepId)
+  }
+
+  // Phases unlock sequentially: fase 1 altijd actief, fase N unlocks als fase N-1 af is.
+  // Lege fases (geen stappen) worden als voltooid beschouwd zodat ze progressie niet blokkeren.
   let prevPhaseCompleted = true
   const phasesWithStatus = (phases ?? []).map(phase => {
     const steps = (stepsByPhase[phase.id] ?? []).sort((a, b) => a.order - b.order)
-    const allDone = steps.length > 0 && steps.every(s => completedStepIds.has(s.id))
+
+    // Bug fix: een fase zonder stappen blokkeert de progressie niet
+    const allDone = steps.length === 0 || steps.every(s => completedStepIds.has(s.id))
 
     let phaseStatus: 'completed' | 'active' | 'todo'
     if (allDone) {
@@ -84,7 +97,15 @@ export async function GET() {
       phaseStatus = 'todo'
     }
 
-    console.log(`[onboarding] phase "${phase.title}": steps=${steps.length}, allDone=${allDone}, prevCompleted=${prevPhaseCompleted}, status=${phaseStatus}`)
+    console.log(
+      `[onboarding] fase "${phase.title}" (${phase.id}):`,
+      `steps=${steps.length}`,
+      `stepIds=[${steps.map(s => s.id).join(', ')}]`,
+      `completedInPhase=${steps.filter(s => completedStepIds.has(s.id)).length}`,
+      `allDone=${allDone}`,
+      `prevCompleted=${prevPhaseCompleted}`,
+      `→ status=${phaseStatus}`
+    )
 
     prevPhaseCompleted = allDone
 

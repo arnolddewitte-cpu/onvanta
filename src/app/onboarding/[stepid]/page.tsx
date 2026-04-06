@@ -35,6 +35,7 @@ export default function StepPage({ params: paramsPromise }: { params: Promise<{ 
   // Per-block completion state (acknowledgement, task)
   const [checkedBlocks, setCheckedBlocks] = useState<Set<string>>(new Set())
   const [saving, setSaving] = useState(false)
+  const [saveError, setSaveError] = useState('')
 
   useEffect(() => {
     fetch(`/api/me/onboarding/${params.stepid}`)
@@ -57,10 +58,17 @@ export default function StepPage({ params: paramsPromise }: { params: Promise<{ 
   async function handleComplete() {
     if (!data || saving) return
     setSaving(true)
+    setSaveError('')
 
-    await fetch(`/api/me/onboarding/${params.stepid}`, { method: 'POST' })
+    const res = await fetch(`/api/me/onboarding/${params.stepid}`, { method: 'POST' })
+    const result = await res.json()
 
     setSaving(false)
+
+    if (!res.ok) {
+      setSaveError(result.error ?? 'Opslaan mislukt. Probeer het opnieuw.')
+      return
+    }
 
     if (data.nextStepId) {
       router.push(`/onboarding/${data.nextStepId}`)
@@ -209,7 +217,10 @@ export default function StepPage({ params: paramsPromise }: { params: Promise<{ 
         </div>
 
         {/* Afronden knop */}
-        <div className="mt-8 flex justify-between items-center">
+        {saveError && (
+          <p className="mt-6 text-sm text-red-600 text-center">{saveError}</p>
+        )}
+        <div className="mt-4 flex justify-between items-center">
           <button
             onClick={() => router.push('/onboarding')}
             className="text-sm text-gray-500 hover:text-gray-700 transition-colors"
