@@ -42,6 +42,10 @@ function SettingsContent() {
   const [savedBranding, setSavedBranding] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
+  // Testmail
+  const [sendingTestEmail, setSendingTestEmail] = useState(false)
+  const [testEmailResult, setTestEmailResult] = useState<{ ok: boolean; msg: string } | null>(null)
+
   // Abonnement
   const [checkingOut, setCheckingOut] = useState(false)
   const [checkoutError, setCheckoutError] = useState<string | null>(null)
@@ -100,6 +104,20 @@ function SettingsContent() {
     }
     setLogoUrl(data.logoUrl)
     if (company) setCompany({ ...company, logoUrl: data.logoUrl })
+  }
+
+  async function handleSendTestEmail() {
+    setSendingTestEmail(true)
+    setTestEmailResult(null)
+    const res = await fetch('/api/admin/settings/test-email', { method: 'POST' })
+    const data = await res.json()
+    setSendingTestEmail(false)
+    if (res.ok) {
+      setTestEmailResult({ ok: true, msg: `✓ Testmail verstuurd naar ${data.sentTo}` })
+    } else {
+      setTestEmailResult({ ok: false, msg: data.error ?? 'Versturen mislukt' })
+    }
+    setTimeout(() => setTestEmailResult(null), 6000)
   }
 
   async function handleSaveBranding() {
@@ -356,47 +374,128 @@ function SettingsContent() {
                     </div>
                   </div>
 
-                  {/* Preview */}
-                  <div className="mt-2 rounded-xl border border-gray-100 overflow-hidden">
-                    <div className="px-4 py-2 bg-gray-50 border-b border-gray-100">
-                      <p className="text-xs font-medium text-gray-500">Voorvertoning e-mail header</p>
-                    </div>
-                    <div className="p-4">
-                      <div className="rounded-xl overflow-hidden border border-gray-200 max-w-sm">
-                        <div className="px-5 py-4 flex items-center gap-3" style={{ background: brandColor }}>
-                          {logoUrl ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img src={logoUrl} alt="Logo" className="h-8 max-w-[140px] object-contain" />
-                          ) : (
-                            <span className="text-white font-semibold text-base">
-                              {senderName || company?.name || 'Jouw bedrijf'}
-                            </span>
-                          )}
-                        </div>
-                        <div className="px-5 py-4 bg-white">
-                          <p className="text-sm text-gray-500 mb-3">Hallo Jan,</p>
-                          {welcomeMessage && (
-                            <div className="mb-3 p-3 bg-gray-50 rounded-lg" style={{ borderLeft: `3px solid ${brandColor}` }}>
-                              <p className="text-xs text-gray-600 italic leading-relaxed">{welcomeMessage.slice(0, 80)}{welcomeMessage.length > 80 ? '...' : ''}</p>
-                            </div>
-                          )}
-                          <div className="inline-block px-4 py-2 rounded-lg text-white text-sm font-medium" style={{ background: brandColor }}>
-                            Start je onboarding →
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                  <div className="flex gap-3 pt-2">
+                    <button
+                      onClick={handleSaveBranding}
+                      className={`px-5 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+                        savedBranding ? 'bg-green-500 text-white' : 'bg-blue-600 text-white hover:bg-blue-700'
+                      }`}
+                    >
+                      {savedBranding ? '✓ Opgeslagen!' : 'Huisstijl opslaan'}
+                    </button>
                   </div>
-
-                  <button
-                    onClick={handleSaveBranding}
-                    className={`px-5 py-2.5 rounded-xl text-sm font-medium transition-colors ${
-                      savedBranding ? 'bg-green-500 text-white' : 'bg-blue-600 text-white hover:bg-blue-700'
-                    }`}
-                  >
-                    {savedBranding ? '✓ Opgeslagen!' : 'Huisstijl opslaan'}
-                  </button>
                 </div>
+              )}
+            </div>
+
+            {/* ── Volledige e-mail preview ── */}
+            <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+              <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+                <div>
+                  <h2 className="font-semibold text-gray-900 text-sm">Voorbeeld uitnodigingsmail</h2>
+                  <p className="text-xs text-gray-400 mt-0.5">Beweegt mee met de instellingen hierboven</p>
+                </div>
+              </div>
+
+              {/* Onderwerpregel */}
+              <div className="px-6 py-3 bg-gray-50 border-b border-gray-100 flex items-center gap-2">
+                <span className="text-xs text-gray-400 font-medium w-20 flex-shrink-0">Onderwerp</span>
+                <span className="text-xs text-gray-700 truncate">
+                  Welkom bij {company?.name || 'Jouw bedrijf'} — je toegangslink staat klaar
+                </span>
+              </div>
+              <div className="px-6 py-2 bg-gray-50 border-b border-gray-100 flex items-center gap-2">
+                <span className="text-xs text-gray-400 font-medium w-20 flex-shrink-0">Van</span>
+                <span className="text-xs text-gray-700">{senderName || 'Onvanta'} &lt;noreply@onvanta.io&gt;</span>
+              </div>
+
+              {/* iframe preview */}
+              <iframe
+                srcDoc={`<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width"></head>
+<body style="margin:0;padding:20px;background:#f9fafb;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0">
+    <tr><td align="center">
+      <table width="520" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb;">
+        <tr>
+          <td style="background:${brandColor};padding:${logoUrl ? '20px 32px' : '24px 32px'};">
+            ${logoUrl
+              ? `<img src="${logoUrl}" alt="Logo" style="max-height:44px;max-width:180px;object-fit:contain;display:block;" />`
+              : `<p style="margin:0;color:#ffffff;font-size:18px;font-weight:700;">${senderName || company?.name || 'Jouw bedrijf'}</p>`
+            }
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:28px 32px 8px;">
+            <p style="margin:0 0 14px;font-size:15px;color:#111827;">Hallo Jan,</p>
+            <p style="margin:0 0 20px;font-size:14px;color:#374151;line-height:1.6;">
+              Je bent uitgenodigd om te starten met je onboarding bij <strong>${company?.name || 'Jouw bedrijf'}</strong>.
+            </p>
+          </td>
+        </tr>
+        ${welcomeMessage.trim() ? `
+        <tr>
+          <td style="padding:0 32px 16px;">
+            <div style="background:#f8f9fa;border-left:4px solid ${brandColor};border-radius:4px;padding:14px 18px;">
+              <p style="margin:0;font-size:13px;color:#374151;line-height:1.7;font-style:italic;">${welcomeMessage.trim().replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>
+            </div>
+          </td>
+        </tr>` : ''}
+        <tr>
+          <td style="padding:8px 32px 28px;">
+            <table cellpadding="0" cellspacing="0" style="margin:0 0 20px;">
+              <tr>
+                <td style="background:${brandColor};border-radius:8px;">
+                  <a href="#" style="display:inline-block;padding:12px 24px;color:#ffffff;font-size:14px;font-weight:600;text-decoration:none;">
+                    Start mijn onboarding →
+                  </a>
+                </td>
+              </tr>
+            </table>
+            <p style="margin:0;font-size:12px;color:#9ca3af;">Deze link is 7 dagen geldig.</p>
+          </td>
+        </tr>
+        <tr>
+          <td style="background:#f9fafb;padding:14px 32px;border-top:1px solid #e5e7eb;">
+            <p style="margin:0;font-size:11px;color:#9ca3af;">Verstuurd via Onvanta &middot; Dit bericht is verstuurd door ${senderName || 'Onvanta'}</p>
+          </td>
+        </tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`}
+                className="w-full border-0"
+                style={{ height: '440px' }}
+                title="E-mail preview"
+                sandbox="allow-same-origin"
+              />
+            </div>
+
+            {/* ── Testmail ── */}
+            <div className="bg-white rounded-2xl border border-gray-100 p-6">
+              <h2 className="font-semibold text-gray-900 mb-1">Testmail versturen</h2>
+              <p className="text-xs text-gray-500 mb-4">
+                Stuurt een voorbeeld-uitnodigingsmail naar jouw eigen e-mailadres met de <strong>opgeslagen</strong> huisstijl.
+                Sla eerst op als je wijzigingen wil testen.
+              </p>
+              <button
+                onClick={handleSendTestEmail}
+                disabled={sendingTestEmail}
+                className="px-5 py-2.5 rounded-xl text-sm font-medium bg-gray-900 text-white hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {sendingTestEmail ? (
+                  <span className="flex items-center gap-2">
+                    <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin inline-block" />
+                    Versturen...
+                  </span>
+                ) : 'Stuur testmail naar mijzelf'}
+              </button>
+              {testEmailResult && (
+                <p className={`mt-3 text-sm font-medium ${testEmailResult.ok ? 'text-green-600' : 'text-red-600'}`}>
+                  {testEmailResult.msg}
+                </p>
               )}
             </div>
           </div>
