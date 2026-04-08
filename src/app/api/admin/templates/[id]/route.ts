@@ -41,9 +41,24 @@ export async function GET(
     return NextResponse.json({ error: 'Fout bij ophalen stappen' }, { status: 500 })
   }
 
+  const stepIds = (steps ?? []).map(s => s.id)
+
+  const { data: blocks } = stepIds.length > 0
+    ? await supabaseAdmin
+        .from('StepBlock')
+        .select('id, stepId, type, title, order')
+        .in('stepId', stepIds)
+        .order('order')
+    : { data: [] }
+
   const phasesWithSteps = (phases ?? []).map(phase => ({
     ...phase,
-    steps: (steps ?? []).filter(s => s.phaseId === phase.id),
+    steps: (steps ?? [])
+      .filter(s => s.phaseId === phase.id)
+      .map(s => ({
+        ...s,
+        blocks: (blocks ?? []).filter(b => b.stepId === s.id),
+      })),
   }))
 
   return NextResponse.json({ ...template, phases: phasesWithSteps })
