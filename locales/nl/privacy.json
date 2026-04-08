@@ -1,0 +1,39 @@
+{
+  "badge": "Juridisch",
+  "title": "Privacybeleid",
+  "updated": "Laatst bijgewerkt: maart 2026",
+  "sections": [
+    {
+      "title": "1. Wie we zijn",
+      "content": "Onvanta is een platform voor medewerkeronboarding en kennisretentie. Dit privacybeleid legt uit hoe we persoonlijke gegevens verzamelen, gebruiken en beschermen wanneer je onze diensten gebruikt. Ons platform wordt beheerd vanuit Nederland en we vallen onder de Nederlandse en Europese wetgeving inzake gegevensbescherming (AVG)."
+    },
+    {
+      "title": "2. Welke gegevens we verzamelen",
+      "content": "We verzamelen de volgende persoonsgegevens: naam en zakelijk e-mailadres (vereist voor het aanmaken van een account), bedrijfsnaam en teamomvang (opgegeven tijdens registratie), gebruiksgegevens zoals inlogtijdstippen, onboardingvoortgang, quizscores en flashcard-resultaten, en technische gegevens zoals IP-adres, browsertype en apparaatinformatie."
+    },
+    {
+      "title": "3. Hoe we je gegevens gebruiken",
+      "content": "We gebruiken je gegevens om de Onvanta-dienst te leveren en te verbeteren, om transactionele e-mails te sturen zoals magic link-inlogmails en onboardingmeldingen, om managers en admins inzicht te geven in de onboardingvoortgang, en om gebruikspatronen te analyseren ter verbetering van het product. We verkopen je gegevens niet aan derden. We gebruiken je gegevens niet voor reclamedoeleinden."
+    },
+    {
+      "title": "4. Gegevensopslag en beveiliging",
+      "content": "Je gegevens worden opgeslagen in Supabase (PostgreSQL) op servers in Frankfurt, Duitsland (EU). We maken gebruik van branchestandaard beveiligingsmaatregelen, waaronder versleutelde verbindingen (HTTPS), gehashte tokens voor authenticatie en op rollen gebaseerde toegangscontroles. We bewaren je gegevens zolang je account actief is. Na verwijdering van het account worden gegevens binnen 30 dagen verwijderd."
+    },
+    {
+      "title": "5. Diensten van derden",
+      "content": "We maken gebruik van de volgende diensten van derden: Supabase (database en authenticatie, EU-servers), Resend (transactionele e-mail), Vercel (hosting en deployment) en Stripe (betalingsverwerking). Elk van deze diensten heeft een eigen privacybeleid en gegevensverwerkingsovereenkomsten."
+    },
+    {
+      "title": "6. Jouw rechten (AVG)",
+      "content": "Op grond van de AVG heb je het recht op inzage in je persoonsgegevens, correctie van onjuiste gegevens, verwijdering van je gegevens, overdraagbaarheid van je gegevens en bezwaar tegen of beperking van de verwerking. Om een van deze rechten uit te oefenen, neem je contact met ons op via hello@onvanta.io. We reageren binnen 30 dagen."
+    },
+    {
+      "title": "7. Cookies",
+      "content": "We gebruiken een sessiecookie (next-auth.session-token) om je ingelogd te houden. Deze cookie is strikt noodzakelijk voor het functioneren van de dienst en volgt je niet op andere websites. We gebruiken geen reclame- of analysecookies."
+    },
+    {
+      "title": "8. Contact",
+      "content": "Heb je vragen over dit privacybeleid of over hoe we je gegevens verwerken? Neem dan contact op via hello@onvanta.io."
+    }
+  ]
+}

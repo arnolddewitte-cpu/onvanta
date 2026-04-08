@@ -1,0 +1,32 @@
+{
+  "badge": "Contact",
+  "title1": "Laten we praten over",
+  "em": "jouw team.",
+  "subtitle": "Of je nu een vraag hebt, een demo wilt plannen of gewoon wil weten of Onvanta bij je past — we praten graag met je.",
+  "cards": [
+    { "icon": "✉️", "title": "E-mail", "value": "hello@onvanta.io", "desc": "We reageren binnen één werkdag." },
+    { "icon": "💬", "title": "Demo", "value": "Plan een gesprek van 30 minuten", "desc": "Zie Onvanta in actie voor jouw team." },
+    { "icon": "📍", "title": "Locatie", "value": "Nederland", "desc": "Teams in heel Europa bedienen." }
+  ],
+  "form": {
+    "title": "Stuur ons een bericht",
+    "subtitle": "We reageren binnen één werkdag.",
+    "name": "Naam",
+    "email": "Zakelijk e-mailadres",
+    "company": "Bedrijf",
+    "companyOptional": "(optioneel)",
+    "message": "Bericht",
+    "placeholderName": "Jan de Vries",
+    "placeholderEmail": "jan@bedrijf.nl",
+    "placeholderCompany": "Acme B.V.",
+    "placeholderMessage": "Vertel ons over je team en wat je zoekt...",
+    "submit": "Verstuur bericht →",
+    "submitting": "Versturen...",
+    "error": "Er ging iets mis. Probeer het opnieuw."
+  },
+  "success": {
+    "icon": "📬",
+    "title": "Bericht verstuurd!",
+    "text": "Bedankt voor je bericht. We reageren binnen één werkdag."
+  }
+}

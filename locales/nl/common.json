@@ -1,0 +1,25 @@
+{
+  "nav": {
+    "features": "Functies",
+    "featuresHref": "/#functies",
+    "pricing": "Prijzen",
+    "about": "Over ons",
+    "contact": "Contact",
+    "login": "Inloggen",
+    "cta": "Gratis proberen →"
+  },
+  "footer": {
+    "tagline": "Nieuwe medewerkers, sneller productief. Onboarding, training en kennisretentie in één systeem.",
+    "product": "Product",
+    "features": "Functies",
+    "pricing": "Prijzen",
+    "company": "Bedrijf",
+    "about": "Over ons",
+    "contact": "Contact",
+    "legal": "Juridisch",
+    "privacy": "Privacybeleid",
+    "terms": "Algemene voorwaarden",
+    "copyright": "© 2026 Onvanta. Alle rechten voorbehouden.",
+    "madeIn": "Gemaakt in Nederland 🇳🇱"
+  }
+}

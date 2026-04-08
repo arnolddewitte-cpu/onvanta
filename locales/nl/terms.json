@@ -1,0 +1,47 @@
+{
+  "badge": "Juridisch",
+  "title": "Algemene voorwaarden",
+  "updated": "Laatst bijgewerkt: maart 2026",
+  "sections": [
+    {
+      "title": "1. Aanvaarding van de voorwaarden",
+      "content": "Door een account aan te maken of het Onvanta-platform te gebruiken, ga je akkoord met deze Algemene voorwaarden. Als je Onvanta namens een bedrijf gebruikt, verklaar je dat je bevoegd bent om dat bedrijf aan deze voorwaarden te binden."
+    },
+    {
+      "title": "2. Beschrijving van de dienst",
+      "content": "Onvanta is een SaaS-platform voor medewerkeronboarding en kennisretentie. We bieden tools voor het aanmaken van onboardingtemplates, het bijhouden van medewerkervoortgang en het leveren van spaced repetition-training. We behouden ons het recht voor om onderdelen van de dienst te wijzigen of te beëindigen met een redelijke kennisgeving."
+    },
+    {
+      "title": "3. Account en toegang",
+      "content": "Je bent verantwoordelijk voor de beveiliging van je account. Je moet accurate informatie verstrekken bij het aanmaken van je account. Elk account is bestemd voor gebruik door één organisatie. Je mag je accountgegevens niet delen met derden buiten je organisatie."
+    },
+    {
+      "title": "4. Abonnement en betaling",
+      "content": "Onvanta wordt aangeboden op abonnementsbasis. De prijs is per actieve onboardee per maand. Managers en admins zijn altijd gratis. Abonnementen worden maandelijks of jaarlijks gefactureerd, afhankelijk van je gekozen plan. Je kunt op elk moment opzeggen. Na opzegging gaat je account in leesmodus en worden je gegevens 30 dagen bewaard."
+    },
+    {
+      "title": "5. Gratis proefperiode",
+      "content": "Nieuwe accounts ontvangen een gratis proefperiode van 14 dagen met volledige toegang. Er is geen creditcard nodig om te starten. Na afloop van de proefperiode kun je een betaald plan kiezen, anders gaat je account in leesmodus. Je gegevens worden nooit verwijderd zonder uitdrukkelijk verzoek."
+    },
+    {
+      "title": "6. Jouw content",
+      "content": "Je behoudt de eigendom van alle content die je in Onvanta aanmaakt, inclusief onboardingtemplates, trainingsmateriaal en bedrijfsinformatie. Door content te uploaden, verleen je Onvanta een beperkte licentie om die content op te slaan en weer te geven aan gebruikers binnen jouw organisatie. We zullen jouw content nooit delen met andere organisaties."
+    },
+    {
+      "title": "7. Acceptabel gebruik",
+      "content": "Je mag Onvanta niet gebruiken om wetten of regelgeving te overtreden, om personen lastig te vallen of te schaden, om kwaadaardige code of content te uploaden, of om ongeautoriseerde toegang tot onze systemen te proberen te verkrijgen. We behouden ons het recht voor om accounts te schorsen of te beëindigen die deze voorwaarden schenden."
+    },
+    {
+      "title": "8. Beperking van aansprakelijkheid",
+      "content": "Onvanta wordt geleverd \"zoals het is\" zonder garanties van welke aard dan ook. We zijn niet aansprakelijk voor indirecte, incidentele of gevolgschade als gevolg van je gebruik van de dienst. Onze totale aansprakelijkheid jegens jou bedraagt niet meer dan het bedrag dat je ons heeft betaald in de 12 maanden voorafgaand aan de claim."
+    },
+    {
+      "title": "9. Toepasselijk recht",
+      "content": "Deze voorwaarden worden beheerst door Nederlands recht. Eventuele geschillen vallen onder de exclusieve bevoegdheid van de Nederlandse rechter."
+    },
+    {
+      "title": "10. Contact",
+      "content": "Voor vragen over deze voorwaarden, neem contact op via hello@onvanta.io."
+    }
+  ]
+}

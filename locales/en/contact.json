@@ -1,0 +1,32 @@
+{
+  "badge": "Contact",
+  "title1": "Let's talk about",
+  "em": "your team.",
+  "subtitle": "Whether you have a question, want to book a demo, or just want to know if Onvanta is a fit — we'd love to chat.",
+  "cards": [
+    { "icon": "✉️", "title": "Email", "value": "hello@onvanta.io", "desc": "We respond within one business day." },
+    { "icon": "💬", "title": "Demo", "value": "Book a 30-minute call", "desc": "See Onvanta in action for your team." },
+    { "icon": "📍", "title": "Location", "value": "The Netherlands", "desc": "Serving teams across Europe." }
+  ],
+  "form": {
+    "title": "Send us a message",
+    "subtitle": "We respond within one business day.",
+    "name": "Name",
+    "email": "Work email address",
+    "company": "Company",
+    "companyOptional": "(optional)",
+    "message": "Message",
+    "placeholderName": "Jane Smith",
+    "placeholderEmail": "jane@company.com",
+    "placeholderCompany": "Acme Ltd.",
+    "placeholderMessage": "Tell us about your team and what you're looking for...",
+    "submit": "Send message →",
+    "submitting": "Sending...",
+    "error": "Something went wrong. Please try again."
+  },
+  "success": {
+    "icon": "📬",
+    "title": "Message sent!",
+    "text": "Thanks for reaching out. We'll get back to you within one business day."
+  }
+}

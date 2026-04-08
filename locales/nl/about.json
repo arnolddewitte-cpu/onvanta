@@ -1,0 +1,39 @@
+{
+  "badge": "Ons verhaal",
+  "hero": {
+    "title1": "Gebouwd door iemand die",
+    "em": "er zelf in stond.",
+    "subtitle": "Onvanta is ontstaan uit frustratie. Na 15+ jaar in print-on-demand zag ik goede mensen mislukken — niet omdat ze niet capabel waren, maar omdat niemand ze een goede start gaf."
+  },
+  "stories": [
+    {
+      "title": "Het probleem dat we steeds zagen",
+      "p1": "Nieuwe klantenservicemedewerkers die klanten vertelden dat tampondruk full-colour foto's aankan. Verkopers die zeefdrukoffertes maakten zonder het aantal logokleuren mee te tellen. Operators die procedures gokten omdat de kennis in één hoofd zat.",
+      "p2": "Het probleem waren niet de mensen. Het was de onboarding. Of eigenlijk: het ontbreken ervan. Een Word-document, een dag meeloopstage en een \"je komt er wel achter\" — dat was wat de meeste teams gebruikten."
+    },
+    {
+      "title": "Waarom we Onvanta bouwden",
+      "p1": "We wilden iets dat gestructureerde onboarding combineert met echte kennisretentie. Niet alleen \"hier is een checklist\" — maar een systeem dat zorgt dat kennis ook echt blijft hangen, met spaced repetition zoals taalleerapps dat doen.",
+      "p2": "En we wilden dat managers echte zichtbaarheid hebben. Niet een 30-dagengesprek waarbij je ontdekt dat iemand drie weken heeft zitten worstelen. Realtime signalen zodat je vroeg kunt ingrijpen."
+    },
+    {
+      "title": "Voor wie we bouwen",
+      "p1": "Nu: print-on-demand en logistieke bedrijven met 10–50 medewerkers. We kennen deze wereld van binnenuit en onze templates weerspiegelen dat — echte druktechnieken-kennis, echte klantcommunicatiescenario's, echte procedures.",
+      "p2": "Binnenkort: elk groeiend bedrijf dat mensen aanneemt en hen sneller productief wil maken. Het probleem is universeel. De oplossing schaalt mee."
+    }
+  ],
+  "values": {
+    "title1": "Waar we in",
+    "em": "geloven.",
+    "items": [
+      { "icon": "🎯", "title": "Specificiteit wint van algemeenheid", "desc": "Een template gebouwd voor POD-klantenservice is meer waard dan een generieke onboarding-checklist. We bouwen voor specifieke functies, specifieke sectoren." },
+      { "icon": "🧠", "title": "Kennis moet beklijven", "desc": "Iets één keer lezen is geen leren. Spaced repetition is geen luxe — het is het verschil tussen weten en vergeten." },
+      { "icon": "👁️", "title": "Managers hebben signalen nodig, geen rapporten", "desc": "Een 30-dagengesprek is te laat. Managers moeten al in week één weten als iemand moeite heeft — zodat ze er nog iets aan kunnen doen." }
+    ]
+  },
+  "cta": {
+    "title": "Klaar voor slimmere onboarding?",
+    "subtitle": "14 dagen gratis. Volledige toegang. Geen creditcard vereist.",
+    "btn": "Gratis proberen →"
+  }
+}

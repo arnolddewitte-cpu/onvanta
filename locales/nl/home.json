@@ -1,0 +1,63 @@
+{
+  "badge": "Medewerker onboarding platform",
+  "hero": {
+    "line1": "Nieuwe medewerkers,",
+    "em": "sneller productief.",
+    "subtitle": "Gestructureerde onboarding, spaced repetition flashcards en managerzichtbaarheid — alles in één systeem voor groeiende teams.",
+    "ctaPrimary": "Gratis proberen →",
+    "ctaSecondary": "Hoe het werkt",
+    "social": "14 dagen gratis proberen · Geen creditcard vereist"
+  },
+  "preview": {
+    "url": "app.onvanta.io/dashboard",
+    "greeting": "Goedemorgen, Sarah 👋",
+    "day": "Dag 4 van onboarding · Klantenservice",
+    "progress": "Voortgang",
+    "tasksToday": "Taken vandaag",
+    "quizScore": "Quizscore",
+    "tasksLabel": "Taken van vandaag",
+    "task1": "Bekijk productdemo video",
+    "task2": "Maak de druktechnieken quiz",
+    "task3": "Toegang klantenportaal instellen"
+  },
+  "features": {
+    "badge": "Functies",
+    "title1": "Alles wat je team nodig heeft",
+    "em": "voor een goede start.",
+    "subtitle": "Geen generiek LMS. Geen HRIS. Specifiek gebouwd voor medewerker-onboarding en kennisretentie.",
+    "items": [
+      { "icon": "📋", "title": "Gestructureerde onboarding", "desc": "Bouw templates met fases, stappen en inhoudsblokken. Elke nieuwe medewerker krijgt dezelfde solide start." },
+      { "icon": "🃏", "title": "Spaced repetition", "desc": "ANKI-stijl flashcards ingebouwd in de onboarding. Kennis beklijft omdat het op het juiste moment herhaald wordt." },
+      { "icon": "👁️", "title": "Managerzichtbaarheid", "desc": "At-risk detectie, quizscores, flashcard nauwkeurigheid. Weet wie het moeilijk heeft vóór het 30-dagen gesprek." },
+      { "icon": "⚡", "title": "In 60 seconden live", "desc": "Kies een template, wijs een manager toe, stel een startdatum in. Je eerste onboarding loopt binnen een minuut." },
+      { "icon": "🎯", "title": "Rolspecifieke templates", "desc": "Andere templates voor CS, Sales en Operators. Elke functie krijgt inhoud die aansluit bij het echte werk." },
+      { "icon": "✅", "title": "Managersgoedkeuringen", "desc": "Blokkeer voortgang totdat een manager aftekent. Zo zeker je dat standaarden behaald zijn voor de volgende fase." }
+    ]
+  },
+  "pricing": {
+    "badge": "Prijzen",
+    "title1": "Eenvoudige prijzen,",
+    "em": "geen verrassingen.",
+    "subtitle": "Per actieve onboardee. Betaal alleen wanneer iemand actief aan het onboarden is. Managers en admins altijd gratis.",
+    "trial": "14 dagen gratis · geen creditcard",
+    "price": "€24,99",
+    "perMonth": "per actieve onboardee / maand (excl. BTW)",
+    "examples": [
+      { "n": 5, "price": "€124,95" },
+      { "n": 10, "price": "€249,90" },
+      { "n": 20, "price": "€499,80" }
+    ],
+    "newEmployees": "nieuwe medewerkers",
+    "examplesNote": "Managers en admins tellen nooit mee",
+    "cta": "Gratis proberen →",
+    "feat1": "✓ Alle functies",
+    "feat2": "✓ Geen vaste kosten",
+    "feat3": "✓ Maandelijks opzegbaar"
+  },
+  "cta": {
+    "title": "Klaar voor een betere onboarding?",
+    "subtitle": "14 dagen gratis proberen. Geen creditcard vereist.",
+    "btn": "Gratis proberen →",
+    "note": "14 dagen gratis · Geen creditcard vereist"
+  }
+}

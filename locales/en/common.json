@@ -1,0 +1,25 @@
+{
+  "nav": {
+    "features": "Features",
+    "featuresHref": "/#functies",
+    "pricing": "Pricing",
+    "about": "About",
+    "contact": "Contact",
+    "login": "Log in",
+    "cta": "Start free →"
+  },
+  "footer": {
+    "tagline": "New employees, productive faster. Onboarding, training and knowledge retention in one system.",
+    "product": "Product",
+    "features": "Features",
+    "pricing": "Pricing",
+    "company": "Company",
+    "about": "About us",
+    "contact": "Contact",
+    "legal": "Legal",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "copyright": "© 2026 Onvanta. All rights reserved.",
+    "madeIn": "Made in the Netherlands 🇳🇱"
+  }
+}

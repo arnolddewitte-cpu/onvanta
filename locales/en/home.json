@@ -1,0 +1,63 @@
+{
+  "badge": "Employee onboarding platform",
+  "hero": {
+    "line1": "New employees,",
+    "em": "productive faster.",
+    "subtitle": "Structured onboarding, spaced repetition flashcards and manager visibility — all in one system for growing teams.",
+    "ctaPrimary": "Start free →",
+    "ctaSecondary": "How it works",
+    "social": "14-day free trial · No credit card required"
+  },
+  "preview": {
+    "url": "app.onvanta.io/dashboard",
+    "greeting": "Good morning, Sarah 👋",
+    "day": "Day 4 of onboarding · Customer Service",
+    "progress": "Progress",
+    "tasksToday": "Tasks today",
+    "quizScore": "Quiz score",
+    "tasksLabel": "Today's tasks",
+    "task1": "Watch product demo video",
+    "task2": "Take the print techniques quiz",
+    "task3": "Set up customer portal access"
+  },
+  "features": {
+    "badge": "Features",
+    "title1": "Everything your team needs",
+    "em": "for a great start.",
+    "subtitle": "Not a generic LMS. Not an HRIS. Built specifically for employee onboarding and knowledge retention.",
+    "items": [
+      { "icon": "📋", "title": "Structured onboarding", "desc": "Build templates with phases, steps and content blocks. Every new hire gets the same solid start." },
+      { "icon": "🃏", "title": "Spaced repetition", "desc": "ANKI-style flashcards built into onboarding. Knowledge sticks because it's repeated at the right moment." },
+      { "icon": "👁️", "title": "Manager visibility", "desc": "At-risk detection, quiz scores, flashcard accuracy. Know who's struggling before the 30-day review." },
+      { "icon": "⚡", "title": "Live in 60 seconds", "desc": "Pick a template, assign a manager, set a start date. Your first onboarding is running within a minute." },
+      { "icon": "🎯", "title": "Role-specific templates", "desc": "Different templates for CS, Sales and Operators. Each role gets content that matches the real work." },
+      { "icon": "✅", "title": "Manager approvals", "desc": "Block progress until a manager signs off. Ensure standards are met before moving to the next phase." }
+    ]
+  },
+  "pricing": {
+    "badge": "Pricing",
+    "title1": "Simple pricing,",
+    "em": "no surprises.",
+    "subtitle": "Per active onboardee. Pay only when someone is actively onboarding. Managers and admins always free.",
+    "trial": "14 days free · no credit card",
+    "price": "€24.99",
+    "perMonth": "per active onboardee / month (excl. VAT)",
+    "examples": [
+      { "n": 5, "price": "€124.95" },
+      { "n": 10, "price": "€249.90" },
+      { "n": 20, "price": "€499.80" }
+    ],
+    "newEmployees": "new employees",
+    "examplesNote": "Managers and admins never count",
+    "cta": "Start free →",
+    "feat1": "✓ All features",
+    "feat2": "✓ No fixed costs",
+    "feat3": "✓ Cancel anytime"
+  },
+  "cta": {
+    "title": "Ready for better onboarding?",
+    "subtitle": "14-day free trial. No credit card required.",
+    "btn": "Start free →",
+    "note": "14 days free · No credit card required"
+  }
+}

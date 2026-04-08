@@ -2,20 +2,25 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
+import { usePathname } from 'next/navigation'
 
-interface Props {
-  activePage?: string
-}
-
-const links = [
-  { href: '/#functies', label: 'Functies' },
-  { href: '/pricing', label: 'Prijzen' },
-  { href: '/about', label: 'Over ons' },
-  { href: '/contact', label: 'Contact' },
-]
-
-export default function MarketingNav({ activePage }: Props) {
+export default function MarketingNav() {
+  const t = useTranslations('common.nav')
+  const pathname = usePathname() // always locale-stripped by next-intl
   const [open, setOpen] = useState(false)
+
+  const links = [
+    { href: t('featuresHref'), label: t('features') },
+    { href: '/pricing', label: t('pricing') },
+    { href: '/about', label: t('about') },
+    { href: '/contact', label: t('contact') },
+  ]
+
+  const isActive = (href: string) => {
+    if (href.startsWith('/#')) return pathname === '/'
+    return pathname === href
+  }
 
   return (
     <>
@@ -38,15 +43,15 @@ export default function MarketingNav({ activePage }: Props) {
 
         <div className="mnav-links">
           {links.map(link => (
-            <Link key={link.href} href={link.href} style={{ fontSize: 14, color: activePage === link.label ? '#0f0f0e' : '#3a3a38', fontWeight: activePage === link.label ? 500 : 400, textDecoration: 'none' }}>
+            <Link key={link.href} href={link.href} style={{ fontSize: 14, color: isActive(link.href) ? '#0f0f0e' : '#3a3a38', fontWeight: isActive(link.href) ? 500 : 400, textDecoration: 'none' }}>
               {link.label}
             </Link>
           ))}
         </div>
 
         <div className="mnav-cta">
-          <Link href="/login" style={{ fontSize: 14, color: '#3a3a38', textDecoration: 'none', padding: '7px 14px' }}>Inloggen</Link>
-          <Link href="/signup" style={{ fontSize: 14, fontWeight: 500, color: 'white', background: '#1a5fd4', padding: '8px 18px', borderRadius: 10, textDecoration: 'none' }}>Gratis proberen →</Link>
+          <Link href="/login" style={{ fontSize: 14, color: '#3a3a38', textDecoration: 'none', padding: '7px 14px' }}>{t('login')}</Link>
+          <Link href="/signup" style={{ fontSize: 14, fontWeight: 500, color: 'white', background: '#1a5fd4', padding: '8px 18px', borderRadius: 10, textDecoration: 'none' }}>{t('cta')}</Link>
         </div>
 
         <button className="mnav-hamburger" onClick={() => setOpen(o => !o)} aria-label="Menu">
@@ -56,7 +61,7 @@ export default function MarketingNav({ activePage }: Props) {
         </button>
       </nav>
 
-      {/* Mobiel menu */}
+      {/* Mobile menu */}
       {open && (
         <div style={{ position: 'fixed', inset: 0, zIndex: 49, background: 'rgba(250,249,246,.98)', display: 'flex', flexDirection: 'column', padding: '80px 24px 40px' }}>
           <button onClick={() => setOpen(false)} style={{ position: 'absolute', top: 18, right: 20, background: 'none', border: 'none', fontSize: 28, cursor: 'pointer', color: '#0f0f0e', lineHeight: 1 }}>×</button>
@@ -69,10 +74,10 @@ export default function MarketingNav({ activePage }: Props) {
           </div>
           <div style={{ marginTop: 40, display: 'flex', flexDirection: 'column', gap: 12 }}>
             <Link href="/login" onClick={() => setOpen(false)} style={{ fontSize: 16, color: '#3a3a38', textDecoration: 'none', padding: '13px 0', textAlign: 'center', border: '1px solid #e8e7e2', borderRadius: 12 }}>
-              Inloggen
+              {t('login')}
             </Link>
             <Link href="/signup" onClick={() => setOpen(false)} style={{ fontSize: 16, fontWeight: 500, color: 'white', background: '#1a5fd4', padding: '13px 0', borderRadius: 12, textDecoration: 'none', textAlign: 'center' }}>
-              Gratis proberen →
+              {t('cta')}
             </Link>
           </div>
         </div>

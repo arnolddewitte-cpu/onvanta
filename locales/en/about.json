@@ -1,0 +1,39 @@
+{
+  "badge": "Our story",
+  "hero": {
+    "title1": "Built by someone who",
+    "em": "lived it themselves.",
+    "subtitle": "Onvanta was born out of frustration. After 15+ years in print-on-demand, I watched good people fail — not because they weren't capable, but because nobody gave them a proper start."
+  },
+  "stories": [
+    {
+      "title": "The problem we kept seeing",
+      "p1": "Customer service reps telling clients that pad printing can handle full-colour photos. Sales reps quoting screen printing without counting logo colours. Operators guessing procedures because the knowledge lived in one person's head.",
+      "p2": "The problem wasn't the people. It was the onboarding. Or rather: the lack of it. A Word document, a day shadowing someone, and a \"you'll figure it out\" — that's what most teams were working with."
+    },
+    {
+      "title": "Why we built Onvanta",
+      "p1": "We wanted something that combines structured onboarding with real knowledge retention. Not just \"here's a checklist\" — but a system that ensures knowledge actually sticks, using spaced repetition the way language apps do.",
+      "p2": "And we wanted managers to have real visibility. Not a 30-day check-in where you discover someone has been struggling for three weeks. Real-time signals so you can step in early."
+    },
+    {
+      "title": "Who we're building for",
+      "p1": "Right now: print-on-demand and logistics companies with 10–50 employees. We know this world from the inside and our templates reflect that — real print technique knowledge, real customer communication scenarios, real procedures.",
+      "p2": "Coming soon: any growing business that hires people and wants to make them productive faster. The problem is universal. The solution scales with it."
+    }
+  ],
+  "values": {
+    "title1": "What we",
+    "em": "believe in.",
+    "items": [
+      { "icon": "🎯", "title": "Specificity beats generality", "desc": "A template built for POD customer service is worth more than a generic onboarding checklist. We build for specific roles, specific industries." },
+      { "icon": "🧠", "title": "Knowledge must stick", "desc": "Reading something once isn't learning. Spaced repetition isn't a luxury — it's the difference between knowing and forgetting." },
+      { "icon": "👁️", "title": "Managers need signals, not reports", "desc": "A 30-day review is too late. Managers need to know in week one if someone is struggling — so they can still do something about it." }
+    ]
+  },
+  "cta": {
+    "title": "Ready for smarter onboarding?",
+    "subtitle": "14 days free. Full access. No credit card required.",
+    "btn": "Start free →"
+  }
+}

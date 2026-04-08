@@ -1,0 +1,65 @@
+{
+  "badge": "Simple pricing",
+  "title1": "Pay for what you use,",
+  "em": "nothing more.",
+  "subtitle": "Per active onboardee. Managers and admins always free.",
+  "trial": "14 days free — no credit card needed",
+  "price": "€24.99",
+  "perMonth": "per active onboardee / month",
+  "features": [
+    "All block types (text, video, quiz, flashcards)",
+    "Spaced repetition flashcards",
+    "Manager and employee dashboards",
+    "At-risk detection",
+    "Template library",
+    "AI template generator",
+    "Audit log",
+    "Unlimited managers and admins"
+  ],
+  "featureExtra": "Managers and admins always free",
+  "newEmployees": "new employees",
+  "examplesLabel": "Examples",
+  "examples": [
+    { "n": 3, "price": "€74.97" },
+    { "n": 5, "price": "€124.95" },
+    { "n": 10, "price": "€249.90" },
+    { "n": 20, "price": "€499.80" }
+  ],
+  "examplesNote": "Excl. VAT. Managers and admins never count.",
+  "cta": "Start free →",
+  "note": "You only pay for active onboardees. No fixed costs.",
+  "enterprise": {
+    "title": "Enterprise",
+    "desc": "SSO, custom SLA, dedicated support and volume discounts.",
+    "cta": "Get in touch"
+  },
+  "faqTitle1": "Frequently asked",
+  "faqEm": "questions.",
+  "faqs": [
+    {
+      "q": "What counts as an active onboardee?",
+      "a": "An active onboardee is any employee with an ongoing onboarding track. Once onboarding is completed or paused, they no longer count. Managers and admins are always free."
+    },
+    {
+      "q": "How does billing work?",
+      "a": "At the end of each month, Onvanta reports the number of active onboardees to Stripe. You pay €24.99 per active onboardee. There are no setup fees or fixed monthly costs."
+    },
+    {
+      "q": "What happens after the 14-day trial?",
+      "a": "After 14 days you'll be asked to add a payment method. Your data is always preserved. If you don't upgrade, your account enters read-only mode — nothing is deleted."
+    },
+    {
+      "q": "Can I cancel at any time?",
+      "a": "Yes. Cancel via the customer portal in your settings. Your subscription remains active until the end of the billing period."
+    },
+    {
+      "q": "Are there any setup fees?",
+      "a": "No. No setup fees, no implementation costs, no hidden charges. You only pay per active onboardee per month."
+    }
+  ],
+  "ctaSection": {
+    "title": "Ready to get started?",
+    "subtitle": "14 days free, full access, no credit card required.",
+    "btn": "Start free →"
+  }
+}

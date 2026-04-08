@@ -1,0 +1,65 @@
+{
+  "badge": "Eenvoudige prijzen",
+  "title1": "Betaal voor wat je gebruikt,",
+  "em": "niets meer.",
+  "subtitle": "Per actieve onboardee. Managers en admins altijd gratis.",
+  "trial": "14 dagen gratis — geen creditcard nodig",
+  "price": "€24,99",
+  "perMonth": "per actieve onboardee / maand",
+  "features": [
+    "Alle block types (tekst, video, quiz, flashcards)",
+    "Spaced repetition flashcards",
+    "Manager en medewerker dashboards",
+    "At-risk detectie",
+    "Template bibliotheek",
+    "AI template generator",
+    "Audit log",
+    "Onbeperkte managers en admins"
+  ],
+  "featureExtra": "Managers en admins altijd gratis",
+  "newEmployees": "nieuwe medewerkers",
+  "examplesLabel": "Voorbeelden",
+  "examples": [
+    { "n": 3, "price": "€74,97" },
+    { "n": 5, "price": "€124,95" },
+    { "n": 10, "price": "€249,90" },
+    { "n": 20, "price": "€499,80" }
+  ],
+  "examplesNote": "Excl. BTW. Managers en admins tellen nooit mee.",
+  "cta": "Gratis proberen →",
+  "note": "Je betaalt alleen voor actieve onboardees. Geen vaste kosten.",
+  "enterprise": {
+    "title": "Enterprise",
+    "desc": "SSO, maatwerk SLA, toegewijde support en volumekortingen.",
+    "cta": "Neem contact op"
+  },
+  "faqTitle1": "Veelgestelde",
+  "faqEm": "vragen.",
+  "faqs": [
+    {
+      "q": "Wat telt als een actieve onboardee?",
+      "a": "Een actieve onboardee is elke medewerker met een lopend onboardingtraject. Zodra de onboarding is afgerond of gepauzeerd, tellen ze niet meer mee. Managers en admins zijn altijd gratis."
+    },
+    {
+      "q": "Hoe werkt de facturering?",
+      "a": "Aan het einde van elke maand rapporteert Onvanta het aantal actieve onboardees aan Stripe. Je betaalt €24,99 per actieve onboardee. Er zijn geen opstartkosten of vaste maandelijkse kosten."
+    },
+    {
+      "q": "Wat gebeurt er na de 14-daagse trial?",
+      "a": "Na 14 dagen word je gevraagd een betaalmethode toe te voegen. Je gegevens blijven altijd bewaard. Upgrade je niet, dan gaat je account in leesmodus — er wordt niets verwijderd."
+    },
+    {
+      "q": "Kan ik op elk moment opzeggen?",
+      "a": "Ja. Zeg op via het klantenportaal in je instellingen. Je abonnement blijft actief tot het einde van de factureringsperiode."
+    },
+    {
+      "q": "Zijn er opstartkosten?",
+      "a": "Nee. Geen opstartkosten, geen implementatiekosten, geen verborgen kosten. Je betaalt alleen per actieve onboardee per maand."
+    }
+  ],
+  "ctaSection": {
+    "title": "Vandaag nog starten?",
+    "subtitle": "14 dagen gratis, volledige toegang, geen creditcard vereist.",
+    "btn": "Gratis proberen →"
+  }
+}
