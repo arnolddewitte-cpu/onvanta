@@ -9,12 +9,12 @@ export default function MarketingFooter() {
             <div style={{ width: 30, height: 30, background: '#1a5fd4', borderRadius: 7, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: 16, fontStyle: 'italic', fontFamily: 'Georgia, serif' }}>O</div>
             <span style={{ fontSize: 16, fontWeight: 500, color: 'white' }}>Onvanta</span>
           </div>
-          <p style={{ fontSize: 14, color: '#7a7a78', lineHeight: 1.6, maxWidth: 260 }}>New hires, productive faster. Onboarding, training, and knowledge retention in one system.</p>
+          <p style={{ fontSize: 14, color: '#7a7a78', lineHeight: 1.6, maxWidth: 260 }}>Nieuwe medewerkers, sneller productief. Onboarding, training en kennisretentie in één systeem.</p>
         </div>
         {[
-          { title: 'Product', links: [{ label: 'Features', href: '/#features' }, { label: 'Pricing', href: '/pricing' }] },
-          { title: 'Company', links: [{ label: 'About', href: '/about' }, { label: 'Contact', href: '/contact' }] },
-          { title: 'Legal', links: [{ label: 'Privacy policy', href: '/privacy' }, { label: 'Terms of service', href: '/terms' }] },
+          { title: 'Product', links: [{ label: 'Functies', href: '/#functies' }, { label: 'Prijzen', href: '/pricing' }] },
+          { title: 'Bedrijf', links: [{ label: 'Over ons', href: '/about' }, { label: 'Contact', href: '/contact' }] },
+          { title: 'Juridisch', links: [{ label: 'Privacybeleid', href: '/privacy' }, { label: 'Algemene voorwaarden', href: '/terms' }] },
         ].map((col, i) => (
           <div key={i}>
             <h4 style={{ fontSize: 13, fontWeight: 500, color: 'white', marginBottom: 16 }}>{col.title}</h4>
@@ -27,8 +27,8 @@ export default function MarketingFooter() {
         ))}
       </div>
       <div style={{ borderTop: '1px solid #1a1a1a', paddingTop: 24, display: 'flex', justifyContent: 'space-between', fontSize: 13, color: '#7a7a78' }}>
-        <span>© 2026 Onvanta. All rights reserved.</span>
-        <span>Made in the Netherlands 🇳🇱</span>
+        <span>© 2026 Onvanta. Alle rechten voorbehouden.</span>
+        <span>Gemaakt in Nederland 🇳🇱</span>
       </div>
     </footer>
   )

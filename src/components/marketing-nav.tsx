@@ -8,9 +8,9 @@ interface Props {
 }
 
 const links = [
-  { href: '/#features', label: 'Features' },
-  { href: '/pricing', label: 'Pricing' },
-  { href: '/about', label: 'About' },
+  { href: '/#functies', label: 'Functies' },
+  { href: '/pricing', label: 'Prijzen' },
+  { href: '/about', label: 'Over ons' },
   { href: '/contact', label: 'Contact' },
 ]
 
@@ -45,8 +45,8 @@ export default function MarketingNav({ activePage }: Props) {
         </div>
 
         <div className="mnav-cta">
-          <Link href="/login" style={{ fontSize: 14, color: '#3a3a38', textDecoration: 'none', padding: '7px 14px' }}>Log in</Link>
-          <Link href="/signup" style={{ fontSize: 14, fontWeight: 500, color: 'white', background: '#1a5fd4', padding: '8px 18px', borderRadius: 10, textDecoration: 'none' }}>Start free trial →</Link>
+          <Link href="/login" style={{ fontSize: 14, color: '#3a3a38', textDecoration: 'none', padding: '7px 14px' }}>Inloggen</Link>
+          <Link href="/signup" style={{ fontSize: 14, fontWeight: 500, color: 'white', background: '#1a5fd4', padding: '8px 18px', borderRadius: 10, textDecoration: 'none' }}>Gratis proberen →</Link>
         </div>
 
         <button className="mnav-hamburger" onClick={() => setOpen(o => !o)} aria-label="Menu">
@@ -56,7 +56,7 @@ export default function MarketingNav({ activePage }: Props) {
         </button>
       </nav>
 
-      {/* Mobile menu overlay */}
+      {/* Mobiel menu */}
       {open && (
         <div style={{ position: 'fixed', inset: 0, zIndex: 49, background: 'rgba(250,249,246,.98)', display: 'flex', flexDirection: 'column', padding: '80px 24px 40px' }}>
           <button onClick={() => setOpen(false)} style={{ position: 'absolute', top: 18, right: 20, background: 'none', border: 'none', fontSize: 28, cursor: 'pointer', color: '#0f0f0e', lineHeight: 1 }}>×</button>
@@ -69,10 +69,10 @@ export default function MarketingNav({ activePage }: Props) {
           </div>
           <div style={{ marginTop: 40, display: 'flex', flexDirection: 'column', gap: 12 }}>
             <Link href="/login" onClick={() => setOpen(false)} style={{ fontSize: 16, color: '#3a3a38', textDecoration: 'none', padding: '13px 0', textAlign: 'center', border: '1px solid #e8e7e2', borderRadius: 12 }}>
-              Log in
+              Inloggen
             </Link>
             <Link href="/signup" onClick={() => setOpen(false)} style={{ fontSize: 16, fontWeight: 500, color: 'white', background: '#1a5fd4', padding: '13px 0', borderRadius: 12, textDecoration: 'none', textAlign: 'center' }}>
-              Start free trial →
+              Gratis proberen →
             </Link>
           </div>
         </div>

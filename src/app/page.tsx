@@ -26,20 +26,20 @@ export default function HomePage() {
         <div>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontSize: 12, fontWeight: 500, letterSpacing: '.8px', textTransform: 'uppercase', color: '#1a5fd4', background: '#e8f0fc', padding: '5px 12px', borderRadius: 20, marginBottom: 24 }}>
             <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#1a5fd4' }} />
-            Employee onboarding platform
+            Medewerker onboarding platform
           </div>
           <h1 style={{ fontFamily: 'Georgia, serif', fontSize: 'clamp(40px, 5vw, 60px)', fontWeight: 400, lineHeight: 1.12, letterSpacing: '-.5px', color: '#0f0f0e', marginBottom: 20 }}>
-            New hires,<br /><em style={{ fontStyle: 'italic', color: '#1a5fd4' }}>productive faster.</em>
+            Nieuwe medewerkers,<br /><em style={{ fontStyle: 'italic', color: '#1a5fd4' }}>sneller productief.</em>
           </h1>
           <p style={{ fontSize: 18, fontWeight: 300, color: '#3a3a38', lineHeight: 1.6, marginBottom: 36, maxWidth: 460 }}>
-            Structured onboarding, spaced repetition flashcards, and manager visibility — all in one system built for growing teams.
+            Gestructureerde onboarding, spaced repetition flashcards en managerzichtbaarheid — alles in één systeem voor groeiende teams.
           </p>
           <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 40 }}>
             <Link href="/signup" style={{ fontSize: 16, fontWeight: 500, color: 'white', background: '#1a5fd4', padding: '14px 28px', borderRadius: 12, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-              Start free trial →
+              Gratis proberen →
             </Link>
-            <a href="#features" style={{ fontSize: 15, color: '#3a3a38', background: 'transparent', border: '1px solid #e8e7e2', padding: '13px 24px', borderRadius: 12, textDecoration: 'none' }}>
-              See how it works
+            <a href="#functies" style={{ fontSize: 15, color: '#3a3a38', background: 'transparent', border: '1px solid #e8e7e2', padding: '13px 24px', borderRadius: 12, textDecoration: 'none' }}>
+              Hoe het werkt
             </a>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 13, color: '#7a7a78' }}>
@@ -48,7 +48,7 @@ export default function HomePage() {
                 <div key={i} style={{ width: 26, height: 26, borderRadius: '50%', border: '2px solid #faf9f6', background: i === 0 ? '#e8f0fc' : i === 1 ? '#e2f4eb' : '#fdf0e0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 500, color: i === 0 ? '#1a5fd4' : i === 1 ? '#177a4a' : '#b05c0a', marginLeft: i === 0 ? 0 : -6 }}>{l}</div>
               ))}
             </div>
-            14-day free trial · No credit card required
+            14 dagen gratis proberen · Geen creditcard vereist
           </div>
         </div>
 
@@ -61,18 +61,18 @@ export default function HomePage() {
             <div style={{ flex: 1, background: '#f2f1ed', borderRadius: 5, padding: '4px 10px', fontSize: 11, color: '#7a7a78', textAlign: 'center' }}>app.onvanta.io/dashboard</div>
           </div>
           <div style={{ padding: 16 }}>
-            <div style={{ fontSize: 13, fontWeight: 500, color: '#0f0f0e', marginBottom: 2 }}>Good morning, Sarah 👋</div>
-            <div style={{ fontSize: 11, color: '#7a7a78', marginBottom: 12 }}>Day 4 of onboarding · Customer Service</div>
+            <div style={{ fontSize: 13, fontWeight: 500, color: '#0f0f0e', marginBottom: 2 }}>Goedemorgen, Sarah 👋</div>
+            <div style={{ fontSize: 11, color: '#7a7a78', marginBottom: 12 }}>Dag 4 van onboarding · Klantenservice</div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginBottom: 12 }}>
-              {[['68%', 'Progress'], ['3', 'Tasks today'], ['82%', 'Quiz score']].map(([v, l], i) => (
+              {[['68%', 'Voortgang'], ['3', 'Taken vandaag'], ['82%', 'Quizscore']].map(([v, l], i) => (
                 <div key={i} style={{ background: '#f2f1ed', borderRadius: 8, padding: '10px 12px' }}>
                   <div style={{ fontSize: 20, fontWeight: 500, color: '#0f0f0e' }}>{v}</div>
                   <div style={{ fontSize: 10, color: '#7a7a78', marginTop: 1 }}>{l}</div>
                 </div>
               ))}
             </div>
-            <div style={{ fontSize: 10, fontWeight: 500, color: '#7a7a78', textTransform: 'uppercase', letterSpacing: '.6px', marginBottom: 8 }}>Today's tasks</div>
-            {[['Watch product demo video', true], ['Complete printing techniques quiz', true], ['Set up customer portal access', false]].map(([t, done], i) => (
+            <div style={{ fontSize: 10, fontWeight: 500, color: '#7a7a78', textTransform: 'uppercase', letterSpacing: '.6px', marginBottom: 8 }}>Taken van vandaag</div>
+            {[['Bekijk productdemo video', true], ['Maak de druktechnieken quiz', true], ['Toegang klantenportaal instellen', false]].map(([t, done], i) => (
               <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 11, color: '#3a3a38', marginBottom: 6 }}>
                 <div style={{ width: 14, height: 14, borderRadius: 3, background: done ? '#1a5fd4' : 'transparent', border: done ? 'none' : '1.5px solid #e8e7e2', flexShrink: 0 }} />
                 <span style={{ textDecoration: done ? 'line-through' : 'none', color: done ? '#7a7a78' : '#3a3a38' }}>{t as string}</span>
@@ -82,20 +82,20 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Features */}
-      <section id="features" style={{ background: '#f2f1ed', padding: '60px 20px' }}>
+      {/* Functies */}
+      <section id="functies" style={{ background: '#f2f1ed', padding: '60px 20px' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto', textAlign: 'center' }}>
-          <div style={{ fontSize: 12, fontWeight: 500, letterSpacing: '.8px', textTransform: 'uppercase', color: '#1a5fd4', marginBottom: 16 }}>Features</div>
-          <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 'clamp(32px, 4vw, 48px)', fontWeight: 400, color: '#0f0f0e', marginBottom: 16 }}>Everything your team needs<br /><em style={{ fontStyle: 'italic', color: '#1a5fd4' }}>to onboard well.</em></h2>
-          <p style={{ fontSize: 18, color: '#3a3a38', fontWeight: 300, maxWidth: 560, margin: '0 auto 56px' }}>Not a generic LMS. Not a HRIS. Built specifically for employee onboarding and knowledge retention.</p>
+          <div style={{ fontSize: 12, fontWeight: 500, letterSpacing: '.8px', textTransform: 'uppercase', color: '#1a5fd4', marginBottom: 16 }}>Functies</div>
+          <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 'clamp(32px, 4vw, 48px)', fontWeight: 400, color: '#0f0f0e', marginBottom: 16 }}>Alles wat je team nodig heeft<br /><em style={{ fontStyle: 'italic', color: '#1a5fd4' }}>voor een goede start.</em></h2>
+          <p style={{ fontSize: 18, color: '#3a3a38', fontWeight: 300, maxWidth: 560, margin: '0 auto 56px' }}>Geen generiek LMS. Geen HRIS. Specifiek gebouwd voor medewerker-onboarding en kennisretentie.</p>
           <div className="hp-features-grid">
             {[
-              { icon: '📋', title: 'Structured onboarding', desc: 'Build templates with phases, steps, and content blocks. Every new hire gets the same solid experience.' },
-              { icon: '🃏', title: 'Spaced repetition', desc: 'ANKI-style flashcards built into onboarding. Knowledge sticks because it\'s reviewed at the right intervals.' },
-              { icon: '👁️', title: 'Manager visibility', desc: 'At-risk detection, quiz scores, flashcard accuracy. Know who\'s struggling before the 30-day review.' },
-              { icon: '⚡', title: '60-second setup', desc: 'Pick a template, assign a manager, set a start date. Your first onboarding is running in under a minute.' },
-              { icon: '🎯', title: 'Role-specific templates', desc: 'Different templates for CS, Sales, Operators. Each role gets content built for their actual job.' },
-              { icon: '✅', title: 'Manager approvals', desc: 'Block progression until a manager signs off. Ensure standards are met before moving to the next phase.' },
+              { icon: '📋', title: 'Gestructureerde onboarding', desc: 'Bouw templates met fases, stappen en inhoudsblokken. Elke nieuwe medewerker krijgt dezelfde solide start.' },
+              { icon: '🃏', title: 'Spaced repetition', desc: 'ANKI-stijl flashcards ingebouwd in de onboarding. Kennis beklijft omdat het op het juiste moment herhaald wordt.' },
+              { icon: '👁️', title: 'Managerzichtbaarheid', desc: 'At-risk detectie, quizscores, flashcard nauwkeurigheid. Weet wie het moeilijk heeft vóór het 30-dagen gesprek.' },
+              { icon: '⚡', title: 'In 60 seconden live', desc: 'Kies een template, wijs een manager toe, stel een startdatum in. Je eerste onboarding loopt binnen een minuut.' },
+              { icon: '🎯', title: 'Rolspecifieke templates', desc: 'Andere templates voor CS, Sales en Operators. Elke functie krijgt inhoud die aansluit bij het echte werk.' },
+              { icon: '✅', title: 'Managersgoedkeuringen', desc: 'Blokkeer voortgang totdat een manager aftekent. Zo zeker je dat standaarden behaald zijn voor de volgende fase.' },
             ].map((f, i) => (
               <div key={i} style={{ background: 'white', borderRadius: 16, padding: 28, textAlign: 'left', border: '1px solid #e8e7e2' }}>
                 <div style={{ fontSize: 28, marginBottom: 14 }}>{f.icon}</div>
@@ -107,12 +107,12 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Pricing */}
-      <section id="pricing" style={{ padding: '60px 20px', textAlign: 'center' }}>
+      {/* Prijzen */}
+      <section id="prijzen" style={{ padding: '60px 20px', textAlign: 'center' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-          <div style={{ fontSize: 12, fontWeight: 500, letterSpacing: '.8px', textTransform: 'uppercase', color: '#1a5fd4', marginBottom: 16 }}>Pricing</div>
-          <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 'clamp(32px, 4vw, 48px)', fontWeight: 400, color: '#0f0f0e', marginBottom: 16 }}>Simple pricing,<br /><em style={{ fontStyle: 'italic', color: '#1a5fd4' }}>no surprises.</em></h2>
-          <p style={{ fontSize: 18, color: '#3a3a38', fontWeight: 300, maxWidth: 520, margin: '0 auto 48px' }}>Per active onboardee. Only pay when someone is actively being onboarded. Managers and admins are always free.</p>
+          <div style={{ fontSize: 12, fontWeight: 500, letterSpacing: '.8px', textTransform: 'uppercase', color: '#1a5fd4', marginBottom: 16 }}>Prijzen</div>
+          <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 'clamp(32px, 4vw, 48px)', fontWeight: 400, color: '#0f0f0e', marginBottom: 16 }}>Eenvoudige prijzen,<br /><em style={{ fontStyle: 'italic', color: '#1a5fd4' }}>geen verrassingen.</em></h2>
+          <p style={{ fontSize: 18, color: '#3a3a38', fontWeight: 300, maxWidth: 520, margin: '0 auto 48px' }}>Per actieve onboardee. Betaal alleen wanneer iemand actief aan het onboarden is. Managers en admins altijd gratis.</p>
 
           <div style={{ maxWidth: 460, margin: '0 auto' }}>
             <div style={{ background: 'white', border: '2px solid #1a5fd4', borderRadius: 20, padding: '36px 32px', textAlign: 'center', boxShadow: '0 4px 32px rgba(26,95,212,.10)' }}>
@@ -124,7 +124,6 @@ export default function HomePage() {
               </div>
               <div style={{ fontSize: 14, color: '#7a7a78', marginBottom: 24 }}>per actieve onboardee / maand (excl. BTW)</div>
 
-              {/* Voorbeeldberekeningen */}
               <div style={{ background: '#f2f1ed', borderRadius: 12, padding: '14px 18px', marginBottom: 24, textAlign: 'left' }}>
                 {[
                   { n: 5, price: '€124,95' },
@@ -140,12 +139,12 @@ export default function HomePage() {
               </div>
 
               <Link href="/signup" style={{ display: 'block', textAlign: 'center', padding: '13px', borderRadius: 12, fontSize: 15, fontWeight: 500, textDecoration: 'none', background: '#1a5fd4', color: 'white', marginBottom: 16 }}>
-                Start free trial →
+                Gratis proberen →
               </Link>
               <div style={{ display: 'flex', justifyContent: 'center', gap: 16, fontSize: 12, color: '#7a7a78' }}>
-                <span>✓ Alle features</span>
+                <span>✓ Alle functies</span>
                 <span>✓ Geen vaste kosten</span>
-                <span>✓ Opzegbaar per maand</span>
+                <span>✓ Maandelijks opzegbaar</span>
               </div>
             </div>
           </div>
@@ -154,12 +153,12 @@ export default function HomePage() {
 
       {/* CTA */}
       <section style={{ background: '#1a5fd4', padding: '60px 20px', textAlign: 'center' }}>
-        <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 'clamp(32px, 4vw, 48px)', fontWeight: 400, color: 'white', marginBottom: 16 }}>Ready to onboard smarter?</h2>
-        <p style={{ fontSize: 18, color: 'rgba(255,255,255,.8)', fontWeight: 300, maxWidth: 520, margin: '0 auto 32px' }}>Start your free 14-day trial. No credit card required.</p>
+        <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 'clamp(32px, 4vw, 48px)', fontWeight: 400, color: 'white', marginBottom: 16 }}>Klaar voor een betere onboarding?</h2>
+        <p style={{ fontSize: 18, color: 'rgba(255,255,255,.8)', fontWeight: 300, maxWidth: 520, margin: '0 auto 32px' }}>14 dagen gratis proberen. Geen creditcard vereist.</p>
         <Link href="/signup" style={{ fontSize: 16, fontWeight: 500, color: '#1a5fd4', background: 'white', padding: '14px 28px', borderRadius: 12, textDecoration: 'none', display: 'inline-block' }}>
-          Start free trial →
+          Gratis proberen →
         </Link>
-        <div style={{ fontSize: 13, color: 'rgba(255,255,255,.6)', marginTop: 16 }}>14-day free trial · No credit card required</div>
+        <div style={{ fontSize: 13, color: 'rgba(255,255,255,.6)', marginTop: 16 }}>14 dagen gratis · Geen creditcard vereist</div>
       </section>
 
       <MarketingFooter />
