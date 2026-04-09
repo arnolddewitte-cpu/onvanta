@@ -1,26 +1,54 @@
 'use client'
 
-import Link from 'next/link'
 import { useState } from 'react'
-import { useTranslations } from 'next-intl'
-import { usePathname } from 'next/navigation'
+import { useTranslations, useLocale } from 'next-intl'
+import { Link, usePathname, useRouter } from '@/i18n/routing'
 
 export default function MarketingNav() {
   const t = useTranslations('common.nav')
+  const locale = useLocale()
   const pathname = usePathname() // always locale-stripped by next-intl
+  const router = useRouter()
   const [open, setOpen] = useState(false)
 
   const links = [
-    { href: t('featuresHref'), label: t('features') },
-    { href: '/pricing', label: t('pricing') },
-    { href: '/about', label: t('about') },
-    { href: '/contact', label: t('contact') },
+    { href: t('featuresHref') as '/', label: t('features') },
+    { href: '/pricing' as const, label: t('pricing') },
+    { href: '/about' as const, label: t('about') },
+    { href: '/contact' as const, label: t('contact') },
   ]
 
   const isActive = (href: string) => {
     if (href.startsWith('/#')) return pathname === '/'
     return pathname === href
   }
+
+  function switchLocale(next: 'nl' | 'en') {
+    if (next === locale) return
+    router.replace(pathname as '/', { locale: next })
+  }
+
+  const LangButton = ({ code, flag }: { code: 'nl' | 'en'; flag: string }) => (
+    <button
+      onClick={() => switchLocale(code)}
+      style={{
+        background: 'none',
+        border: 'none',
+        cursor: code === locale ? 'default' : 'pointer',
+        fontSize: 16,
+        lineHeight: 1,
+        padding: '2px 4px',
+        borderRadius: 4,
+        opacity: code === locale ? 1 : 0.45,
+        fontWeight: code === locale ? 700 : 400,
+        transition: 'opacity .15s',
+      }}
+      aria-label={code === 'nl' ? 'Nederlands' : 'English'}
+      aria-pressed={code === locale}
+    >
+      {flag}
+    </button>
+  )
 
   return (
     <>
@@ -50,6 +78,11 @@ export default function MarketingNav() {
         </div>
 
         <div className="mnav-cta">
+          {/* Language switcher */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 2, marginRight: 8 }}>
+            <LangButton code="nl" flag="🇳🇱" />
+            <LangButton code="en" flag="🇬🇧" />
+          </div>
           <Link href="/login" style={{ fontSize: 14, color: '#3a3a38', textDecoration: 'none', padding: '7px 14px' }}>{t('login')}</Link>
           <Link href="/signup" style={{ fontSize: 14, fontWeight: 500, color: 'white', background: '#1a5fd4', padding: '8px 18px', borderRadius: 10, textDecoration: 'none' }}>{t('cta')}</Link>
         </div>
@@ -73,6 +106,15 @@ export default function MarketingNav() {
             ))}
           </div>
           <div style={{ marginTop: 40, display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {/* Mobile language switcher */}
+            <div style={{ display: 'flex', gap: 12, justifyContent: 'center', padding: '8px 0' }}>
+              <button onClick={() => { switchLocale('nl'); setOpen(false) }} style={{ background: 'none', border: locale === 'nl' ? '1.5px solid #1a5fd4' : '1px solid #e8e7e2', borderRadius: 8, padding: '8px 20px', fontSize: 15, cursor: locale === 'nl' ? 'default' : 'pointer', fontWeight: locale === 'nl' ? 600 : 400, color: locale === 'nl' ? '#1a5fd4' : '#3a3a38' }}>
+                🇳🇱 Nederlands
+              </button>
+              <button onClick={() => { switchLocale('en'); setOpen(false) }} style={{ background: 'none', border: locale === 'en' ? '1.5px solid #1a5fd4' : '1px solid #e8e7e2', borderRadius: 8, padding: '8px 20px', fontSize: 15, cursor: locale === 'en' ? 'default' : 'pointer', fontWeight: locale === 'en' ? 600 : 400, color: locale === 'en' ? '#1a5fd4' : '#3a3a38' }}>
+                🇬🇧 English
+              </button>
+            </div>
             <Link href="/login" onClick={() => setOpen(false)} style={{ fontSize: 16, color: '#3a3a38', textDecoration: 'none', padding: '13px 0', textAlign: 'center', border: '1px solid #e8e7e2', borderRadius: 12 }}>
               {t('login')}
             </Link>
