@@ -1,12 +1,33 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { jwtVerify } from 'jose'
+import createMiddleware from 'next-intl/middleware'
+import { routing } from './i18n/routing'
+
+const intlMiddleware = createMiddleware(routing)
+
+// App routes that should NOT go through locale routing
+const APP_PREFIXES = [
+  '/api', '/admin', '/dashboard', '/manager', '/onboarding',
+  '/login', '/signup', '/flashcards', '/tasks', '/super',
+  '/_next', '/_vercel',
+]
 
 const protectedRoutes = ['/dashboard', '/onboarding', '/tasks', '/flashcards', '/manager', '/admin', '/super']
 
+function isAppPath(path: string) {
+  return APP_PREFIXES.some(p => path === p || path.startsWith(p + '/'))
+}
+
 export async function proxy(req: NextRequest) {
   const path = req.nextUrl.pathname
-  const isProtected = protectedRoutes.some(route => path.startsWith(route))
 
+  // Marketing pages (including /en/* variants) → next-intl locale routing
+  if (!isAppPath(path)) {
+    return intlMiddleware(req)
+  }
+
+  // Protected app routes → auth check
+  const isProtected = protectedRoutes.some(route => path.startsWith(route))
   if (!isProtected) {
     return NextResponse.next()
   }
@@ -49,5 +70,8 @@ export async function proxy(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/tasks/:path*', '/flashcards/:path*', '/manager/:path*', '/admin/:path*', '/super/:path*'],
+  matcher: [
+    // Everything except Next.js internals and static files
+    '/((?!_next|_vercel|.*\\..*).*)',
+  ],
 }
