@@ -121,22 +121,27 @@ export default function OnboardingPage() {
                       return (
                         <button
                           key={step.id}
-                          onClick={() => canClick && router.push(`/onboarding/${step.id}`)}
+                          onClick={() => (canClick || done) && router.push(`/onboarding/${step.id}`)}
                           className={`w-full flex items-center gap-3 py-2.5 px-3 rounded-xl text-left transition-colors ${
-                            !canClick ? 'opacity-40 cursor-not-allowed' : 'hover:bg-gray-50 cursor-pointer'
+                            !canClick && !done ? 'opacity-40 cursor-not-allowed' : 'hover:bg-gray-50 cursor-pointer'
                           }`}
-                          disabled={!canClick}
+                          disabled={!canClick && !done}
                         >
                           <div className={`w-5 h-5 rounded-full flex-shrink-0 flex items-center justify-center ${
-                            done ? 'bg-green-500' : 'bg-gray-200'
+                            done ? 'bg-green-100 border-2 border-green-400' : 'bg-gray-200'
                           }`}>
-                            {done && <span className="text-white text-xs">✓</span>}
+                            {done && <span className="text-green-600 text-xs">✓</span>}
                           </div>
                           <span className={`text-sm flex-1 ${
-                            done ? 'line-through text-gray-400' : 'text-gray-700'
+                            done ? 'text-gray-400' : 'text-gray-700'
                           }`}>
                             {step.title}
                           </span>
+                          {done && (
+                            <span className="text-xs text-gray-400 hover:text-blue-500 transition-colors flex-shrink-0">
+                              Bekijk opnieuw →
+                            </span>
+                          )}
                           {canClick && !done && <span className="text-gray-300 text-sm">→</span>}
                         </button>
                       )
