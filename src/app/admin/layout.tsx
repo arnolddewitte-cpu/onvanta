@@ -1,10 +1,15 @@
+import { getMessages } from 'next-intl/server'
+import { NextIntlClientProvider } from 'next-intl'
 import Navigation from '@/components/navigation'
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+export default async function AdminLayout({ children }: { children: React.ReactNode }) {
+  const messages = await getMessages()
   return (
-    <div className="md:pl-56">
-      <Navigation role="company_admin" />
-      {children}
-    </div>
+    <NextIntlClientProvider messages={messages}>
+      <div className="md:pl-56">
+        <Navigation role="company_admin" />
+        {children}
+      </div>
+    </NextIntlClientProvider>
   )
 }

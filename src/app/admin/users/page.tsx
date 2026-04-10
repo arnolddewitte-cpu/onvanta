@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 
 interface User {
   id: string
@@ -11,13 +12,8 @@ interface User {
   createdAt: string
 }
 
-const roleConfig: Record<string, { label: string; color: string }> = {
-  company_admin: { label: 'Admin', color: 'bg-purple-50 text-purple-600' },
-  manager:       { label: 'Manager', color: 'bg-blue-50 text-blue-600' },
-  employee:      { label: 'Medewerker', color: 'bg-gray-100 text-gray-600' },
-}
-
 export default function UsersPage() {
+  const t = useTranslations('app')
   const router = useRouter()
   const [users, setUsers] = useState<User[]>([])
   const [loading, setLoading] = useState(true)
@@ -27,6 +23,12 @@ export default function UsersPage() {
   const [submitting, setSubmitting] = useState(false)
   const [invited, setInvited] = useState(false)
   const [error, setError] = useState('')
+
+  const roleConfig: Record<string, { label: string; color: string }> = {
+    company_admin: { label: t('users.roleAdmin'),    color: 'bg-purple-50 text-purple-600' },
+    manager:       { label: t('users.roleManager'),  color: 'bg-blue-50 text-blue-600' },
+    employee:      { label: t('users.roleEmployee'), color: 'bg-gray-100 text-gray-600' },
+  }
 
   useEffect(() => {
     fetch('/api/admin/users')
@@ -44,7 +46,7 @@ export default function UsersPage() {
 
   async function handleInvite() {
     if (!form.name.trim() || !form.email.trim()) {
-      setError('Naam en e-mailadres zijn verplicht')
+      setError(t('common.error'))
       return
     }
     setSubmitting(true)
@@ -59,12 +61,11 @@ export default function UsersPage() {
     setSubmitting(false)
 
     if (!res.ok) {
-      setError(data.error || 'Er ging iets mis')
+      setError(data.error || t('common.error'))
       return
     }
 
     setInvited(true)
-    // Herlaad gebruikerslijst
     fetch('/api/admin/users')
       .then(r => r.json())
       .then(d => setUsers(Array.isArray(d) ? d : []))
@@ -80,24 +81,28 @@ export default function UsersPage() {
       <div className="max-w-4xl mx-auto px-6 py-8">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-2xl font-semibold text-gray-900">Gebruikers</h1>
+            <h1 className="text-2xl font-semibold text-gray-900">{t('users.title')}</h1>
             <p className="text-gray-500 mt-1">
-              {loading ? 'Laden...' : `${users.length} gebruiker${users.length !== 1 ? 's' : ''} in jouw organisatie.`}
+              {loading
+                ? t('common.loading')
+                : users.length === 1
+                  ? t('users.subtitleOne', { count: users.length })
+                  : t('users.subtitleMany', { count: users.length })}
             </p>
           </div>
           <button
             onClick={openModal}
             className="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-blue-700 transition-colors"
           >
-            + Uitnodigen
+            {t('users.invite')}
           </button>
         </div>
 
         <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
           {loading ? (
-            <p className="text-center py-12 text-gray-400 text-sm">Laden...</p>
+            <p className="text-center py-12 text-gray-400 text-sm">{t('common.loading')}</p>
           ) : users.length === 0 ? (
-            <p className="text-center py-12 text-gray-400 text-sm">Geen gebruikers gevonden</p>
+            <p className="text-center py-12 text-gray-400 text-sm">{t('users.noUsers')}</p>
           ) : (
             <div className="divide-y divide-gray-50">
               {users.map(user => {
@@ -121,7 +126,7 @@ export default function UsersPage() {
                       }}
                       className="text-xs text-blue-600 hover:text-blue-700 font-medium px-3 py-1.5 rounded-lg hover:bg-blue-50 transition-colors whitespace-nowrap flex-shrink-0"
                     >
-                      Onboarding starten →
+                      {t('users.startOnboarding')}
                     </button>
                   </div>
                 )
@@ -131,7 +136,6 @@ export default function UsersPage() {
         </div>
       </div>
 
-      {/* Invite modal */}
       {showModal && (
         <div
           className="fixed inset-0 bg-black/20 flex items-center justify-center z-50 px-4"
@@ -141,15 +145,15 @@ export default function UsersPage() {
             {invited ? (
               <div className="text-center py-6">
                 <div className="text-4xl mb-3">📬</div>
-                <h2 className="text-lg font-semibold text-gray-900 mb-1">Uitnodiging verstuurd!</h2>
+                <h2 className="text-lg font-semibold text-gray-900 mb-1">{t('users.invitedTitle')}</h2>
                 <p className="text-sm text-gray-500">
-                  <strong>{form.email}</strong> ontvangt een uitnodigingsmail met een inloglink.
+                  {t('users.invitedText', { email: form.email })}
                 </p>
               </div>
             ) : (
               <>
                 <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-lg font-semibold text-gray-900">Gebruiker uitnodigen</h2>
+                  <h2 className="text-lg font-semibold text-gray-900">{t('users.modalTitle')}</h2>
                   <button
                     onClick={() => !submitting && setShowModal(false)}
                     className="text-gray-400 hover:text-gray-600 text-xl"
@@ -157,7 +161,7 @@ export default function UsersPage() {
                 </div>
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Volledige naam</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('users.nameLabel')}</label>
                     <input
                       type="text"
                       value={form.name}
@@ -168,7 +172,7 @@ export default function UsersPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5">E-mailadres</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('users.emailLabel')}</label>
                     <input
                       type="email"
                       value={form.email}
@@ -179,16 +183,16 @@ export default function UsersPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Rol</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('users.roleLabel')}</label>
                     <select
                       value={form.role}
                       onChange={e => setForm({ ...form, role: e.target.value })}
                       style={{ color: '#0f0f0e' }}
                       className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                     >
-                      <option value="employee">Medewerker</option>
-                      <option value="manager">Manager</option>
-                      <option value="company_admin">Admin</option>
+                      <option value="employee">{t('users.roleEmployee')}</option>
+                      <option value="manager">{t('users.roleManager')}</option>
+                      <option value="company_admin">{t('users.roleAdmin')}</option>
                     </select>
                   </div>
                   {error && (
@@ -200,12 +204,12 @@ export default function UsersPage() {
                     className="w-full bg-blue-600 text-white py-3 rounded-xl text-sm font-medium hover:bg-blue-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   >
                     {submitting ? (
-                      <><div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />Bezig...</>
-                    ) : 'Uitnodiging versturen'}
+                      <><div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />{t('users.submitting')}</>
+                    ) : t('users.submit')}
                   </button>
                 </div>
                 <p className="text-xs text-gray-400 text-center mt-4">
-                  Er wordt een magic link gestuurd die 7 dagen geldig is.
+                  {t('users.magicLinkNote')}
                 </p>
               </>
             )}

@@ -1,8 +1,10 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useTranslations } from 'next-intl'
 
 export default function CookieBanner() {
+  const t = useTranslations('app.cookieBanner')
   const [visible, setVisible] = useState(false)
 
   useEffect(() => {
@@ -34,11 +36,11 @@ export default function CookieBanner() {
     }}>
       <div style={{ flex: 1 }}>
         <p style={{ fontSize: 14, fontWeight: 500, color: '#0f0f0e', margin: '0 0 4px' }}>
-          We use cookies 🍪
+          {t('title')}
         </p>
         <p style={{ fontSize: 13, color: '#7a7a78', margin: 0, fontWeight: 300, lineHeight: 1.5 }}>
-          We use cookies to improve your experience. You can accept or decline non-essential cookies.{' '}
-          <a href="/privacy" style={{ color: '#1a5fd4', textDecoration: 'none' }}>Privacy policy</a>
+          {t('text')}{' '}
+          <a href="/privacy" style={{ color: '#1a5fd4', textDecoration: 'none' }}>{t('privacy')}</a>
         </p>
       </div>
       <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
@@ -50,7 +52,7 @@ export default function CookieBanner() {
             cursor: 'pointer', fontFamily: 'DM Sans, sans-serif',
           }}
         >
-          Decline
+          {t('decline')}
         </button>
         <button
           onClick={accept}
@@ -60,7 +62,7 @@ export default function CookieBanner() {
             cursor: 'pointer', fontFamily: 'DM Sans, sans-serif',
           }}
         >
-          Accept
+          {t('accept')}
         </button>
       </div>
     </div>

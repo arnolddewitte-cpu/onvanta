@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 
 interface TeamMember {
   instanceId: string
@@ -15,14 +16,8 @@ interface TeamMember {
   isAtRisk: boolean
 }
 
-function timeAgo(days: number, lastActivity: string | null): string {
-  if (!lastActivity) return 'Nog geen activiteit'
-  if (days === 0) return 'Vandaag'
-  if (days === 1) return 'Gisteren'
-  return `${days} dagen geleden`
-}
-
 export default function ManagerPage() {
+  const t = useTranslations('app')
   const router = useRouter()
   const [team, setTeam] = useState<TeamMember[]>([])
   const [loading, setLoading] = useState(true)
@@ -40,7 +35,7 @@ export default function ManagerPage() {
   if (loading) {
     return (
       <main className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <p className="text-gray-400 text-sm">Laden...</p>
+        <p className="text-gray-400 text-sm">{t('common.loading')}</p>
       </main>
     )
   }
@@ -50,72 +45,75 @@ export default function ManagerPage() {
       <div className="max-w-4xl mx-auto px-6 py-8">
         <div className="flex items-start justify-between mb-8">
           <div>
-            <h1 className="text-2xl font-semibold text-gray-900">Team overzicht</h1>
-            <p className="text-gray-500 mt-1">{team.length} medewerker{team.length !== 1 ? 's' : ''} in onboarding</p>
+            <h1 className="text-2xl font-semibold text-gray-900">{t('manager.title')}</h1>
+            <p className="text-gray-500 mt-1">
+              {team.length === 1
+                ? t('manager.subtitleOne', { count: team.length })
+                : t('manager.subtitleMany', { count: team.length })}
+            </p>
           </div>
           <button
             onClick={() => router.push('/admin/onboardings/new')}
             className="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-blue-700 transition-colors whitespace-nowrap"
           >
-            + Onboarding starten
+            {t('manager.startOnboarding')}
           </button>
         </div>
 
         {team.length === 0 ? (
           <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center">
             <div className="text-4xl mb-3">👥</div>
-            <p className="text-gray-500 text-sm mb-4">Nog geen medewerkers in onboarding.</p>
+            <p className="text-gray-500 text-sm mb-4">{t('manager.noTeam')}</p>
             <button
               onClick={() => router.push('/admin/onboardings/new')}
               className="bg-blue-600 text-white px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-blue-700 transition-colors"
             >
-              + Eerste onboarding starten
+              {t('manager.firstOnboarding')}
             </button>
           </div>
         ) : (
           <>
-            {/* Statistieken */}
             <div className="grid grid-cols-3 gap-4 mb-8">
               <div className="bg-white rounded-2xl border border-gray-100 p-5">
                 <p className="text-3xl font-bold text-gray-900">{team.length}</p>
-                <p className="text-sm text-gray-500 mt-1">In onboarding</p>
+                <p className="text-sm text-gray-500 mt-1">{t('manager.inOnboarding')}</p>
               </div>
               <div className="bg-red-50 rounded-2xl border border-red-100 p-5">
                 <p className="text-3xl font-bold text-red-600">{atRisk.length}</p>
-                <p className="text-sm text-red-500 mt-1">At-risk</p>
+                <p className="text-sm text-red-500 mt-1">{t('manager.atRisk')}</p>
               </div>
               <div className="bg-green-50 rounded-2xl border border-green-100 p-5">
                 <p className="text-3xl font-bold text-green-600">{onTrack.length}</p>
-                <p className="text-sm text-green-500 mt-1">Op schema</p>
+                <p className="text-sm text-green-500 mt-1">{t('manager.onTrack')}</p>
               </div>
             </div>
 
-            {/* At-risk */}
             {atRisk.length > 0 && (
               <div className="mb-6">
-                <h2 className="text-sm font-semibold text-red-600 uppercase tracking-wide mb-3">⚠️ At-risk</h2>
+                <h2 className="text-sm font-semibold text-red-600 uppercase tracking-wide mb-3">⚠️ {t('manager.atRisk')}</h2>
                 <div className="space-y-3">
                   {atRisk.map(member => (
                     <MemberCard
                       key={member.instanceId}
                       member={member}
                       onClick={() => router.push(`/manager/${member.instanceId}`)}
+                      t={t}
                     />
                   ))}
                 </div>
               </div>
             )}
 
-            {/* Op schema */}
             {onTrack.length > 0 && (
               <div>
-                <h2 className="text-sm font-semibold text-green-600 uppercase tracking-wide mb-3">✅ Op schema</h2>
+                <h2 className="text-sm font-semibold text-green-600 uppercase tracking-wide mb-3">✅ {t('manager.onTrack')}</h2>
                 <div className="space-y-3">
                   {onTrack.map(member => (
                     <MemberCard
                       key={member.instanceId}
                       member={member}
                       onClick={() => router.push(`/manager/${member.instanceId}`)}
+                      t={t}
                     />
                   ))}
                 </div>
@@ -128,8 +126,18 @@ export default function ManagerPage() {
   )
 }
 
-function MemberCard({ member, onClick }: { member: TeamMember; onClick: () => void }) {
+type TFunc = ReturnType<typeof useTranslations<'app'>>
+
+function MemberCard({ member, onClick, t }: { member: TeamMember; onClick: () => void; t: TFunc }) {
   const barColor = member.isAtRisk ? 'bg-red-400' : 'bg-green-500'
+
+  function timeAgo(days: number, lastActivity: string | null): string {
+    if (!lastActivity) return t('manager.noActivity')
+    if (days === 0) return t('manager.today')
+    if (days === 1) return t('manager.yesterday')
+    return t('manager.daysAgo', { days })
+  }
+
   const lastSeenText = timeAgo(member.daysSinceActivity, member.lastActivity)
 
   return (
@@ -150,19 +158,19 @@ function MemberCard({ member, onClick }: { member: TeamMember; onClick: () => vo
           </div>
         </div>
         <span className={`text-xs px-2 py-1 rounded-full font-medium ${member.isAtRisk ? 'bg-red-50 text-red-600' : 'bg-green-50 text-green-600'}`}>
-          {member.isAtRisk ? 'At-risk' : 'Op schema'}
+          {member.isAtRisk ? t('manager.atRisk') : t('manager.onTrack')}
         </span>
       </div>
 
       <div className="flex items-center gap-4 text-xs text-gray-500 mb-3">
         <span>🕐 {lastSeenText}</span>
         {member.overdueTasks > 0 && (
-          <span className="text-red-500">⚠️ {member.overdueTasks} te laat</span>
+          <span className="text-red-500">⚠️ {member.overdueTasks} {t('manager.overdueTasks')}</span>
         )}
       </div>
 
       <div className="flex justify-between text-xs mb-1">
-        <span className="text-gray-400">Voortgang</span>
+        <span className="text-gray-400">{t('onboarding.totalProgress')}</span>
         <span className="text-gray-600 font-medium">{member.progressPct}%</span>
       </div>
       <div className="w-full bg-gray-100 rounded-full h-1.5">

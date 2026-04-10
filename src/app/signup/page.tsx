@@ -2,8 +2,10 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 
 export default function SignupPage() {
+  const t = useTranslations('app.signup')
   const [step, setStep] = useState(1)
   const [form, setForm] = useState({
     name: '',
@@ -16,8 +18,8 @@ export default function SignupPage() {
   const [done, setDone] = useState(false)
 
   const steps = [
-    { label: 'Your details', desc: 'Name and work email' },
-    { label: 'Your company', desc: 'Company info' },
+    { label: t('step1Label'), desc: t('step1Desc') },
+    { label: t('step2Label'), desc: t('step2Desc') },
   ]
 
   async function handleSubmit() {
@@ -34,14 +36,14 @@ export default function SignupPage() {
       const data = await res.json()
 
       if (!res.ok) {
-        setError(data.error || 'Er ging iets mis')
+        setError(data.error || t('error'))
         setLoading(false)
         return
       }
 
       setDone(true)
     } catch {
-      setError('Er ging iets mis. Probeer het opnieuw.')
+      setError(t('error'))
       setLoading(false)
     }
   }
@@ -58,14 +60,14 @@ export default function SignupPage() {
         <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 40 }}>
           <div style={{ textAlign: 'center', maxWidth: 440 }}>
             <div style={{ fontSize: 48, marginBottom: 16 }}>🎉</div>
-            <h1 style={{ fontFamily: 'Georgia, serif', fontSize: 32, fontWeight: 400, color: '#0f0f0e', marginBottom: 12 }}>Welcome to Onvanta!</h1>
-            <p style={{ fontSize: 16, color: '#3a3a38', fontWeight: 300, marginBottom: 8, lineHeight: 1.6 }}>Your 14-day Pro trial is active.</p>
-            <p style={{ fontSize: 16, color: '#3a3a38', fontWeight: 300, marginBottom: 32, lineHeight: 1.6 }}>Check your inbox at <strong>{form.email}</strong> for a magic link to log in.</p>
+            <h1 style={{ fontFamily: 'Georgia, serif', fontSize: 32, fontWeight: 400, color: '#0f0f0e', marginBottom: 12 }}>{t('successTitle')}</h1>
+            <p style={{ fontSize: 16, color: '#3a3a38', fontWeight: 300, marginBottom: 8, lineHeight: 1.6 }}>{t('successSubtitle')}</p>
+            <p style={{ fontSize: 16, color: '#3a3a38', fontWeight: 300, marginBottom: 32, lineHeight: 1.6 }}>{t('successText', { email: form.email })}</p>
             <div style={{ background: '#e8f0fc', borderRadius: 12, padding: '16px 20px', fontSize: 14, color: '#1a5fd4', textAlign: 'left' }}>
-              <strong>What's next?</strong><br />
-              1. Click the magic link in your email<br />
-              2. Create your first onboarding template<br />
-              3. Invite your first team member
+              <strong>{t('successStepsTitle')}</strong><br />
+              1. {t('successStep1')}<br />
+              2. {t('successStep2')}<br />
+              3. {t('successStep3')}
             </div>
           </div>
         </div>
@@ -85,32 +87,28 @@ export default function SignupPage() {
         }
       `}</style>
 
-      {/* Nav */}
       <nav style={{ padding: '0 20px', height: 60, display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #e8e7e2', background: 'white' }}>
         <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
           <div style={{ width: 28, height: 28, background: '#1a5fd4', borderRadius: 7, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: 14, fontStyle: 'italic', fontFamily: 'Georgia, serif' }}>O</div>
           <span style={{ fontSize: 16, fontWeight: 500, color: '#0f0f0e' }}>Onvanta</span>
         </Link>
         <Link href="/login" style={{ fontSize: 13, color: '#7a7a78', textDecoration: 'none' }}>
-          Already have an account? <span style={{ color: '#1a5fd4', fontWeight: 500 }}>Log in</span>
+          {t('alreadyHaveAccount')} <span style={{ color: '#1a5fd4', fontWeight: 500 }}>{t('login')}</span>
         </Link>
       </nav>
 
-      {/* Page */}
       <div className="su-grid" style={{ flex: 1, minHeight: 'calc(100vh - 60px)' }}>
 
-        {/* Left panel */}
         <div className="su-left" style={{ background: '#0f0f0e', padding: '64px 56px', flexDirection: 'column', justifyContent: 'space-between' }}>
           <div>
-            <div style={{ fontSize: 11, fontWeight: 500, letterSpacing: '.8px', textTransform: 'uppercase', color: 'rgba(255,255,255,.4)', marginBottom: 32 }}>Start free trial</div>
+            <div style={{ fontSize: 11, fontWeight: 500, letterSpacing: '.8px', textTransform: 'uppercase', color: 'rgba(255,255,255,.4)', marginBottom: 32 }}>{t('trialBadge')}</div>
             <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 36, color: 'white', lineHeight: 1.2, marginBottom: 16, fontWeight: 400 }}>
-              Your team deserves<br /><em style={{ fontStyle: 'italic', color: '#7aaefc' }}>better onboarding.</em>
+              {t('heroTitle')}<br /><em style={{ fontStyle: 'italic', color: '#7aaefc' }}>{t('heroEm')}</em>
             </h2>
             <p style={{ fontSize: 15, color: 'rgba(255,255,255,.5)', lineHeight: 1.6, maxWidth: 340 }}>
-              14 days free. Full Pro access. No credit card required. Your first onboarding takes less than an hour to set up.
+              {t('heroText')}
             </p>
 
-            {/* Steps indicator */}
             <div style={{ display: 'flex', flexDirection: 'column', marginTop: 48 }}>
               {steps.map((s, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 16, padding: '16px 0', position: 'relative' }}>
@@ -133,48 +131,47 @@ export default function SignupPage() {
                 <div key={i} style={{ width: 28, height: 28, borderRadius: '50%', border: '2px solid #0f0f0e', background: 'rgba(255,255,255,.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 500, color: 'rgba(255,255,255,.7)', marginLeft: i === 0 ? 0 : -6 }}>{a}</div>
               ))}
             </div>
-            <div style={{ fontSize: 12, color: 'rgba(255,255,255,.4)' }}>Joined by 200+ HR teams this year</div>
+            <div style={{ fontSize: 12, color: 'rgba(255,255,255,.4)' }}>{t('joinedBy')}</div>
           </div>
         </div>
 
-        {/* Right panel */}
         <div className="su-right" style={{ background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '48px 56px' }}>
           <div style={{ maxWidth: 380, width: '100%' }}>
 
             {step === 1 && (
               <>
-                <h3 style={{ fontFamily: 'Georgia, serif', fontSize: 28, fontWeight: 400, marginBottom: 6, color: '#0f0f0e' }}>Create your account</h3>
-                <p style={{ fontSize: 14, color: '#7a7a78', marginBottom: 28 }}>Start your 14-day free trial. No credit card required.</p>
+                <h3 style={{ fontFamily: 'Georgia, serif', fontSize: 28, fontWeight: 400, marginBottom: 6, color: '#0f0f0e' }}>{t('step1Title')}</h3>
+                <p style={{ fontSize: 14, color: '#7a7a78', marginBottom: 28 }}>{t('step1Subtitle')}</p>
                 <div style={{ marginBottom: 16 }}>
-                  <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: '#3a3a38', marginBottom: 6 }}>Full name</label>
-                  <input type="text" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder="Jan de Vries" style={{ width: '100%', padding: '11px 14px', border: '1px solid #e8e7e2', borderRadius: 8, fontSize: 14, fontFamily: 'DM Sans, sans-serif', color: '#0f0f0e', outline: 'none' }} />
+                  <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: '#3a3a38', marginBottom: 6 }}>{t('nameLabel')}</label>
+                  <input type="text" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder={t('namePlaceholder')} style={{ width: '100%', padding: '11px 14px', border: '1px solid #e8e7e2', borderRadius: 8, fontSize: 14, fontFamily: 'DM Sans, sans-serif', color: '#0f0f0e', outline: 'none' }} />
                 </div>
                 <div style={{ marginBottom: 24 }}>
-                  <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: '#3a3a38', marginBottom: 6 }}>Work email</label>
-                  <input type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} placeholder="jan@company.com" style={{ width: '100%', padding: '11px 14px', border: '1px solid #e8e7e2', borderRadius: 8, fontSize: 14, fontFamily: 'DM Sans, sans-serif', color: '#0f0f0e', outline: 'none' }} />
+                  <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: '#3a3a38', marginBottom: 6 }}>{t('emailLabel')}</label>
+                  <input type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} placeholder={t('emailPlaceholder')} style={{ width: '100%', padding: '11px 14px', border: '1px solid #e8e7e2', borderRadius: 8, fontSize: 14, fontFamily: 'DM Sans, sans-serif', color: '#0f0f0e', outline: 'none' }} />
                 </div>
                 <button onClick={() => setStep(2)} disabled={!form.name || !form.email} style={{ width: '100%', padding: 13, background: '#1a5fd4', color: 'white', border: 'none', borderRadius: 10, fontSize: 15, fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', opacity: !form.name || !form.email ? 0.4 : 1 }}>
-                  Continue →
+                  {t('continueBtn')}
                 </button>
               </>
             )}
 
             {step === 2 && (
               <>
-                <h3 style={{ fontFamily: 'Georgia, serif', fontSize: 28, fontWeight: 400, marginBottom: 6, color: '#0f0f0e' }}>About your company</h3>
-                <p style={{ fontSize: 14, color: '#7a7a78', marginBottom: 28 }}>Help us set up your workspace.</p>
+                <h3 style={{ fontFamily: 'Georgia, serif', fontSize: 28, fontWeight: 400, marginBottom: 6, color: '#0f0f0e' }}>{t('step2Title')}</h3>
+                <p style={{ fontSize: 14, color: '#7a7a78', marginBottom: 28 }}>{t('step2Subtitle')}</p>
                 <div style={{ marginBottom: 16 }}>
-                  <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: '#3a3a38', marginBottom: 6 }}>Company name</label>
-                  <input type="text" value={form.company} onChange={e => setForm({ ...form, company: e.target.value })} placeholder="Acme B.V." style={{ width: '100%', padding: '11px 14px', border: '1px solid #e8e7e2', borderRadius: 8, fontSize: 14, fontFamily: 'DM Sans, sans-serif', color: '#0f0f0e', outline: 'none' }} />
+                  <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: '#3a3a38', marginBottom: 6 }}>{t('companyLabel')}</label>
+                  <input type="text" value={form.company} onChange={e => setForm({ ...form, company: e.target.value })} placeholder={t('companyPlaceholder')} style={{ width: '100%', padding: '11px 14px', border: '1px solid #e8e7e2', borderRadius: 8, fontSize: 14, fontFamily: 'DM Sans, sans-serif', color: '#0f0f0e', outline: 'none' }} />
                 </div>
                 <div style={{ marginBottom: 16 }}>
-                  <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: '#3a3a38', marginBottom: 6 }}>Team size</label>
+                  <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: '#3a3a38', marginBottom: 6 }}>{t('sizeLabel')}</label>
                   <select value={form.size} onChange={e => setForm({ ...form, size: e.target.value })} style={{ width: '100%', padding: '11px 14px', border: '1px solid #e8e7e2', borderRadius: 8, fontSize: 14, fontFamily: 'DM Sans, sans-serif', color: '#0f0f0e', outline: 'none', background: 'white' }}>
-                    <option value="">Select team size</option>
-                    <option value="1-10">1–10 employees</option>
-                    <option value="10-50">10–50 employees</option>
-                    <option value="50-100">50–100 employees</option>
-                    <option value="100+">100+ employees</option>
+                    <option value="">{t('sizeSelect')}</option>
+                    <option value="1-10">{t('size1')}</option>
+                    <option value="10-50">{t('size2')}</option>
+                    <option value="50-100">{t('size3')}</option>
+                    <option value="100+">{t('size4')}</option>
                   </select>
                 </div>
 
@@ -185,20 +182,20 @@ export default function SignupPage() {
                 )}
 
                 <div style={{ background: '#e2f4eb', border: '1px solid #9FE1CB', borderRadius: 8, padding: '10px 14px', fontSize: 13, color: '#177a4a', marginBottom: 20 }}>
-                  ✓ 14-day free trial · Full Pro access · No credit card required
+                  {t('trialNote')}
                 </div>
 
                 <div style={{ display: 'flex', gap: 10 }}>
-                  <button onClick={() => setStep(1)} style={{ flex: 1, padding: 13, background: 'transparent', color: '#3a3a38', border: '1px solid #e8e7e2', borderRadius: 10, fontSize: 14, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>← Back</button>
+                  <button onClick={() => setStep(1)} style={{ flex: 1, padding: 13, background: 'transparent', color: '#3a3a38', border: '1px solid #e8e7e2', borderRadius: 10, fontSize: 14, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>{t('back')}</button>
                   <button onClick={handleSubmit} disabled={!form.company || loading} style={{ flex: 2, padding: 13, background: '#1a5fd4', color: 'white', border: 'none', borderRadius: 10, fontSize: 15, fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', opacity: !form.company || loading ? 0.4 : 1 }}>
-                    {loading ? 'Bezig...' : 'Start free trial →'}
+                    {loading ? t('submitting') : t('submit')}
                   </button>
                 </div>
               </>
             )}
 
             <p style={{ fontSize: 12, color: '#b8b8b5', textAlign: 'center', marginTop: 20, lineHeight: 1.5 }}>
-              By signing up you agree to our <a href="/terms" style={{ color: '#1a5fd4' }}>Terms</a> and <a href="/privacy" style={{ color: '#1a5fd4' }}>Privacy Policy</a>.
+              {t('terms')} <a href="/terms" style={{ color: '#1a5fd4' }}>{t('termsLink')}</a> {t('and')} <a href="/privacy" style={{ color: '#1a5fd4' }}>{t('privacyLink')}</a>.
             </p>
           </div>
         </div>

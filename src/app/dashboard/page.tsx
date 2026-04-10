@@ -2,18 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-
-const BLOCK_TYPE_LABELS: Record<string, string> = {
-  video: 'Video',
-  text: 'Tekst',
-  document: 'Document',
-  task: 'Taak',
-  flashcards: 'Flashcards',
-  questionnaire: 'Quiz',
-  meeting: 'Meeting',
-  acknowledgement: 'Bevestiging',
-  manager_approval: 'Goedkeuring',
-}
+import { useTranslations } from 'next-intl'
 
 interface TodayTask {
   stepId: string
@@ -47,6 +36,7 @@ interface DashboardData {
 }
 
 export default function DashboardPage() {
+  const t = useTranslations('app')
   const [data, setData] = useState<DashboardData | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -60,7 +50,7 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <main className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <p className="text-gray-400 text-sm">Laden...</p>
+        <p className="text-gray-400 text-sm">{t('common.loading')}</p>
       </main>
     )
   }
@@ -71,8 +61,8 @@ export default function DashboardPage() {
         <div className="max-w-4xl mx-auto px-6 py-8">
           <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center">
             <div className="text-4xl mb-4">👋</div>
-            <h2 className="font-semibold text-gray-900 mb-2">Welkom!</h2>
-            <p className="text-gray-500 text-sm">Je hebt nog geen actieve onboarding. Neem contact op met je manager.</p>
+            <h2 className="font-semibold text-gray-900 mb-2">{t('dashboard.noOnboardingTitle')}</h2>
+            <p className="text-gray-500 text-sm">{t('dashboard.noOnboardingText')}</p>
           </div>
         </div>
       </main>
@@ -85,7 +75,7 @@ export default function DashboardPage() {
     <main className="min-h-screen bg-gray-50">
       <div className="max-w-4xl mx-auto px-6 py-8">
 
-        {/* Voortgang */}
+        {/* Progress */}
         <div className="bg-white rounded-2xl border border-gray-100 p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
             <div>
@@ -101,24 +91,24 @@ export default function DashboardPage() {
             />
           </div>
           <div className="flex justify-between text-xs text-gray-400">
-            <span>{instance.completedCount} van {instance.totalSteps} stappen voltooid</span>
-            {instance.managerName && <span>Begeleider: {instance.managerName}</span>}
+            <span>{t('dashboard.stepsCompleted', { completed: instance.completedCount, total: instance.totalSteps })}</span>
+            {instance.managerName && <span>{t('dashboard.supervisor')}: {instance.managerName}</span>}
           </div>
         </div>
 
-        {/* Taken vandaag */}
+        {/* Continue */}
         <div className="bg-white rounded-2xl border border-gray-100 p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="font-semibold text-gray-900">Verder gaan</h2>
+            <h2 className="font-semibold text-gray-900">{t('dashboard.continueTitle')}</h2>
             <Link href="/onboarding" className="text-xs text-blue-600 hover:underline">
-              Alle stappen →
+              {t('dashboard.allSteps')}
             </Link>
           </div>
 
           {todayTasks.length === 0 ? (
             <div className="text-center py-6">
               <div className="text-3xl mb-2">🎉</div>
-              <p className="text-sm text-gray-500">Je hebt alles afgerond!</p>
+              <p className="text-sm text-gray-500">{t('dashboard.allDone')}</p>
             </div>
           ) : (
             <div className="space-y-2">
@@ -136,7 +126,7 @@ export default function DashboardPage() {
                   <div className="flex gap-1 flex-shrink-0">
                     {task.blockTypes.slice(0, 2).map((type, i) => (
                       <span key={i} className="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">
-                        {BLOCK_TYPE_LABELS[type] ?? type}
+                        {t(`blockTypes.${type}` as Parameters<typeof t>[0]) || type}
                       </span>
                     ))}
                   </div>
@@ -149,13 +139,13 @@ export default function DashboardPage() {
         {/* Flashcards */}
         <div className="bg-white rounded-2xl border border-gray-100 p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="font-semibold text-gray-900">Flashcards</h2>
+            <h2 className="font-semibold text-gray-900">{t('dashboard.flashcardsTitle')}</h2>
           </div>
 
           {flashcardSteps.length === 0 ? (
             <div className="text-center py-8 text-gray-400">
               <div className="text-4xl mb-2">🃏</div>
-              <p className="text-sm">Geen flashcards te herhalen</p>
+              <p className="text-sm">{t('dashboard.noFlashcards')}</p>
             </div>
           ) : (
             <div className="space-y-2">
@@ -169,7 +159,7 @@ export default function DashboardPage() {
                     <span className="text-xl">🃏</span>
                     <p className="text-sm font-medium text-gray-900">{fc.title}</p>
                   </div>
-                  <span className="text-xs text-gray-400">{fc.cardCount} kaartjes</span>
+                  <span className="text-xs text-gray-400">{t('dashboard.cards', { count: fc.cardCount })}</span>
                 </Link>
               ))}
             </div>

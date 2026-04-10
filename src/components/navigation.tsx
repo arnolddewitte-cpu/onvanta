@@ -3,6 +3,7 @@
 import { usePathname, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useState } from 'react'
+import { useTranslations, useLocale } from 'next-intl'
 
 type Role = 'employee' | 'manager' | 'company_admin' | 'super_admin'
 
@@ -10,45 +11,52 @@ interface Props {
   role?: Role
 }
 
-const navConfig = {
-  employee: [
-    { href: '/dashboard', label: 'Dashboard', icon: '🏠' },
-    { href: '/onboarding', label: 'Onboarding', icon: '📋' },
-    { href: '/tasks', label: 'Taken', icon: '✅' },
-    { href: '/flashcards', label: 'Flashcards', icon: '🃏' },
-  ],
-  manager: [
-    { href: '/manager', label: 'Team', icon: '👥' },
-    { href: '/manager/approvals', label: 'Goedkeuringen', icon: '✓' },
-  ],
-  company_admin: [
-    { href: '/admin', label: 'Dashboard', icon: '🏠' },
-    { href: '/admin/templates', label: 'Templates', icon: '📋' },
-    { href: '/admin/users', label: 'Gebruikers', icon: '👥' },
-    { href: '/admin/settings', label: 'Instellingen', icon: '⚙️' },
-  ],
-  super_admin: [
-    { href: '/super', label: 'Dashboard', icon: '🏠' },
-  ],
-}
-
-const roleLabel: Record<Role, string> = {
-  employee: 'Medewerker',
-  manager: 'Manager',
-  company_admin: 'Admin',
-  super_admin: 'Super Admin',
-}
-
 export default function Navigation({ role = 'employee' }: Props) {
+  const t = useTranslations('app')
+  const locale = useLocale()
   const pathname = usePathname()
   const router = useRouter()
   const [loggingOut, setLoggingOut] = useState(false)
+
+  const navConfig = {
+    employee: [
+      { href: '/dashboard', label: t('nav.dashboard'), icon: '🏠' },
+      { href: '/onboarding', label: t('nav.onboarding'), icon: '📋' },
+      { href: '/tasks', label: t('nav.tasks'), icon: '✅' },
+      { href: '/flashcards', label: t('nav.flashcards'), icon: '🃏' },
+    ],
+    manager: [
+      { href: '/manager', label: t('nav.team'), icon: '👥' },
+      { href: '/manager/approvals', label: t('nav.approvals'), icon: '✓' },
+    ],
+    company_admin: [
+      { href: '/admin', label: t('nav.dashboard'), icon: '🏠' },
+      { href: '/admin/templates', label: t('nav.templates'), icon: '📋' },
+      { href: '/admin/users', label: t('nav.users'), icon: '👥' },
+      { href: '/admin/settings', label: t('nav.settings'), icon: '⚙️' },
+    ],
+    super_admin: [
+      { href: '/super', label: t('nav.dashboard'), icon: '🏠' },
+    ],
+  }
+
   const items = navConfig[role] ?? navConfig.employee
 
   async function handleLogout() {
     setLoggingOut(true)
     await fetch('/api/auth/logout', { method: 'POST' })
     router.push('/login')
+  }
+
+  function switchLocale(next: 'nl' | 'en') {
+    if (next === locale) return
+    document.cookie = `ONVANTA_LOCALE=${next}; path=/; max-age=31536000; SameSite=Lax`
+    fetch('/api/admin/company', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ locale: next }),
+    }).catch(() => {})
+    window.location.reload()
   }
 
   return (
@@ -86,16 +94,41 @@ export default function Navigation({ role = 'employee' }: Props) {
           })}
         </nav>
 
-        {/* Rol badge + uitloggen */}
+        {/* Language switcher + role + logout */}
         <div className="px-3 py-4 border-t border-gray-100 space-y-1">
-          <p className="text-xs text-gray-400 px-3 mb-2">{roleLabel[role]}</p>
+          {/* Language switcher */}
+          <div className="flex items-center gap-1 px-3 py-2 mb-1">
+            <button
+              onClick={() => switchLocale('nl')}
+              className={`text-sm px-2 py-1 rounded-lg transition-colors ${
+                locale === 'nl'
+                  ? 'bg-blue-50 text-blue-600 font-semibold'
+                  : 'text-gray-400 hover:text-gray-600'
+              }`}
+            >
+              🇳🇱 NL
+            </button>
+            <span className="text-gray-200 text-xs">/</span>
+            <button
+              onClick={() => switchLocale('en')}
+              className={`text-sm px-2 py-1 rounded-lg transition-colors ${
+                locale === 'en'
+                  ? 'bg-blue-50 text-blue-600 font-semibold'
+                  : 'text-gray-400 hover:text-gray-600'
+              }`}
+            >
+              🇬🇧 EN
+            </button>
+          </div>
+
+          <p className="text-xs text-gray-400 px-3 mb-2">{t(`nav.roles.${role}`)}</p>
           <button
             onClick={handleLogout}
             disabled={loggingOut}
             className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-400 hover:bg-red-50 hover:text-red-500 transition-colors w-full disabled:opacity-50"
           >
             <span className="text-base">↩</span>
-            {loggingOut ? 'Uitloggen...' : 'Uitloggen'}
+            {loggingOut ? t('nav.loggingOut') : t('nav.logout')}
           </button>
         </div>
       </aside>
@@ -124,7 +157,7 @@ export default function Navigation({ role = 'employee' }: Props) {
             className="flex flex-col items-center gap-1 px-3 py-1.5 rounded-xl text-gray-400 transition-colors disabled:opacity-50"
           >
             <span className="text-xl">↩</span>
-            <span className="text-xs font-medium">Uitloggen</span>
+            <span className="text-xs font-medium">{t('nav.logout')}</span>
           </button>
         </div>
       </nav>

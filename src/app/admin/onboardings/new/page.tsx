@@ -2,6 +2,7 @@
 
 import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 
 interface Template {
   id: string
@@ -32,6 +33,7 @@ export default function NewOnboardingPageWrapper() {
 }
 
 function NewOnboardingPage() {
+  const t = useTranslations('app')
   const router = useRouter()
   const searchParams = useSearchParams()
   const [step, setStep] = useState(1)
@@ -61,7 +63,6 @@ function NewOnboardingPage() {
       .then(r => r.json())
       .then((p: Profile) => {
         setProfile(p)
-        // Managers worden automatisch als manager ingesteld
         if (p.role === 'manager') {
           setForm(f => ({ ...f, managerId: p.id }))
         }
@@ -78,7 +79,7 @@ function NewOnboardingPage() {
       .finally(() => setLoadingManagers(false))
   }, [])
 
-  const selectedTemplate = templates.find(t => t.id === form.templateId)
+  const selectedTemplate = templates.find(tmpl => tmpl.id === form.templateId)
   const selectedManager = managers.find(m => m.id === form.managerId)
   const backHref = isManager ? '/manager' : '/admin'
 
@@ -103,7 +104,7 @@ function NewOnboardingPage() {
     setSubmitting(false)
 
     if (!res.ok) {
-      setSubmitError(data.error || 'Er ging iets mis')
+      setSubmitError(data.error || t('common.error'))
       return
     }
 
@@ -116,17 +117,17 @@ function NewOnboardingPage() {
         <div className="max-w-2xl mx-auto px-6 py-8">
           <div className="text-center py-12">
             <div className="text-6xl mb-4">🎉</div>
-            <h1 className="text-2xl font-semibold text-gray-900 mb-2">Onboarding gestart!</h1>
+            <h1 className="text-2xl font-semibold text-gray-900 mb-2">{t('newOnboarding.doneTitle')}</h1>
             <p className="text-gray-500 mb-2">
-              {form.employeeName} ontvangt een uitnodigingsmail op {form.employeeEmail}.
+              {t('newOnboarding.doneText', { name: form.employeeName, email: form.employeeEmail })}
             </p>
-            <p className="text-gray-400 text-sm mb-8">De link in de mail is 7 dagen geldig.</p>
+            <p className="text-gray-400 text-sm mb-8">{t('newOnboarding.doneLinkValid')}</p>
             <div className="flex gap-3 justify-center">
               <button
                 onClick={() => router.push(backHref)}
                 className="bg-blue-600 text-white px-6 py-3 rounded-xl text-sm font-medium hover:bg-blue-700 transition-colors"
               >
-                {isManager ? 'Terug naar team' : 'Terug naar admin'}
+                {isManager ? t('newOnboarding.backToTeamBtn') : t('newOnboarding.backToAdminBtn')}
               </button>
               <button
                 onClick={() => {
@@ -136,7 +137,7 @@ function NewOnboardingPage() {
                 }}
                 className="bg-gray-100 text-gray-600 px-6 py-3 rounded-xl text-sm font-medium hover:bg-gray-200 transition-colors"
               >
-                Nog een starten
+                {t('newOnboarding.startAnother')}
               </button>
             </div>
           </div>
@@ -149,15 +150,13 @@ function NewOnboardingPage() {
     <main className="min-h-screen bg-gray-50">
       <div className="max-w-2xl mx-auto px-6 py-8">
 
-        {/* Terug link */}
         <button
           onClick={() => router.push(backHref)}
           className="text-sm text-gray-400 hover:text-gray-600 mb-6 transition-colors"
         >
-          ← {isManager ? 'Terug naar team' : 'Terug naar admin'}
+          {isManager ? t('newOnboarding.backToTeam') : t('newOnboarding.backToAdmin')}
         </button>
 
-        {/* Stappen indicator */}
         <div className="flex items-center gap-2 mb-8">
           {[1, 2, 3].map(s => (
             <div key={s} className="flex items-center gap-2">
@@ -169,22 +168,21 @@ function NewOnboardingPage() {
                 {s < step ? '✓' : s}
               </div>
               <span className={`text-sm ${s === step ? 'text-gray-900 font-medium' : 'text-gray-400'}`}>
-                {s === 1 ? 'Medewerker' : s === 2 ? 'Template' : 'Details'}
+                {s === 1 ? t('newOnboarding.step1Label') : s === 2 ? t('newOnboarding.step2Label') : t('newOnboarding.step3Label')}
               </span>
               {s < 3 && <div className={`w-8 h-0.5 ${s < step ? 'bg-blue-600' : 'bg-gray-200'}`} />}
             </div>
           ))}
         </div>
 
-        {/* Stap 1 — Medewerker gegevens */}
         {step === 1 && (
           <div>
-            <h1 className="text-2xl font-semibold text-gray-900 mb-2">Nieuwe medewerker</h1>
-            <p className="text-gray-500 mb-8">Vul de gegevens in van de nieuwe medewerker.</p>
+            <h1 className="text-2xl font-semibold text-gray-900 mb-2">{t('newOnboarding.step1Title')}</h1>
+            <p className="text-gray-500 mb-8">{t('newOnboarding.step1Subtitle')}</p>
 
             <div className="bg-white rounded-2xl border border-gray-100 p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Volledige naam</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('newOnboarding.nameLabel')}</label>
                 <input
                   type="text"
                   value={form.employeeName}
@@ -195,7 +193,7 @@ function NewOnboardingPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Werk e-mailadres</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('newOnboarding.emailLabel')}</label>
                 <input
                   type="email"
                   value={form.employeeEmail}
@@ -206,12 +204,12 @@ function NewOnboardingPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Functie</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('newOnboarding.roleLabel')}</label>
                 <input
                   type="text"
                   value={form.role}
                   onChange={e => setForm({ ...form, role: e.target.value })}
-                  placeholder="Customer Service Medewerker"
+                  placeholder={t('newOnboarding.rolePlaceholder')}
                   className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                   style={{ color: '#0f0f0e' }}
                 />
@@ -224,23 +222,23 @@ function NewOnboardingPage() {
                 disabled={!form.employeeName.trim() || !form.employeeEmail.trim()}
                 className="bg-blue-600 text-white px-6 py-3 rounded-xl text-sm font-medium hover:bg-blue-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
               >
-                Volgende →
+                {t('newOnboarding.next')}
               </button>
             </div>
           </div>
         )}
 
-        {/* Stap 2 — Template kiezen */}
         {step === 2 && (
           <div>
-            <h1 className="text-2xl font-semibold text-gray-900 mb-2">Kies een template</h1>
-            <p className="text-gray-500 mb-8">Welk onboarding template past bij {form.employeeName}?</p>
+            <h1 className="text-2xl font-semibold text-gray-900 mb-2">{t('newOnboarding.step2Title')}</h1>
+            <p className="text-gray-500 mb-8">{t('newOnboarding.step2Subtitle', { name: form.employeeName })}</p>
 
             {loadingTemplates ? (
-              <div className="text-center py-8 text-gray-400 text-sm">Templates laden...</div>
+              <div className="text-center py-8 text-gray-400 text-sm">{t('common.loading')}</div>
             ) : templates.length === 0 ? (
               <div className="text-center py-8 text-gray-400 text-sm">
-                Nog geen templates. <a href="/admin/templates" className="text-blue-600 hover:underline">Maak er eerst een aan.</a>
+                {t('newOnboarding.noTemplates')}{' '}
+                <a href="/admin/templates" className="text-blue-600 hover:underline">{t('newOnboarding.createTemplate')}</a>
               </div>
             ) : (
               <div className="space-y-3 mb-6">
@@ -266,8 +264,8 @@ function NewOnboardingPage() {
                       </div>
                     </div>
                     <div className="flex gap-4 mt-3 text-xs text-gray-400">
-                      <span>{template.phaseCount} fases</span>
-                      <span>{template.stepCount} stappen</span>
+                      <span>{t('newOnboarding.phases', { count: template.phaseCount })}</span>
+                      <span>{t('newOnboarding.steps', { count: template.stepCount })}</span>
                     </div>
                   </div>
                 ))}
@@ -276,41 +274,39 @@ function NewOnboardingPage() {
 
             <div className="flex justify-between">
               <button onClick={() => setStep(1)} className="text-gray-500 px-6 py-3 rounded-xl text-sm font-medium hover:bg-gray-100 transition-colors">
-                ← Terug
+                {t('newOnboarding.back')}
               </button>
               <button
                 onClick={() => setStep(3)}
                 disabled={!form.templateId}
                 className="bg-blue-600 text-white px-6 py-3 rounded-xl text-sm font-medium hover:bg-blue-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
               >
-                Volgende →
+                {t('newOnboarding.next')}
               </button>
             </div>
           </div>
         )}
 
-        {/* Stap 3 — Details */}
         {step === 3 && (
           <div>
-            <h1 className="text-2xl font-semibold text-gray-900 mb-2">Details instellen</h1>
+            <h1 className="text-2xl font-semibold text-gray-900 mb-2">{t('newOnboarding.step3Title')}</h1>
             <p className="text-gray-500 mb-8">
-              {isManager ? 'Kies de startdatum.' : 'Kies de manager en startdatum.'}
+              {isManager ? t('newOnboarding.step3SubtitleManager') : t('newOnboarding.step3SubtitleAdmin')}
             </p>
 
             <div className="bg-white rounded-2xl border border-gray-100 p-6 space-y-4">
-              {/* Manager veld: verborgen voor managers (automatisch ingesteld) */}
               {isManager ? (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Manager</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('newOnboarding.managerLabel')}</label>
                   <div className="px-4 py-3 rounded-xl border border-gray-100 bg-blue-50 text-sm text-blue-700 font-medium">
-                    {profile?.name} (jij)
+                    {profile?.name} {t('newOnboarding.youSuffix')}
                   </div>
                 </div>
               ) : (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Manager</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('newOnboarding.managerLabel')}</label>
                   {loadingManagers ? (
-                    <div className="text-sm text-gray-400 py-2">Laden...</div>
+                    <div className="text-sm text-gray-400 py-2">{t('common.loading')}</div>
                   ) : (
                     <select
                       value={form.managerId}
@@ -318,7 +314,7 @@ function NewOnboardingPage() {
                       className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                       style={{ color: '#0f0f0e' }}
                     >
-                      <option value="">Selecteer een manager (optioneel)</option>
+                      <option value="">{t('newOnboarding.managerOptional')}</option>
                       {managers.map(m => (
                         <option key={m.id} value={m.id}>{m.name}</option>
                       ))}
@@ -328,7 +324,7 @@ function NewOnboardingPage() {
               )}
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Startdatum</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('newOnboarding.startDateLabel')}</label>
                 <input
                   type="date"
                   value={form.startDate}
@@ -339,26 +335,25 @@ function NewOnboardingPage() {
               </div>
             </div>
 
-            {/* Samenvatting */}
             <div className="bg-blue-50 rounded-2xl p-5 mt-4">
-              <p className="text-xs font-semibold text-blue-600 uppercase tracking-wide mb-3">Samenvatting</p>
+              <p className="text-xs font-semibold text-blue-600 uppercase tracking-wide mb-3">{t('newOnboarding.summary')}</p>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-gray-500">Medewerker</span>
+                  <span className="text-gray-500">{t('newOnboarding.summaryEmployee')}</span>
                   <span className="font-medium text-gray-900">{form.employeeName}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-500">Email</span>
+                  <span className="text-gray-500">{t('newOnboarding.summaryEmail')}</span>
                   <span className="font-medium text-gray-900">{form.employeeEmail}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-500">Template</span>
+                  <span className="text-gray-500">{t('newOnboarding.summaryTemplate')}</span>
                   <span className="font-medium text-gray-900">{selectedTemplate?.name}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-500">Manager</span>
+                  <span className="text-gray-500">{t('newOnboarding.summaryManager')}</span>
                   <span className="font-medium text-gray-900">
-                    {isManager ? `${profile?.name} (jij)` : (selectedManager?.name ?? '—')}
+                    {isManager ? `${profile?.name} ${t('newOnboarding.youSuffix')}` : (selectedManager?.name ?? t('newOnboarding.noManager'))}
                   </span>
                 </div>
               </div>
@@ -370,7 +365,7 @@ function NewOnboardingPage() {
 
             <div className="flex justify-between mt-6">
               <button onClick={() => setStep(2)} className="text-gray-500 px-6 py-3 rounded-xl text-sm font-medium hover:bg-gray-100 transition-colors">
-                ← Terug
+                {t('newOnboarding.back')}
               </button>
               <button
                 onClick={handleSubmit}
@@ -380,11 +375,9 @@ function NewOnboardingPage() {
                 {submitting ? (
                   <>
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    Bezig...
+                    {t('newOnboarding.submitting')}
                   </>
-                ) : (
-                  '🚀 Onboarding starten'
-                )}
+                ) : t('newOnboarding.submit')}
               </button>
             </div>
           </div>

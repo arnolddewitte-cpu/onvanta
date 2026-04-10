@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 
 interface Task {
   id: string
@@ -9,14 +10,8 @@ interface Task {
   dueLabel: string
 }
 
-const statusConfig = {
-  done:     { label: 'Afgerond',   color: 'text-green-600', bg: 'bg-green-50' },
-  today:    { label: 'Vandaag',    color: 'text-blue-600',  bg: 'bg-blue-50' },
-  overdue:  { label: 'Te laat',    color: 'text-red-600',   bg: 'bg-red-50' },
-  upcoming: { label: 'Binnenkort', color: 'text-gray-500',  bg: 'bg-gray-100' },
-}
-
 export default function TasksPage() {
+  const t = useTranslations('app')
   const [filter, setFilter] = useState<'all' | 'today' | 'overdue' | 'done'>('all')
   const [tasks, setTasks] = useState<Task[]>([])
   const [loading, setLoading] = useState(true)
@@ -32,12 +27,23 @@ export default function TasksPage() {
       .finally(() => setLoading(false))
   }, [])
 
-  const filtered = tasks.filter(t => {
+  const statusConfig = {
+    done:     { label: t('tasks.statusDone'),     color: 'text-green-600', bg: 'bg-green-50' },
+    today:    { label: t('tasks.statusToday'),    color: 'text-blue-600',  bg: 'bg-blue-50' },
+    overdue:  { label: t('tasks.statusOverdue'),  color: 'text-red-600',   bg: 'bg-red-50' },
+    upcoming: { label: t('tasks.statusUpcoming'), color: 'text-gray-500',  bg: 'bg-gray-100' },
+  }
+
+  const tabs = [
+    { key: 'all' as const,     label: t('tasks.filterAll') },
+    { key: 'today' as const,   label: t('tasks.filterToday') },
+    { key: 'overdue' as const, label: t('tasks.filterOverdue') },
+    { key: 'done' as const,    label: t('tasks.filterDone') },
+  ]
+
+  const filtered = tasks.filter(task => {
     if (filter === 'all') return true
-    if (filter === 'today') return t.status === 'today'
-    if (filter === 'overdue') return t.status === 'overdue'
-    if (filter === 'done') return t.status === 'done'
-    return true
+    return task.status === filter
   })
 
   const counts = {
@@ -50,7 +56,7 @@ export default function TasksPage() {
   if (loading) {
     return (
       <main className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <p className="text-gray-400 text-sm">Laden...</p>
+        <p className="text-gray-400 text-sm">{t('common.loading')}</p>
       </main>
     )
   }
@@ -59,30 +65,24 @@ export default function TasksPage() {
     <main className="min-h-screen bg-gray-50">
       <div className="max-w-3xl mx-auto px-6 py-8">
         <div className="mb-6">
-          <h1 className="text-2xl font-semibold text-gray-900">Taken</h1>
-          <p className="text-gray-500 mt-1">Overzicht van al je taken.</p>
+          <h1 className="text-2xl font-semibold text-gray-900">{t('tasks.title')}</h1>
+          <p className="text-gray-500 mt-1">{t('tasks.subtitle')}</p>
         </div>
 
         {noInstance ? (
           <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center">
             <div className="text-4xl mb-4">📋</div>
-            <p className="text-gray-500 text-sm">Geen actieve onboarding gevonden.</p>
+            <p className="text-gray-500 text-sm">{t('tasks.noOnboarding')}</p>
           </div>
         ) : tasks.length === 0 ? (
           <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center">
             <div className="text-4xl mb-4">✅</div>
-            <p className="text-gray-500 text-sm">Je hebt nog geen taken. Je manager kan taken aan je toewijzen.</p>
+            <p className="text-gray-500 text-sm">{t('tasks.noTasks')}</p>
           </div>
         ) : (
           <>
-            {/* Filter tabs */}
             <div className="flex gap-2 mb-6">
-              {([
-                { key: 'all',     label: 'Alles' },
-                { key: 'today',   label: 'Vandaag' },
-                { key: 'overdue', label: 'Te laat' },
-                { key: 'done',    label: 'Afgerond' },
-              ] as const).map(tab => (
+              {tabs.map(tab => (
                 <button
                   key={tab.key}
                   onClick={() => setFilter(tab.key)}
@@ -102,10 +102,9 @@ export default function TasksPage() {
               ))}
             </div>
 
-            {/* Taken lijst */}
             {filtered.length === 0 ? (
               <div className="bg-white rounded-2xl border border-gray-100 p-8 text-center">
-                <p className="text-gray-400 text-sm">Geen taken in deze categorie</p>
+                <p className="text-gray-400 text-sm">{t('tasks.noTasksInFilter')}</p>
               </div>
             ) : (
               <div className="space-y-2">

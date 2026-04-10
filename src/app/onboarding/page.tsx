@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 
 interface Step {
   id: string
@@ -25,6 +26,7 @@ interface OnboardingData {
 }
 
 export default function OnboardingPage() {
+  const t = useTranslations('app')
   const router = useRouter()
   const [data, setData] = useState<OnboardingData | null>(null)
   const [loading, setLoading] = useState(true)
@@ -39,7 +41,7 @@ export default function OnboardingPage() {
   if (loading) {
     return (
       <main className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <p className="text-gray-400 text-sm">Laden...</p>
+        <p className="text-gray-400 text-sm">{t('common.loading')}</p>
       </main>
     )
   }
@@ -50,7 +52,7 @@ export default function OnboardingPage() {
         <div className="max-w-3xl mx-auto px-6 py-8">
           <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center">
             <div className="text-4xl mb-4">📋</div>
-            <p className="text-gray-500 text-sm">Geen actieve onboarding gevonden.</p>
+            <p className="text-gray-500 text-sm">{t('onboarding.noOnboarding')}</p>
           </div>
         </div>
       </main>
@@ -61,14 +63,13 @@ export default function OnboardingPage() {
     <main className="min-h-screen bg-gray-50">
       <div className="max-w-3xl mx-auto px-6 py-8">
         <div className="mb-8">
-          <h1 className="text-2xl font-semibold text-gray-900">Jouw onboarding</h1>
-          <p className="text-gray-500 mt-1">Doorloop alle fases om volledig operationeel te worden.</p>
+          <h1 className="text-2xl font-semibold text-gray-900">{t('onboarding.title')}</h1>
+          <p className="text-gray-500 mt-1">{t('onboarding.subtitle')}</p>
         </div>
 
-        {/* Voortgangsbalk */}
         <div className="bg-white rounded-2xl border border-gray-100 p-5 mb-8">
           <div className="flex justify-between text-sm mb-2">
-            <span className="text-gray-500">Totale voortgang</span>
+            <span className="text-gray-500">{t('onboarding.totalProgress')}</span>
             <span className="font-semibold text-gray-900">{data.progressPct}%</span>
           </div>
           <div className="w-full bg-gray-100 rounded-full h-2 mb-2">
@@ -77,10 +78,9 @@ export default function OnboardingPage() {
               style={{ width: `${data.progressPct}%` }}
             />
           </div>
-          <p className="text-xs text-gray-400">{data.completedCount} van {data.totalSteps} stappen voltooid</p>
+          <p className="text-xs text-gray-400">{t('onboarding.stepsCompleted', { completed: data.completedCount, total: data.totalSteps })}</p>
         </div>
 
-        {/* Fases */}
         <div className="space-y-4">
           {data.phases.map((phase, i) => {
             const isCompleted = phase.status === 'completed'
@@ -106,7 +106,7 @@ export default function OnboardingPage() {
                         isCompleted ? 'bg-green-50 text-green-600' :
                         isActive ? 'bg-blue-50 text-blue-600' : 'bg-gray-100 text-gray-400'
                       }`}>
-                        {isCompleted ? 'Afgerond' : isActive ? 'Bezig' : 'Nog te doen'}
+                        {isCompleted ? t('onboarding.phaseCompleted') : isActive ? t('onboarding.phaseActive') : t('onboarding.phaseTodo')}
                       </span>
                     </div>
                   </div>

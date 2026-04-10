@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 
 type ModalMode = 'none' | 'manual' | 'ai'
 
@@ -16,34 +17,19 @@ interface Template {
   stepCount: number
 }
 
-function timeAgo(iso: string): string {
-  const diff = Date.now() - new Date(iso).getTime()
-  const mins = Math.floor(diff / 60000)
-  if (mins < 60) return `${mins} minuten geleden`
-  const hours = Math.floor(mins / 60)
-  if (hours < 24) return `${hours} uur geleden`
-  const days = Math.floor(hours / 24)
-  if (days < 7) return `${days} dag${days !== 1 ? 'en' : ''} geleden`
-  const weeks = Math.floor(days / 7)
-  return `${weeks} week${weeks !== 1 ? 'en' : ''} geleden`
-}
-
 export default function TemplatesPage() {
+  const t = useTranslations('app')
   const router = useRouter()
   const nameRef = useRef<HTMLInputElement>(null)
 
   const [templates, setTemplates] = useState<Template[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-
   const [search, setSearch] = useState('')
-
   const [modal, setModal] = useState<ModalMode>('none')
   const [form, setForm] = useState({ name: '', description: '' })
   const [creating, setCreating] = useState(false)
   const [createError, setCreateError] = useState('')
-
-  // AI generator state
   const [aiForm, setAiForm] = useState({ role: '', context: '' })
   const [aiGenerating, setAiGenerating] = useState(false)
   const [aiError, setAiError] = useState('')
@@ -56,11 +42,10 @@ export default function TemplatesPage() {
         if (data.error) { setError(data.error); return }
         setTemplates(data)
       })
-      .catch(() => setError('Kon templates niet laden'))
+      .catch(() => setError(t('common.error')))
       .finally(() => setLoading(false))
   }, [])
 
-  // Focus naamveld zodra modal opent
   useEffect(() => {
     if (modal === 'manual') setTimeout(() => nameRef.current?.focus(), 50)
     if (modal === 'ai') setTimeout(() => aiRoleRef.current?.focus(), 50)
@@ -84,7 +69,7 @@ export default function TemplatesPage() {
   }
 
   async function handleCreate() {
-    if (!form.name.trim()) { setCreateError('Naam is verplicht'); return }
+    if (!form.name.trim()) { setCreateError(t('templates.nameRequired')); return }
     setCreating(true)
     setCreateError('')
 
@@ -97,7 +82,7 @@ export default function TemplatesPage() {
     setCreating(false)
 
     if (!res.ok) {
-      setCreateError(data.error || 'Er ging iets mis')
+      setCreateError(data.error || t('common.error'))
       return
     }
 
@@ -105,7 +90,7 @@ export default function TemplatesPage() {
   }
 
   async function handleAiGenerate() {
-    if (!aiForm.role.trim()) { setAiError('Functietitel is verplicht'); return }
+    if (!aiForm.role.trim()) { setAiError(t('templates.errorMissingRole')); return }
     setAiGenerating(true)
     setAiError('')
 
@@ -118,16 +103,28 @@ export default function TemplatesPage() {
     setAiGenerating(false)
 
     if (!res.ok) {
-      setAiError(data.error || 'Er ging iets mis')
+      setAiError(data.error || t('common.error'))
       return
     }
 
     router.push(`/admin/templates/${data.id}/edit`)
   }
 
-  const filteredTemplates = templates.filter(t => {
+  function timeAgo(iso: string): string {
+    const diff = Date.now() - new Date(iso).getTime()
+    const mins = Math.floor(diff / 60000)
+    if (mins < 60) return t('templates.minutesAgo', { n: mins })
+    const hours = Math.floor(mins / 60)
+    if (hours < 24) return t('templates.hoursAgo', { n: hours })
+    const days = Math.floor(hours / 24)
+    if (days < 7) return days === 1 ? t('templates.dayAgo', { n: days }) : t('templates.daysAgo', { n: days })
+    const weeks = Math.floor(days / 7)
+    return weeks === 1 ? t('templates.weekAgo', { n: weeks }) : t('templates.weeksAgo', { n: weeks })
+  }
+
+  const filteredTemplates = templates.filter(tmpl => {
     const q = search.toLowerCase()
-    return t.name.toLowerCase().includes(q) || (t.description ?? '').toLowerCase().includes(q)
+    return tmpl.name.toLowerCase().includes(q) || (tmpl.description ?? '').toLowerCase().includes(q)
   })
 
   return (
@@ -135,42 +132,39 @@ export default function TemplatesPage() {
       <div className="max-w-4xl mx-auto px-6 py-8">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-2xl font-semibold text-gray-900">Templates</h1>
-            <p className="text-gray-500 mt-1">Beheer de onboarding templates voor je team.</p>
+            <h1 className="text-2xl font-semibold text-gray-900">{t('templates.title')}</h1>
+            <p className="text-gray-500 mt-1">{t('templates.subtitle')}</p>
           </div>
           <div className="flex gap-2">
             <button
               onClick={openAiModal}
               className="bg-purple-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-purple-700 transition-colors flex items-center gap-1.5"
             >
-              <span>✦</span> Genereer met AI
+              {t('templates.generateAi')}
             </button>
             <button
               onClick={openModal}
               className="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-blue-700 transition-colors"
             >
-              + Nieuw template
+              {t('templates.newTemplate')}
             </button>
           </div>
         </div>
 
-        {/* Tabs */}
         <div className="flex gap-1 mb-8 border-b border-gray-200">
-          <button
-            className="px-4 py-2.5 text-sm font-medium text-blue-600 border-b-2 border-blue-600 -mb-px"
-          >
-            Mijn templates
+          <button className="px-4 py-2.5 text-sm font-medium text-blue-600 border-b-2 border-blue-600 -mb-px">
+            {t('templates.myTemplates')}
           </button>
           <button
             onClick={() => router.push('/admin/templates/library')}
             className="px-4 py-2.5 text-sm font-medium text-gray-500 hover:text-gray-700 transition-colors"
           >
-            Bibliotheek
+            {t('templates.library')}
           </button>
         </div>
 
         {loading && (
-          <div className="text-center py-16 text-gray-400 text-sm">Laden...</div>
+          <div className="text-center py-16 text-gray-400 text-sm">{t('common.loading')}</div>
         )}
 
         {error && (
@@ -179,20 +173,19 @@ export default function TemplatesPage() {
 
         {!loading && !error && templates.length === 0 && (
           <div className="text-center py-16">
-            <p className="text-gray-400 text-sm mb-4">Nog geen templates. Maak je eerste template aan.</p>
+            <p className="text-gray-400 text-sm mb-4">{t('templates.noTemplates')}</p>
             <div className="flex justify-center gap-3">
               <button onClick={openAiModal} className="text-sm text-purple-600 font-medium hover:underline">
-                ✦ Genereer met AI
+                {t('templates.generateWithAi')}
               </button>
               <span className="text-gray-300">|</span>
               <button onClick={openModal} className="text-sm text-blue-600 font-medium hover:underline">
-                + Handmatig aanmaken
+                {t('templates.createManually')}
               </button>
             </div>
           </div>
         )}
 
-        {/* Zoekbalk */}
         {!loading && !error && templates.length > 0 && (
           <div className="relative mb-6">
             <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm">🔍</span>
@@ -200,7 +193,7 @@ export default function TemplatesPage() {
               type="text"
               value={search}
               onChange={e => setSearch(e.target.value)}
-              placeholder="Zoek op naam of omschrijving..."
+              placeholder={t('templates.searchPlaceholder')}
               className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
             />
           </div>
@@ -208,7 +201,7 @@ export default function TemplatesPage() {
 
         {!loading && !error && templates.length > 0 && filteredTemplates.length === 0 && (
           <div className="text-center py-12 text-gray-400 text-sm">
-            Geen templates gevonden voor &ldquo;{search}&rdquo;
+            {t('templates.noResults', { search })}
           </div>
         )}
 
@@ -224,7 +217,7 @@ export default function TemplatesPage() {
                     <h3 className="font-semibold text-gray-900 text-lg">{template.name}</h3>
                     {!template.published && (
                       <span className="text-xs bg-yellow-50 text-yellow-600 border border-yellow-200 px-2 py-0.5 rounded-full">
-                        concept
+                        {t('templates.draft')}
                       </span>
                     )}
                   </div>
@@ -235,22 +228,22 @@ export default function TemplatesPage() {
                     onClick={() => router.push(`/admin/templates/${template.id}`)}
                     className="text-sm bg-gray-100 text-gray-600 px-3 py-1.5 rounded-lg hover:bg-gray-200 transition-colors"
                   >
-                    Bekijken
+                    {t('templates.view')}
                   </button>
                   <button
                     onClick={() => router.push(`/admin/templates/${template.id}/edit`)}
                     className="text-sm bg-blue-50 text-blue-600 px-3 py-1.5 rounded-lg hover:bg-blue-100 transition-colors"
                   >
-                    Bewerken
+                    {t('templates.edit')}
                   </button>
                 </div>
               </div>
 
               <div className="flex items-center gap-6 text-sm text-gray-500">
-                <span>📋 {template.phaseCount} fases</span>
-                <span>📝 {template.stepCount} stappen</span>
+                <span>📋 {t('templates.phases', { count: template.phaseCount })}</span>
+                <span>📝 {t('templates.steps', { count: template.stepCount })}</span>
                 <span className="ml-auto text-xs text-gray-400">
-                  Bijgewerkt {timeAgo(template.updatedAt)}
+                  {t('templates.updated', { time: timeAgo(template.updatedAt) })}
                 </span>
               </div>
             </div>
@@ -258,7 +251,7 @@ export default function TemplatesPage() {
         </div>
       </div>
 
-      {/* Modal: handmatig aanmaken */}
+      {/* Modal: manual */}
       {modal === 'manual' && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4"
@@ -267,19 +260,14 @@ export default function TemplatesPage() {
         >
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
             <div className="flex items-center justify-between mb-5">
-              <h2 className="text-lg font-semibold text-gray-900">Nieuw template</h2>
-              <button
-                onClick={closeModal}
-                className="text-gray-400 hover:text-gray-600 text-2xl leading-none"
-              >
-                ×
-              </button>
+              <h2 className="text-lg font-semibold text-gray-900">{t('templates.modalTitle')}</h2>
+              <button onClick={closeModal} className="text-gray-400 hover:text-gray-600 text-2xl leading-none">×</button>
             </div>
 
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                  Naam <span className="text-red-400">*</span>
+                  {t('templates.nameLabel')} <span className="text-red-400">*</span>
                 </label>
                 <input
                   ref={nameRef}
@@ -287,27 +275,25 @@ export default function TemplatesPage() {
                   value={form.name}
                   onChange={e => setForm({ ...form, name: e.target.value })}
                   onKeyDown={e => e.key === 'Enter' && handleCreate()}
-                  placeholder="bijv. Warehouse Medewerker"
+                  placeholder={t('templates.namePlaceholder')}
                   className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                  Omschrijving
+                  {t('templates.descLabel')}
                 </label>
                 <textarea
                   value={form.description}
                   onChange={e => setForm({ ...form, description: e.target.value })}
-                  placeholder="Korte omschrijving van de onboarding..."
+                  placeholder={t('templates.descPlaceholder')}
                   rows={3}
                   className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
                 />
               </div>
             </div>
 
-            {createError && (
-              <p className="mt-3 text-sm text-red-500">{createError}</p>
-            )}
+            {createError && <p className="mt-3 text-sm text-red-500">{createError}</p>}
 
             <div className="flex gap-3 mt-6">
               <button
@@ -315,21 +301,21 @@ export default function TemplatesPage() {
                 disabled={creating}
                 className="flex-1 px-4 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 transition-colors"
               >
-                Annuleren
+                {t('common.cancel')}
               </button>
               <button
                 onClick={handleCreate}
                 disabled={creating || !form.name.trim()}
                 className="flex-1 px-4 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
               >
-                {creating ? 'Aanmaken...' : 'Template aanmaken →'}
+                {creating ? t('templates.creating') : t('templates.create')}
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Modal: genereer met AI */}
+      {/* Modal: AI */}
       {modal === 'ai' && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4"
@@ -338,23 +324,19 @@ export default function TemplatesPage() {
         >
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
             <div className="flex items-center justify-between mb-2">
-              <h2 className="text-lg font-semibold text-gray-900">Template genereren met AI</h2>
+              <h2 className="text-lg font-semibold text-gray-900">{t('templates.aiModalTitle')}</h2>
               <button
                 onClick={closeModal}
                 disabled={aiGenerating}
                 className="text-gray-400 hover:text-gray-600 text-2xl leading-none disabled:opacity-30"
-              >
-                ×
-              </button>
+              >×</button>
             </div>
-            <p className="text-sm text-gray-500 mb-5">
-              Beschrijf de functie en de AI genereert automatisch een compleet onboarding programma.
-            </p>
+            <p className="text-sm text-gray-500 mb-5">{t('templates.aiModalSubtitle')}</p>
 
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                  Functietitel <span className="text-red-400">*</span>
+                  {t('templates.aiRoleLabel')} <span className="text-red-400">*</span>
                 </label>
                 <input
                   ref={aiRoleRef}
@@ -362,7 +344,7 @@ export default function TemplatesPage() {
                   value={aiForm.role}
                   onChange={e => setAiForm({ ...aiForm, role: e.target.value })}
                   onKeyDown={e => e.key === 'Enter' && !aiGenerating && handleAiGenerate()}
-                  placeholder="bijv. Warehouse Medewerker, Junior Developer..."
+                  placeholder={t('templates.aiRolePlaceholder')}
                   disabled={aiGenerating}
                   style={{ color: '#0f0f0e' }}
                   className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-50 disabled:text-gray-400"
@@ -370,15 +352,13 @@ export default function TemplatesPage() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                  Extra context <span className="text-gray-400 font-normal">(optioneel)</span>
+                  {t('templates.aiContextLabel')} <span className="text-gray-400 font-normal">{t('templates.aiContextOptional')}</span>
                 </label>
-                <p className="text-xs text-gray-500 mb-2">
-                  💡 Tip: Plak hier de volledige functieomschrijving van de medewerker. Hoe meer context je geeft (tools, verantwoordelijkheden, branche, bijzonderheden), hoe beter het gegenereerde template aansluit op de functie.
-                </p>
+                <p className="text-xs text-gray-500 mb-2">{t('templates.aiContextTip')}</p>
                 <textarea
                   value={aiForm.context}
                   onChange={e => setAiForm({ ...aiForm, context: e.target.value })}
-                  placeholder="bijv. fysiek werk in een distributiecentrum, werkt in ploegendienst, 3-shifts..."
+                  placeholder={t('templates.aiContextPlaceholder')}
                   rows={3}
                   disabled={aiGenerating}
                   style={{ color: '#0f0f0e' }}
@@ -391,15 +371,13 @@ export default function TemplatesPage() {
               <div className="mt-4 p-3 bg-purple-50 rounded-xl">
                 <div className="flex items-center gap-2">
                   <div className="w-4 h-4 border-2 border-purple-400 border-t-transparent rounded-full animate-spin flex-shrink-0" />
-                  <p className="text-sm text-purple-700">AI is je onboarding template aan het samenstellen...</p>
+                  <p className="text-sm text-purple-700">{t('templates.aiGenerating')}</p>
                 </div>
-                <p className="text-xs text-purple-500 mt-1 ml-6">Dit duurt ongeveer 15-30 seconden.</p>
+                <p className="text-xs text-purple-500 mt-1 ml-6">{t('templates.aiDuration')}</p>
               </div>
             )}
 
-            {aiError && (
-              <p className="mt-3 text-sm text-red-500">{aiError}</p>
-            )}
+            {aiError && <p className="mt-3 text-sm text-red-500">{aiError}</p>}
 
             <div className="flex gap-3 mt-6">
               <button
@@ -407,7 +385,7 @@ export default function TemplatesPage() {
                 disabled={aiGenerating}
                 className="flex-1 px-4 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 transition-colors disabled:opacity-40"
               >
-                Annuleren
+                {t('common.cancel')}
               </button>
               <button
                 onClick={handleAiGenerate}
@@ -417,11 +395,9 @@ export default function TemplatesPage() {
                 {aiGenerating ? (
                   <>
                     <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    Genereren...
+                    {t('templates.generatingBtn')}
                   </>
-                ) : (
-                  '✦ Template genereren'
-                )}
+                ) : t('templates.generateBtn')}
               </button>
             </div>
           </div>

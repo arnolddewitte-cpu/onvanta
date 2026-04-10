@@ -75,6 +75,7 @@ model Company {
   trialEndsAt          DateTime?
   stripeCustomerId     String?
   stripeSubscriptionId String?
+  locale               String        @default("nl")
   createdAt            DateTime      @default(now())
   updatedAt            DateTime      @updatedAt
 
