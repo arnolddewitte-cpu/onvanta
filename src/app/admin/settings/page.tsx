@@ -46,6 +46,14 @@ function SettingsContent() {
   const [sendingTestEmail, setSendingTestEmail] = useState(false)
   const [testEmailResult, setTestEmailResult] = useState<{ ok: boolean; msg: string } | null>(null)
 
+  // Gevarenzone
+  const [showPauseModal, setShowPauseModal] = useState(false)
+  const [pauseLoading, setPauseLoading] = useState(false)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [deleteConfirm, setDeleteConfirm] = useState('')
+  const [deleteLoading, setDeleteLoading] = useState(false)
+  const [deleteError, setDeleteError] = useState('')
+
   // Abonnement
   const [checkingOut, setCheckingOut] = useState(false)
   const [checkoutError, setCheckoutError] = useState<string | null>(null)
@@ -174,6 +182,42 @@ function SettingsContent() {
 
   const isActive = company?.status === 'active'
   const isTrial = company?.status === 'trial'
+  const isPaused = company?.status === 'paused'
+
+  async function handlePauseResume() {
+    if (!company) return
+    setPauseLoading(true)
+    const action = isPaused ? 'resume' : 'pause'
+    const res = await fetch('/api/admin/company/status', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action }),
+    })
+    setPauseLoading(false)
+    setShowPauseModal(false)
+    if (res.ok) {
+      const data = await res.json()
+      setCompany({ ...company, status: data.status })
+    }
+  }
+
+  async function handleDelete() {
+    if (!company || deleteConfirm !== company.name) return
+    setDeleteLoading(true)
+    setDeleteError('')
+    const res = await fetch('/api/admin/company/delete', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ confirm: deleteConfirm }),
+    })
+    if (res.ok) {
+      window.location.href = '/'
+    } else {
+      const data = await res.json()
+      setDeleteError(data.error ?? 'Er ging iets mis')
+      setDeleteLoading(false)
+    }
+  }
 
   const TABS: { id: Tab; label: string }[] = [
     { id: 'algemeen', label: 'Algemeen' },
@@ -589,11 +633,20 @@ function SettingsContent() {
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-900">Account pauzeren</p>
-                <p className="text-xs text-gray-500">Alle onboardings worden tijdelijk gestopt.</p>
+                <p className="text-sm font-medium text-gray-900">
+                  {isPaused ? 'Account hervatten' : 'Account pauzeren'}
+                </p>
+                <p className="text-xs text-gray-500">
+                  {isPaused
+                    ? 'Herstart alle gepauzeerde onboardings.'
+                    : 'Alle onboardings worden tijdelijk gestopt.'}
+                </p>
               </div>
-              <button className="text-sm bg-yellow-50 text-yellow-600 px-4 py-2 rounded-xl hover:bg-yellow-100 transition-colors font-medium">
-                Pauzeren
+              <button
+                onClick={() => setShowPauseModal(true)}
+                className="text-sm bg-yellow-50 text-yellow-600 px-4 py-2 rounded-xl hover:bg-yellow-100 transition-colors font-medium"
+              >
+                {isPaused ? 'Hervatten' : 'Pauzeren'}
               </button>
             </div>
             <div className="border-t border-gray-50 pt-3 flex items-center justify-between">
@@ -601,7 +654,10 @@ function SettingsContent() {
                 <p className="text-sm font-medium text-gray-900">Account verwijderen</p>
                 <p className="text-xs text-gray-500">Alle data wordt permanent verwijderd.</p>
               </div>
-              <button className="text-sm bg-red-50 text-red-600 px-4 py-2 rounded-xl hover:bg-red-100 transition-colors font-medium">
+              <button
+                onClick={() => { setShowDeleteModal(true); setDeleteConfirm(''); setDeleteError('') }}
+                className="text-sm bg-red-50 text-red-600 px-4 py-2 rounded-xl hover:bg-red-100 transition-colors font-medium"
+              >
                 Verwijderen
               </button>
             </div>
@@ -609,6 +665,82 @@ function SettingsContent() {
         </div>
 
       </div>
+
+      {/* Pause / resume modal */}
+      {showPauseModal && (
+        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
+            <h3 className="font-semibold text-gray-900 mb-2">
+              {isPaused ? 'Account hervatten?' : 'Account pauzeren?'}
+            </h3>
+            <p className="text-sm text-gray-500 mb-6">
+              {isPaused
+                ? 'Alle gepauzeerde onboardings worden hervat en medewerkers kunnen weer inloggen.'
+                : 'Weet je zeker dat je het account wil pauzeren? Alle actieve onboardings worden tijdelijk gestopt.'}
+            </p>
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => setShowPauseModal(false)}
+                disabled={pauseLoading}
+                className="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors"
+              >
+                Annuleren
+              </button>
+              <button
+                onClick={handlePauseResume}
+                disabled={pauseLoading}
+                className="px-4 py-2 text-sm font-medium text-white bg-yellow-500 rounded-xl hover:bg-yellow-600 transition-colors disabled:opacity-50 flex items-center gap-2"
+              >
+                {pauseLoading && <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />}
+                {isPaused ? 'Hervatten' : 'Pauzeren'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
+            <h3 className="font-semibold text-red-600 mb-2">Account permanent verwijderen</h3>
+            <p className="text-sm text-gray-500 mb-4">
+              Dit verwijdert alle data — gebruikers, onboardings, templates en instellingen — en kan <strong>niet ongedaan</strong> worden gemaakt.
+            </p>
+            <p className="text-sm text-gray-700 mb-2">
+              Typ <strong>{company?.name}</strong> om te bevestigen:
+            </p>
+            <input
+              type="text"
+              value={deleteConfirm}
+              onChange={e => setDeleteConfirm(e.target.value)}
+              placeholder={company?.name ?? ''}
+              className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 mb-4"
+            />
+            {deleteError && (
+              <p className="text-xs text-red-600 mb-3">{deleteError}</p>
+            )}
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                disabled={deleteLoading}
+                className="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors"
+              >
+                Annuleren
+              </button>
+              <button
+                onClick={handleDelete}
+                disabled={deleteConfirm !== company?.name || deleteLoading}
+                className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-xl hover:bg-red-700 transition-colors disabled:opacity-40 flex items-center gap-2"
+              >
+                {deleteLoading && <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />}
+                Definitief verwijderen
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </main>
   )
 }
