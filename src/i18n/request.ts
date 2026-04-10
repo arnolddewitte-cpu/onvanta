@@ -38,11 +38,14 @@ async function getCompanyLocale(): Promise<string | null> {
 export default getRequestConfig(async ({ requestLocale }) => {
   let locale = await requestLocale
 
-  // For app routes (no URL locale segment), resolve priority:
-  // 1. Company.locale from DB (for logged-in users)
-  // 2. Cookie
-  // 3. Default
-  if (!isValidLocale(locale)) {
+  if (isValidLocale(locale)) {
+    // URL locale segment has highest priority ([locale] routes like /en/help).
+    // Do not override with DB or cookie — the URL is the source of truth here.
+  } else {
+    // For app routes (no URL locale segment), resolve priority:
+    // 1. Company.locale from DB (for logged-in users)
+    // 2. Cookie
+    // 3. Default
     const cookieStore = await cookies()
     const cookieLocale = cookieStore.get('ONVANTA_LOCALE')?.value
 
