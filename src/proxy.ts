@@ -21,6 +21,14 @@ function isAppPath(path: string) {
 export async function proxy(req: NextRequest) {
   const path = req.nextUrl.pathname
 
+  // /en/<app-path> → redirect to /<app-path> (app routes never have a locale prefix)
+  if (path.startsWith('/en/')) {
+    const stripped = path.slice(3) // e.g. /en/login → /login
+    if (isAppPath(stripped)) {
+      return NextResponse.redirect(new URL(stripped + req.nextUrl.search, req.url))
+    }
+  }
+
   // Marketing pages (including /en/* variants) → next-intl locale routing
   if (!isAppPath(path)) {
     return intlMiddleware(req)
