@@ -49,7 +49,16 @@ export default function Navigation({ role = 'employee' }: Props) {
   }
 
   function switchLocale(next: string) {
-    document.cookie = `ONVANTA_LOCALE=${next}; path=/; max-age=31536000; SameSite=Lax`
+    const cookieOpts = '; path=/; max-age=31536000; SameSite=Lax'
+    document.cookie = `ONVANTA_LOCALE=${next}${cookieOpts}`
+    document.cookie = `NEXT_LOCALE=${next}${cookieOpts}` // used by next-intl middleware
+    // Persist per-user locale (all roles)
+    fetch('/api/me/locale', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ locale: next }),
+    }).catch(() => {})
+    // Also update company default (succeeds only for company_admin, silently ignored otherwise)
     fetch('/api/admin/company', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },

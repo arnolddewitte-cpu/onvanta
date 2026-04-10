@@ -90,6 +90,7 @@ model User {
   name      String
   avatarUrl String?
   role      UserRole @default(employee)
+  locale    String?
   companyId String
   company   Company  @relation(fields: [companyId], references: [id])
   createdAt DateTime @default(now())

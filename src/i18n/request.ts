@@ -8,30 +8,34 @@ function isValidLocale(v: string | undefined | null): v is 'nl' | 'en' {
   return !!v && routing.locales.includes(v as 'nl' | 'en')
 }
 
-async function getCompanyLocale(): Promise<string | null> {
+async function getDbLocales(): Promise<{ userLocale: string | null; companyLocale: string | null }> {
   try {
     const cookieStore = await cookies()
     const token = cookieStore.get('next-auth.session-token')?.value
-    if (!token) return null
+    if (!token) return { userLocale: null, companyLocale: null }
 
     const secret = new TextEncoder().encode(process.env.NEXTAUTH_SECRET!)
     const { payload } = await jwtVerify(token, secret)
+    const userId = payload.sub as string | undefined
     const companyId = payload.companyId as string | undefined
-    if (!companyId) return null
+    if (!userId && !companyId) return { userLocale: null, companyLocale: null }
 
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!,
     )
-    const { data } = await supabase
-      .from('Company')
-      .select('locale')
-      .eq('id', companyId)
-      .single()
 
-    return data?.locale ?? null
+    const [userResult, companyResult] = await Promise.all([
+      userId ? supabase.from('User').select('locale').eq('id', userId).single() : Promise.resolve({ data: null }),
+      companyId ? supabase.from('Company').select('locale').eq('id', companyId).single() : Promise.resolve({ data: null }),
+    ])
+
+    return {
+      userLocale: (userResult.data as { locale?: string } | null)?.locale ?? null,
+      companyLocale: (companyResult.data as { locale?: string } | null)?.locale ?? null,
+    }
   } catch {
-    return null
+    return { userLocale: null, companyLocale: null }
   }
 }
 
@@ -43,12 +47,19 @@ export default getRequestConfig(async ({ requestLocale }) => {
   // 2. Cookie
   // 3. Default
   if (!isValidLocale(locale)) {
+    // Priority for app routes (no URL locale segment):
+    // 1. User.locale  — per-user preference (set by locale switcher)
+    // 2. Company.locale — company default
+    // 3. ONVANTA_LOCALE cookie — client-side fallback
+    // 4. Default locale
     const cookieStore = await cookies()
     const cookieLocale = cookieStore.get('ONVANTA_LOCALE')?.value
 
-    const companyLocale = await getCompanyLocale()
+    const { userLocale, companyLocale } = await getDbLocales()
 
-    if (isValidLocale(companyLocale)) {
+    if (isValidLocale(userLocale)) {
+      locale = userLocale
+    } else if (isValidLocale(companyLocale)) {
       locale = companyLocale
     } else if (isValidLocale(cookieLocale)) {
       locale = cookieLocale
