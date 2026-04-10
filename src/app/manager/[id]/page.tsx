@@ -79,12 +79,24 @@ export default function MemberDetailPage({ params: paramsPromise }: { params: Pr
       <div className="max-w-3xl mx-auto px-6 py-8">
 
         {/* Terug */}
-        <button
-          onClick={() => router.push('/manager')}
-          className="text-sm text-gray-400 hover:text-gray-600 mb-6 transition-colors"
-        >
-          ← Team overzicht
-        </button>
+        <div className="flex items-center justify-between mb-6">
+          <button
+            onClick={() => router.push('/manager')}
+            className="text-sm text-gray-400 hover:text-gray-600 transition-colors"
+          >
+            ← Team overzicht
+          </button>
+          {instance.status === 'completed' && (
+            <a
+              href={`/api/manager/team/${instance.id}/certificate`}
+              download
+              className="flex items-center gap-2 bg-green-50 text-green-700 text-sm font-medium px-4 py-2 rounded-xl hover:bg-green-100 transition-colors border border-green-200"
+            >
+              <span>🎓</span>
+              Certificaat downloaden
+            </a>
+          )}
+        </div>
 
         {/* Profiel */}
         <div className="bg-white rounded-2xl border border-gray-100 p-6 mb-6">

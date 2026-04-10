@@ -17,7 +17,7 @@ export async function GET() {
       manager:User!OnboardingInstance_managerId_fkey(id, name)
     `)
     .eq('employeeId', session.id)
-    .in('status', ['active', 'at_risk'])
+    .in('status', ['active', 'at_risk', 'completed'])
     .order('createdAt', { ascending: false })
     .limit(1)
     .single() as { data: {
