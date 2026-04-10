@@ -57,14 +57,14 @@ export default function Navigation({ role = 'employee' }: Props) {
     const isAppRoute = APP_PREFIXES.some(p => base === p || base.startsWith(p + '/'))
 
     if (isAppRoute) {
-      // App page: persist to DB and reload (URL stays the same)
+      // Cookie always wins as fallback (works for super_admin who has no company)
       document.cookie = `ONVANTA_LOCALE=${next}; path=/; max-age=31536000; SameSite=Lax`
+      // Try to persist to company DB — silently skip if no permission (e.g. super_admin)
       fetch('/api/admin/company', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ locale: next }),
-      }).catch(() => {})
-      window.location.reload()
+      }).catch(() => {}).finally(() => window.location.reload())
     } else {
       // [locale] page (marketing / /help): change URL prefix only
       if (next === 'en' && !path.startsWith('/en')) {
