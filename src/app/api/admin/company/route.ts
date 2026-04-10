@@ -10,7 +10,7 @@ export async function GET() {
 
   const { data: company } = await supabaseAdmin
     .from('Company')
-    .select('id, name, slug, plan, status, trialEndsAt, stripeCustomerId, logoUrl, senderName, welcomeMessage, brandColor')
+    .select('id, name, slug, plan, status, trialEndsAt, stripeCustomerId, logoUrl, senderName, welcomeMessage, brandColor, locale')
     .eq('id', session.companyId)
     .single()
 
