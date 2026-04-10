@@ -8,52 +8,47 @@ function isValidLocale(v: string | undefined | null): v is 'nl' | 'en' {
   return !!v && routing.locales.includes(v as 'nl' | 'en')
 }
 
-async function getDbLocales(): Promise<{ userLocale: string | null; companyLocale: string | null }> {
+async function getCompanyLocale(): Promise<string | null> {
   try {
     const cookieStore = await cookies()
     const token = cookieStore.get('next-auth.session-token')?.value
-    if (!token) return { userLocale: null, companyLocale: null }
+    if (!token) return null
 
     const secret = new TextEncoder().encode(process.env.NEXTAUTH_SECRET!)
     const { payload } = await jwtVerify(token, secret)
-    const userId = payload.sub as string | undefined
     const companyId = payload.companyId as string | undefined
-    if (!userId && !companyId) return { userLocale: null, companyLocale: null }
+    if (!companyId) return null
 
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!,
     )
+    const { data } = await supabase
+      .from('Company')
+      .select('locale')
+      .eq('id', companyId)
+      .single()
 
-    const [userResult, companyResult] = await Promise.all([
-      userId ? supabase.from('User').select('locale').eq('id', userId).single() : Promise.resolve({ data: null }),
-      companyId ? supabase.from('Company').select('locale').eq('id', companyId).single() : Promise.resolve({ data: null }),
-    ])
-
-    return {
-      userLocale: (userResult.data as { locale?: string } | null)?.locale ?? null,
-      companyLocale: (companyResult.data as { locale?: string } | null)?.locale ?? null,
-    }
+    return data?.locale ?? null
   } catch {
-    return { userLocale: null, companyLocale: null }
+    return null
   }
 }
 
 export default getRequestConfig(async ({ requestLocale }) => {
   let locale = await requestLocale
 
-  if (isValidLocale(locale)) {
-    // URL locale segment always wins — /help = nl, /en/help = en, no exceptions.
-  } else {
-    // App routes without a URL locale segment: User.locale > Company.locale > cookie > default
+  // For app routes (no URL locale segment), resolve priority:
+  // 1. Company.locale from DB (for logged-in users)
+  // 2. Cookie
+  // 3. Default
+  if (!isValidLocale(locale)) {
     const cookieStore = await cookies()
     const cookieLocale = cookieStore.get('ONVANTA_LOCALE')?.value
 
-    const { userLocale, companyLocale } = await getDbLocales()
+    const companyLocale = await getCompanyLocale()
 
-    if (isValidLocale(userLocale)) {
-      locale = userLocale
-    } else if (isValidLocale(companyLocale)) {
+    if (isValidLocale(companyLocale)) {
       locale = companyLocale
     } else if (isValidLocale(cookieLocale)) {
       locale = cookieLocale

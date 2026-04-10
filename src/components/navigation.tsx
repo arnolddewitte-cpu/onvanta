@@ -48,14 +48,32 @@ export default function Navigation({ role = 'employee' }: Props) {
     router.push('/login')
   }
 
+  // App routes that never carry a locale prefix — these use DB + reload
+  const APP_PREFIXES = ['/admin', '/dashboard', '/manager', '/onboarding', '/login', '/signup', '/flashcards', '/tasks', '/super']
+
   function switchLocale(next: string) {
     const path = window.location.pathname
-    if (next === 'en' && !path.startsWith('/en')) {
-      window.location.href = '/en' + (path === '/' ? '' : path)
-    } else if (next === 'nl' && path.startsWith('/en')) {
-      window.location.href = path.replace(/^\/en/, '') || '/'
-    } else {
+    const base = path.startsWith('/en/') ? path.slice(3) : path === '/en' ? '/' : path
+    const isAppRoute = APP_PREFIXES.some(p => base === p || base.startsWith(p + '/'))
+
+    if (isAppRoute) {
+      // App page: persist to DB and reload (URL stays the same)
+      document.cookie = `ONVANTA_LOCALE=${next}; path=/; max-age=31536000; SameSite=Lax`
+      fetch('/api/admin/company', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ locale: next }),
+      }).catch(() => {})
       window.location.reload()
+    } else {
+      // [locale] page (marketing / /help): change URL prefix only
+      if (next === 'en' && !path.startsWith('/en')) {
+        window.location.href = '/en' + (path === '/' ? '' : path)
+      } else if (next === 'nl' && path.startsWith('/en')) {
+        window.location.href = path.replace(/^\/en/, '') || '/'
+      } else {
+        window.location.reload()
+      }
     }
   }
 
