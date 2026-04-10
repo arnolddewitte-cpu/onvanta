@@ -49,34 +49,13 @@ export default function Navigation({ role = 'employee' }: Props) {
   }
 
   function switchLocale(next: string) {
-    const cookieOpts = '; path=/; max-age=31536000; SameSite=Lax'
-    document.cookie = `ONVANTA_LOCALE=${next}${cookieOpts}`
-    document.cookie = `NEXT_LOCALE=${next}${cookieOpts}` // used by next-intl middleware
-    // Persist per-user locale (all roles)
-    fetch('/api/me/locale', {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ locale: next }),
-    }).catch(() => {})
-    // Also update company default (succeeds only for company_admin, silently ignored otherwise)
-    fetch('/api/admin/company', {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ locale: next }),
-    }).catch(() => {})
     const path = window.location.pathname
-    if (next === 'en') {
-      if (!path.startsWith('/en')) {
-        window.location.href = '/en' + path
-      }
+    if (next === 'en' && !path.startsWith('/en')) {
+      window.location.href = '/en' + (path === '/' ? '' : path)
+    } else if (next === 'nl' && path.startsWith('/en')) {
+      window.location.href = path.replace(/^\/en/, '') || '/'
     } else {
-      if (path.startsWith('/en/')) {
-        window.location.href = path.replace('/en/', '/')
-      } else if (path === '/en') {
-        window.location.href = '/'
-      } else {
-        window.location.reload()
-      }
+      window.location.reload()
     }
   }
 
