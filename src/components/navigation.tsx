@@ -56,7 +56,19 @@ export default function Navigation({ role = 'employee' }: Props) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ locale: next }),
     }).catch(() => {})
-    window.location.reload()
+    // For pages inside [locale] the URL prefix must change too (e.g. /help ↔ /en/help)
+    const currentPath = window.location.pathname
+    let newPath: string
+    if (next === 'en') {
+      newPath = currentPath.startsWith('/en') ? currentPath : '/en' + currentPath
+    } else {
+      newPath = currentPath.startsWith('/en/') ? currentPath.slice(3) : currentPath === '/en' ? '/' : currentPath
+    }
+    if (newPath !== currentPath) {
+      window.location.href = newPath
+    } else {
+      window.location.reload()
+    }
   }
 
   return (

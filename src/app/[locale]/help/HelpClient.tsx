@@ -53,10 +53,11 @@ export default function HelpClient({ role }: Props) {
   const [activeCategory, setActiveCategory] = useState<string | null>(null)
   const [openArticle, setOpenArticle] = useState<string | null>(null)
 
-  // Which articles this role can see
+  // Which articles this role can see (super_admin sees everything company_admin sees)
+  const effectiveRole = role === 'super_admin' ? 'company_admin' : role
   const visible = useMemo(
-    () => ARTICLES.filter(a => a.roles.includes(role)),
-    [role]
+    () => ARTICLES.filter(a => a.roles.includes(effectiveRole)),
+    [effectiveRole]
   )
 
   // Which categories exist for this role
