@@ -16,8 +16,6 @@ export async function GET() {
     .limit(1)
     .single()
 
-  console.log('[onboarding] instance:', instance)
-
   if (!instance) return NextResponse.json({ instance: null })
 
   // Fases (apart ophalen, geen nested join)
@@ -26,8 +24,6 @@ export async function GET() {
     .select('id, title, order')
     .eq('templateId', instance.templateId)
     .order('order')
-
-  console.log('[onboarding] phases:', phases?.length, phases?.map(p => p.title))
 
   // Stappen per fase (apart ophalen om nested join problemen te vermijden)
   const phaseIds = (phases ?? []).map(p => p.id)
@@ -39,8 +35,6 @@ export async function GET() {
         .order('order')
     : { data: [] }
 
-  console.log('[onboarding] allStepsRaw:', allStepsRaw?.length, allStepsRaw?.map(s => s.title))
-
   // Group steps per phaseId
   const stepsByPhase: Record<string, { id: string; title: string; order: number }[]> = {}
   for (const step of allStepsRaw ?? []) {
@@ -49,35 +43,19 @@ export async function GET() {
   }
 
   // Voortgang
-  const { data: progress, error: progressError } = await supabaseAdmin
+  const { data: progress } = await supabaseAdmin
     .from('StepProgress')
     .select('stepId, completed')
     .eq('instanceId', instance.id)
-
-  console.log('[onboarding] progress fetch error:', progressError)
-  console.log('[onboarding] progress records:', progress?.length)
-  console.log('[onboarding] progress raw:', JSON.stringify(progress))
 
   const completedStepIds = new Set(
     (progress ?? []).filter(p => p.completed).map(p => p.stepId)
   )
 
-  console.log('[onboarding] completedStepIds:', [...completedStepIds])
-
   const allSteps = allStepsRaw ?? []
   const totalSteps = allSteps.length
   const completedCount = allSteps.filter(s => completedStepIds.has(s.id)).length
   const progressPct = totalSteps > 0 ? Math.round((completedCount / totalSteps) * 100) : 0
-
-  console.log('[onboarding] progress calc:', { totalSteps, completedCount, progressPct })
-
-  // Controleer of step IDs overeenkomen (type check)
-  if (allSteps.length > 0 && completedStepIds.size > 0) {
-    const sampleTemplateStepId = allSteps[0].id
-    const sampleProgressStepId = [...completedStepIds][0]
-    console.log('[onboarding] ID type check — templateStep.id type:', typeof sampleTemplateStepId, 'value:', sampleTemplateStepId)
-    console.log('[onboarding] ID type check — StepProgress.stepId type:', typeof sampleProgressStepId, 'value:', sampleProgressStepId)
-  }
 
   // Phases unlock sequentially: fase 1 altijd actief, fase N unlocks als fase N-1 af is.
   // Lege fases (geen stappen) worden als voltooid beschouwd zodat ze progressie niet blokkeren.
@@ -96,16 +74,6 @@ export async function GET() {
     } else {
       phaseStatus = 'todo'
     }
-
-    console.log(
-      `[onboarding] fase "${phase.title}" (${phase.id}):`,
-      `steps=${steps.length}`,
-      `stepIds=[${steps.map(s => s.id).join(', ')}]`,
-      `completedInPhase=${steps.filter(s => completedStepIds.has(s.id)).length}`,
-      `allDone=${allDone}`,
-      `prevCompleted=${prevPhaseCompleted}`,
-      `→ status=${phaseStatus}`
-    )
 
     prevPhaseCompleted = allDone
 
