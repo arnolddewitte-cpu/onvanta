@@ -48,30 +48,27 @@ export default function Navigation({ role = 'employee' }: Props) {
     router.push('/login')
   }
 
-  function switchLocale(next: 'nl' | 'en') {
-    // Derive current locale from the URL (not useLocale()) because NextIntlClientProvider
-    // may receive the wrong locale from the DB-priority chain in request.ts, causing
-    // useLocale() to return 'nl' even when the URL says /en/...
-    const currentPath = window.location.pathname
-    const urlLocale = currentPath.startsWith('/en/') || currentPath === '/en' ? 'en' : 'nl'
-    if (next === urlLocale) return
-
+  function switchLocale(next: string) {
     document.cookie = `ONVANTA_LOCALE=${next}; path=/; max-age=31536000; SameSite=Lax`
     fetch('/api/admin/company', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ locale: next }),
     }).catch(() => {})
-
-    // For [locale] pages the URL prefix must change (e.g. /help ↔ /en/help).
-    // For app pages outside [locale] (e.g. /dashboard) the path stays the same → reload.
-    let newPath: string
+    const path = window.location.pathname
     if (next === 'en') {
-      newPath = currentPath.startsWith('/en') ? currentPath : '/en' + currentPath
+      if (!path.startsWith('/en')) {
+        window.location.href = '/en' + path
+      }
     } else {
-      newPath = currentPath.startsWith('/en/') ? currentPath.slice(3) : currentPath === '/en' ? '/' : currentPath
+      if (path.startsWith('/en/')) {
+        window.location.href = path.replace('/en/', '/')
+      } else if (path === '/en') {
+        window.location.href = '/'
+      } else {
+        window.location.reload()
+      }
     }
-    window.location.href = newPath
   }
 
   return (
