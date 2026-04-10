@@ -2,6 +2,7 @@
 
 import { use, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { getEmbedUrl } from '@/lib/video'
 
 interface Block {
   id: string
@@ -130,26 +131,37 @@ export default function StepPage({ params: paramsPromise }: { params: Promise<{ 
             <div key={block.id} className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
 
               {/* Video */}
-              {block.type === 'video' && (
-                <div>
-                  {(block.config.url as string) ? (
-                    <div className="aspect-video bg-gray-900">
-                      <iframe
-                        src={block.config.url as string}
-                        className="w-full h-full"
-                        allowFullScreen
-                      />
+              {block.type === 'video' && (() => {
+                const rawUrl = block.config.url as string | undefined
+                const embedUrl = rawUrl ? getEmbedUrl(rawUrl) : null
+                return (
+                  <div>
+                    {embedUrl ? (
+                      <div className="aspect-video bg-gray-900">
+                        <iframe
+                          src={embedUrl}
+                          className="w-full h-full"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                        />
+                      </div>
+                    ) : rawUrl ? (
+                      <div className="aspect-video bg-gray-100 flex items-center justify-center">
+                        <a href={rawUrl} target="_blank" rel="noreferrer" className="text-blue-600 text-sm underline">
+                          Video openen →
+                        </a>
+                      </div>
+                    ) : (
+                      <div className="aspect-video bg-gray-100 flex items-center justify-center">
+                        <p className="text-gray-400 text-sm">Video nog niet toegevoegd</p>
+                      </div>
+                    )}
+                    <div className="p-4">
+                      <p className="text-sm font-medium text-gray-900">{block.title}</p>
                     </div>
-                  ) : (
-                    <div className="aspect-video bg-gray-100 flex items-center justify-center">
-                      <p className="text-gray-400 text-sm">Video nog niet toegevoegd</p>
-                    </div>
-                  )}
-                  <div className="p-4">
-                    <p className="text-sm font-medium text-gray-900">{block.title}</p>
                   </div>
-                </div>
-              )}
+                )
+              })()}
 
               {/* Tekst */}
               {block.type === 'text' && (

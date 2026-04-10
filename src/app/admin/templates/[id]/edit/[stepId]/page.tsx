@@ -2,6 +2,7 @@
 
 import { use, useEffect, useState } from 'react'
 import Link from 'next/link'
+import { getEmbedUrl } from '@/lib/video'
 
 type BlockType = 'video' | 'text' | 'task' | 'acknowledgement' | 'flashcards'
 
@@ -292,25 +293,41 @@ export default function StepEditorPage({
                     />
                   </div>
 
-                  {/* Video: URL */}
-                  {block.type === 'video' && (
-                    <div>
-                      <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: '#7a7a78', marginBottom: 5, textTransform: 'uppercase', letterSpacing: '.4px' }}>Video URL</label>
-                      <input
-                        type="url"
-                        value={block.url}
-                        onChange={e => updateBlock(block.id, { url: e.target.value })}
-                        placeholder="https://youtube.com/watch?v=..."
-                        style={{ width: '100%', padding: '9px 12px', border: '1px solid #e8e7e2', borderRadius: 8, fontSize: 14, color: '#0f0f0e', fontFamily: 'DM Sans, sans-serif', outline: 'none', boxSizing: 'border-box' }}
-                      />
-                      {block.url && (
-                        <div style={{ marginTop: 8, padding: '8px 12px', background: '#f5f3ff', borderRadius: 8, fontSize: 12, color: '#7c3aed', display: 'flex', alignItems: 'center', gap: 6 }}>
-                          <span>▶</span>
-                          <a href={block.url} target="_blank" rel="noreferrer" style={{ color: '#7c3aed', textDecoration: 'none' }}>{block.url}</a>
-                        </div>
-                      )}
-                    </div>
-                  )}
+                  {/* Video: URL + live preview */}
+                  {block.type === 'video' && (() => {
+                    const embedUrl = getEmbedUrl(block.url)
+                    const hasUrl = !!block.url.trim()
+                    return (
+                      <div>
+                        <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: '#7a7a78', marginBottom: 5, textTransform: 'uppercase', letterSpacing: '.4px' }}>YouTube of Vimeo URL</label>
+                        <input
+                          type="url"
+                          value={block.url}
+                          onChange={e => updateBlock(block.id, { url: e.target.value })}
+                          placeholder="https://youtube.com/watch?v=... of https://vimeo.com/..."
+                          style={{ width: '100%', padding: '9px 12px', border: '1px solid #e8e7e2', borderRadius: 8, fontSize: 14, color: '#0f0f0e', fontFamily: 'DM Sans, sans-serif', outline: 'none', boxSizing: 'border-box' }}
+                        />
+                        {hasUrl && (
+                          <div style={{ marginTop: 10 }}>
+                            {embedUrl ? (
+                              <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0, borderRadius: 8, overflow: 'hidden', background: '#000' }}>
+                                <iframe
+                                  src={embedUrl}
+                                  style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 0 }}
+                                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                  allowFullScreen
+                                />
+                              </div>
+                            ) : (
+                              <div style={{ padding: '8px 12px', background: '#fff7ed', border: '1px solid #fed7aa', borderRadius: 8, fontSize: 12, color: '#c2410c' }}>
+                                Geen geldige YouTube of Vimeo URL — video wordt niet ingebed
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })()}
 
                   {/* Text: body */}
                   {block.type === 'text' && (
