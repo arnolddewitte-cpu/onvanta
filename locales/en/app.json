@@ -346,5 +346,84 @@
     "successStep1": "Click the magic link in your email",
     "successStep2": "Create your first onboarding template",
     "successStep3": "Invite your first team member"
+  },
+  "help": {
+    "pageTitle": "Help Centre",
+    "pageSubtitle": "Find quick answers to your questions.",
+    "searchPlaceholder": "Search an article...",
+    "noResults": "No articles found for \"{query}\"",
+    "navLabel": "Help",
+    "cta": "Still have questions? Send us a message →",
+    "categories": {
+      "employee": "For employees",
+      "manager": "For managers",
+      "admin": "Admin & settings"
+    },
+    "articles": {
+      "howOnboarding": {
+        "title": "How does my onboarding work?",
+        "body": "Your onboarding is divided into phases and steps. Each phase contains one or more steps you complete in sequence.\n\nYour progress is shown as a percentage at the top of the dashboard. Each phase only unlocks after the previous one is completed. Within a step you may find videos, tasks, flashcards, or acknowledgements.\n\nClick a step to open it. After completing all required items, click 'Next step' to continue."
+      },
+      "howFlashcards": {
+        "title": "How do I use flashcards?",
+        "body": "Flashcards help you retain new knowledge through spaced repetition. You see a question, think about the answer, then click to reveal it.\n\nNavigate with the 'Previous' and 'Next' buttons. You can always practise a set again using the 'Practise again' button at the bottom of the step — this only resets your local session, not your progress.\n\nFlashcards are accessible from your dashboard and inside the relevant onboarding step."
+      },
+      "howTasks": {
+        "title": "What are tasks and how do I complete them?",
+        "body": "Tasks are concrete actions you need to perform, such as 'Read the safety manual' or 'Set up your email signature'. Your manager can also assign standalone tasks outside of the onboarding.\n\nTick a task by clicking the circle. Once all tasks in a step are ticked, you can mark the step as complete. Overdue tasks are flagged automatically when they are late.\n\nYou can find all your tasks in the 'Tasks' menu."
+      },
+      "whatIsAtRisk": {
+        "title": "What does 'at-risk' mean?",
+        "body": "Your onboarding is marked 'at-risk' when a potential delay is detected — either 3 or more days of inactivity, or 3 or more overdue tasks.\n\nYour manager receives an automatic notification so they can offer support if you are stuck. The status returns to 'active' once you make progress again.\n\nAt-risk is a support tool, not an evaluation — it exists to make sure you get the help you need."
+      },
+      "howCertificate": {
+        "title": "How do I download my certificate?",
+        "body": "Once you have completed all steps in your onboarding, a green banner with a 'Download certificate' button automatically appears on your dashboard.\n\nThe certificate is a PDF containing your name, the name of the onboarding, the completion date, and your company logo. You can save or share it.\n\nYour manager can also download the certificate from the team overview."
+      },
+      "howStartOnboarding": {
+        "title": "How do I start an onboarding for a team member?",
+        "body": "Go to 'Team' in the menu and click 'Start new onboarding'. Select a template, choose the employee, and optionally set a start date.\n\nThe employee receives an email with a magic link to log in and start immediately. Make sure the employee is already created under 'Users' before you start the onboarding.\n\nYou can track progress in real time via the team overview."
+      },
+      "howInvite": {
+        "title": "How do I invite a team member?",
+        "body": "Go to 'Users' and click 'Invite employee'. Enter the name, email address, and role. The employee receives an invitation email with an activation link.\n\nThe link is valid for 7 days. If a team member has not received the email, you can resend the invitation from the user list.\n\nAfter activation, the employee can log in with a magic link sent by email — no password required."
+      },
+      "howAtRiskManager": {
+        "title": "What is at-risk detection and when do I get notified?",
+        "body": "Onvanta automatically monitors your team's progress. A team member becomes 'at-risk' after 3 or more days of inactivity, or when they have 3 or more overdue tasks.\n\nYou then receive an email explaining the reason with a direct link to the employee's profile so you can act quickly.\n\nNotifications are sent at most once every 7 days per employee to avoid inbox fatigue. You can also proactively check status in the team overview."
+      },
+      "howApproval": {
+        "title": "How do I approve a step?",
+        "body": "Some steps require your approval as a manager before the employee can continue. You receive a notification when a team member has completed such a step.\n\nGo to 'Approvals' in the menu for an overview of all pending approvals. Click an item to view the details and approve or reject.\n\nAfter approval, the employee can automatically proceed to the next step."
+      },
+      "howDigest": {
+        "title": "What is in the weekly digest email?",
+        "body": "Every Monday at 8:00 UTC you receive an overview of your team. For each employee you see: name, which onboarding they are following, progress percentage, a visual progress bar, and status (on track or at-risk).\n\nEmployees with at-risk status appear at the top for immediate attention. At the bottom is a 'View your team' button that takes you directly to the team overview.\n\nYou only receive the digest if you have at least one active onboarding in your team."
+      },
+      "howTemplate": {
+        "title": "How do I create a template?",
+        "body": "Go to 'Templates' and click 'New template'. Give it a name and description. Then add phases using the 'Add phase' button.\n\nWithin each phase, add steps. Per step you can add blocks: video, text, task, flashcards, quiz, acknowledgement, or manager approval. Set the order using the arrow buttons.\n\nPublish the template when it is ready so you can use it for onboardings. Templates can always be edited afterwards."
+      },
+      "howLibrary": {
+        "title": "How do I use the template library?",
+        "body": "The library contains ready-made templates for common onboarding scenarios. Go to 'Templates' and click the 'Library' tab.\n\nClick 'Preview' to inspect a template before adding it. Click 'Use as starting point' to add a copy to your templates.\n\nThe copy is independent of the original — you can fully customise it for your situation."
+      },
+      "howAI": {
+        "title": "How do I generate a template with AI?",
+        "body": "Go to 'Templates' and click 'Generate with AI'. Describe the role or situation for which you want to build an onboarding, for example 'Customer service agent, 3 weeks, focus on product knowledge'.\n\nThe AI generates a complete structure with phases, steps, and blocks. You can edit the result immediately after generation.\n\nAI generation is a starting point, not a finished product — always review the generated content before publishing."
+      },
+      "howBranding": {
+        "title": "How do I configure the brand identity?",
+        "body": "Go to 'Settings' and click the 'Brand identity' tab. Here you configure: company logo (JPG/PNG/SVG, max 2 MB), sender name for emails, welcome message, and primary colour.\n\nThe live preview on the right shows how the invitation email will look. Click 'Send test email' to send the result to yourself.\n\nThe brand identity is used in all outgoing emails and the PDF certificate."
+      },
+      "howBilling": {
+        "title": "How does billing work?",
+        "body": "Onvanta uses usage-based billing: you pay €24.99 per active onboardee per month. Managers and admins are always free.\n\nAt the end of each month, Stripe automatically counts the number of active onboardees and sends the invoice. No active onboardings = no charges.\n\nManage your subscription under 'Settings' → 'Subscription' → 'Manage subscription'. Here you can view invoices, payment methods, and cancel."
+      },
+      "howPauseDelete": {
+        "title": "How do I pause or delete my account?",
+        "body": "Go to 'Settings' and scroll to the 'Danger zone' at the bottom. Here you will find two options:\n\n**Pause account** temporarily stops all active onboardings. Employees cannot log in while the account is paused. You can resume the account at any time using the same button.\n\n**Delete account** permanently deletes all data — users, templates, onboardings, and settings. You must type the company name to confirm. This cannot be undone."
+      }
+    }
   }
 }

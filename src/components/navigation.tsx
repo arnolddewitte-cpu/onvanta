@@ -96,6 +96,19 @@ export default function Navigation({ role = 'employee' }: Props) {
 
         {/* Language switcher + role + logout */}
         <div className="px-3 py-4 border-t border-gray-100 space-y-1">
+          {/* Help link */}
+          <Link
+            href="/help"
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+              pathname === '/help'
+                ? 'bg-blue-50 text-blue-600'
+                : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
+            }`}
+          >
+            <span className="text-base flex items-center justify-center w-5 h-5 rounded-full border border-current text-xs font-bold leading-none">?</span>
+            {t('help.navLabel')}
+          </Link>
+
           {/* Language switcher */}
           <div className="flex items-center gap-1 px-3 py-2 mb-1">
             <button

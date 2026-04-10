@@ -346,5 +346,84 @@
     "successStep1": "Klik de magic link in je e-mail",
     "successStep2": "Maak je eerste onboarding template aan",
     "successStep3": "Nodig je eerste teamlid uit"
+  },
+  "help": {
+    "pageTitle": "Helpcentrum",
+    "pageSubtitle": "Vind snel antwoord op je vragen.",
+    "searchPlaceholder": "Zoek een artikel...",
+    "noResults": "Geen artikelen gevonden voor \"{query}\"",
+    "navLabel": "Help",
+    "cta": "Nog vragen? Stuur ons een bericht →",
+    "categories": {
+      "employee": "Voor medewerkers",
+      "manager": "Voor managers",
+      "admin": "Beheer & instellingen"
+    },
+    "articles": {
+      "howOnboarding": {
+        "title": "Hoe werkt mijn onboarding?",
+        "body": "Je onboarding is opgedeeld in fases en stappen. Elke fase bevat een of meerdere stappen die je in volgorde doorloopt.\n\nJe ziet je voortgang bovenaan het dashboard als percentage. Elke fase wordt pas zichtbaar als de vorige fase is afgerond. Binnen een stap kunnen video's, taken, flashcards of bevestigingen staan.\n\nKlik op een stap om hem te openen. Na het afronden van alle verplichte onderdelen klik je op 'Volgende stap' om door te gaan."
+      },
+      "howFlashcards": {
+        "title": "Hoe gebruik ik flashcards?",
+        "body": "Flashcards helpen je nieuwe kennis te onthouden via spaced repetition. Je ziet een vraag, denkt na over het antwoord, en klik dan om het antwoord te onthullen.\n\nNavigeer met de knoppen 'Vorige' en 'Volgende' door de set. Je kunt een set altijd opnieuw oefenen via de 'Opnieuw oefenen' knop onderaan de stap — dit reset alleen je lokale sessie, niet je voortgang.\n\nFlashcards vind je terug op je dashboard en in de bijbehorende onboarding stap."
+      },
+      "howTasks": {
+        "title": "Wat zijn taken en hoe voltooi ik ze?",
+        "body": "Taken zijn concrete acties die je moet uitvoeren, zoals 'Lees het veiligheidshandboek' of 'Stel je e-mailhandtekening in'. Je manager kan ook losse taken aan je toewijzen buiten de onboarding om.\n\nVink een taak af door op het rondje te klikken. Als alle taken in een stap zijn afgevinkt, kun je de stap afronden. Overdue taken worden automatisch gemarkeerd als ze te laat zijn.\n\nJe ziet al je taken in het menu onder 'Taken'."
+      },
+      "whatIsAtRisk": {
+        "title": "Wat betekent 'at-risk'?",
+        "body": "Je onboarding krijgt de status 'at-risk' als er een mogelijke vertraging is gedetecteerd. Dit gebeurt als je 3 of meer dagen niet actief bent geweest, of als je 3 of meer overdue taken hebt.\n\nJe manager ontvangt automatisch een melding zodat hij of zij je kan helpen als je ergens vastloopt. De status gaat terug naar 'actief' zodra je weer voortgang boekt.\n\nAt-risk is een hulpmiddel, geen beoordeling — het is er om te zorgen dat je de support krijgt die je nodig hebt."
+      },
+      "howCertificate": {
+        "title": "Hoe download ik mijn certificaat?",
+        "body": "Als je alle stappen van je onboarding hebt voltooid, verschijnt er automatisch een groene banner op je dashboard met een 'Download certificaat' knop.\n\nHet certificaat is een PDF met je naam, de naam van de onboarding, de datum van voltooiing en het bedrijfslogo. Je kunt het opslaan of delen.\n\nJe manager kan het certificaat ook downloaden via het teamoverzicht."
+      },
+      "howStartOnboarding": {
+        "title": "Hoe start ik een onboarding voor een medewerker?",
+        "body": "Ga naar 'Team' in het menu en klik op 'Nieuwe onboarding starten'. Selecteer een template, kies de medewerker en stel eventueel een startdatum in.\n\nDe medewerker ontvangt een e-mail met een magic link om in te loggen en direct te starten. Zorg dat de medewerker al is aangemaakt onder 'Gebruikers' voor je de onboarding start.\n\nJe volgt de voortgang real-time via het teamoverzicht."
+      },
+      "howInvite": {
+        "title": "Hoe nodig ik een medewerker uit?",
+        "body": "Ga naar 'Gebruikers' en klik op 'Medewerker uitnodigen'. Vul naam, e-mailadres en rol in. De medewerker ontvangt een uitnodigingsmail met een activatielink.\n\nDe link is 7 dagen geldig. Als een medewerker de e-mail niet heeft ontvangen, kun je de uitnodiging opnieuw sturen via de gebruikerslijst.\n\nNa activatie kan de medewerker direct inloggen met een magic link via e-mail — geen wachtwoord nodig."
+      },
+      "howAtRiskManager": {
+        "title": "Wat is at-risk detectie en wanneer krijg ik een melding?",
+        "body": "Onvanta monitort automatisch de voortgang van je teamleden. Een medewerker wordt 'at-risk' als hij of zij 3 of meer dagen niet actief is, of 3 of meer overdue taken heeft.\n\nJij ontvangt dan een e-mail met uitleg over de reden en een directe link naar het profiel van de medewerker. Zo kun je snel actie ondernemen.\n\nDe melding wordt maximaal eens per 7 dagen verstuurd per medewerker om e-mailmoeheid te voorkomen. Je kunt ook zelf proactief de status checken via het teamoverzicht."
+      },
+      "howApproval": {
+        "title": "Hoe keur ik een stap goed?",
+        "body": "Sommige stappen vereisen jouw goedkeuring als manager voordat de medewerker verder kan. Je ontvangt een melding als een medewerker klaar is met zo'n stap.\n\nGa naar 'Goedkeuringen' in het menu voor een overzicht van alle openstaande goedkeuringen. Klik op een item om de details te bekijken en goed te keuren of af te wijzen.\n\nNa goedkeuring kan de medewerker automatisch verder met de volgende stap."
+      },
+      "howDigest": {
+        "title": "Wat staat er in de wekelijkse digest e-mail?",
+        "body": "Elke maandag om 8:00 ontvang je een overzicht van je team. Per medewerker zie je: naam, welke onboarding ze volgen, de voortgang in procenten, een visuele voortgangsbalk en de status (op schema of at-risk).\n\nMedewerkers met at-risk status staan bovenaan voor directe aandacht. Onderaan staat een knop 'Bekijk je team' die je direct naar het teamoverzicht brengt.\n\nJe ontvangt de digest alleen als je minstens één actieve onboarding hebt in je team."
+      },
+      "howTemplate": {
+        "title": "Hoe maak ik een template aan?",
+        "body": "Ga naar 'Templates' en klik op 'Nieuw template'. Geef het template een naam en beschrijving. Voeg daarna fases toe via de 'Fase toevoegen' knop.\n\nBinnen elke fase voeg je stappen toe. Per stap kun je blokken toevoegen: video, tekst, taak, flashcards, quiz, bevestiging of manager-goedkeuring. Stel de volgorde in via de pijltjes.\n\nPubliceer het template als het klaar is zodat je het kunt gebruiken voor onboardings. Je kunt templates altijd achteraf aanpassen."
+      },
+      "howLibrary": {
+        "title": "Hoe gebruik ik de template bibliotheek?",
+        "body": "In de bibliotheek staan kant-en-klare templates voor veelvoorkomende onboardingssituaties. Ga naar 'Templates' en klik op het tabblad 'Bibliotheek'.\n\nKlik op 'Voorbeeld' om de inhoud van een template te bekijken voor je het toevoegt. Klik op 'Gebruik als startpunt' om een kopie aan jouw templates toe te voegen.\n\nDe kopie staat los van het origineel — je kunt hem volledig aanpassen naar jouw situatie."
+      },
+      "howAI": {
+        "title": "Hoe genereer ik een template met AI?",
+        "body": "Ga naar 'Templates' en klik op 'Genereer met AI'. Beschrijf de functie of situatie waarvoor je een onboarding wil bouwen, bijvoorbeeld 'Klantenservice medewerker, 3 weken, focus op productkennis'.\n\nDe AI genereert een complete structuur met fases, stappen en blokken. Je kunt het resultaat direct bewerken na het genereren.\n\nDe AI-generatie is een startpunt, geen eindproduct — review altijd de gegenereerde content voor je hem publiceert."
+      },
+      "howBranding": {
+        "title": "Hoe stel ik de huisstijl in?",
+        "body": "Ga naar 'Instellingen' en klik op het tabblad 'Huisstijl'. Hier stel je in: bedrijfslogo (JPG/PNG/SVG, max 2 MB), afzendernaam voor e-mails, welkomsttekst en primaire kleur.\n\nDe live preview rechts van de instellingen toont hoe de uitnodigingsmail eruit ziet. Klik op 'Testmail sturen' om het resultaat naar jezelf te sturen.\n\nDe huisstijl wordt gebruikt in alle uitgaande e-mails en het PDF-certificaat."
+      },
+      "howBilling": {
+        "title": "Hoe werkt de billing?",
+        "body": "Onvanta werkt op basis van usage-based billing: je betaalt €24,99 per actieve onboardee per maand. Managers en admins tellen niet mee.\n\nAan het einde van elke maand telt Stripe automatisch het aantal actieve onboardees en stuurt de factuur. Geen actieve onboardings = geen kosten.\n\nJe kunt je abonnement beheren via 'Instellingen' → 'Abonnement' → 'Beheer abonnement'. Hier zie je facturen, betalingsmethoden en kun je opzeggen."
+      },
+      "howPauseDelete": {
+        "title": "Hoe pauzeer of verwijder ik mijn account?",
+        "body": "Ga naar 'Instellingen' en scroll naar de 'Gevarenzone' onderaan. Hier vind je twee opties:\n\n**Account pauzeren** stopt alle actieve onboardings tijdelijk. Medewerkers kunnen niet meer inloggen zolang het account gepauzeerd is. Je kunt het account op elk moment hervatten via dezelfde knop.\n\n**Account verwijderen** verwijdert alle data permanent — gebruikers, templates, onboardings en instellingen. Je moet de bedrijfsnaam intypen ter bevestiging. Dit kan niet ongedaan worden gemaakt."
+      }
+    }
   }
 }
