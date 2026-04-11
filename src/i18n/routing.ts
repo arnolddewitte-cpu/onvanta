@@ -5,6 +5,7 @@ export const routing = defineRouting({
   locales: ['nl', 'en'],
   defaultLocale: 'nl',
   localePrefix: 'as-needed', // nl: no prefix (/), en: /en prefix
+  localeDetection: false,    // URL prefix is the only routing signal — no NEXT_LOCALE cookie redirect
 })
 
 // Locale-aware navigation helpers — import useRouter/usePathname/Link from here
