@@ -51,12 +51,17 @@ export default function Navigation({ role = 'employee' }: Props) {
   function switchLocale(next: string) {
     document.cookie = `ONVANTA_LOCALE=${next}; path=/; max-age=31536000; SameSite=Lax`
     const path = window.location.pathname
+    console.log('[switchLocale] next=%s path=%s', next, path)
     if (next === 'en' && !path.startsWith('/en')) {
-      window.location.href = '/en' + (path === '/' ? '' : path)
+      const target = '/en' + (path === '/' ? '' : path)
+      console.log('[switchLocale] navigating to', target)
+      window.location.href = target
     } else if (next === 'nl') {
-      window.location.href = path.startsWith('/en/')
-        ? path.slice(3)
-        : path === '/en' ? '/' : path
+      const target = path.startsWith('/en/') ? path.slice(3) : path === '/en' ? '/' : path
+      console.log('[switchLocale] navigating to', target)
+      window.location.href = target
+    } else {
+      console.log('[switchLocale] no navigation — already correct locale')
     }
   }
 
