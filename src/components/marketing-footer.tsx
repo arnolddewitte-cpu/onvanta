@@ -1,8 +1,10 @@
-import Link from 'next/link'
-import { getTranslations } from 'next-intl/server'
+'use client'
 
-export default async function MarketingFooter() {
-  const t = await getTranslations('common.footer')
+import Link from 'next/link'
+import { useTranslations } from 'next-intl'
+
+export default function MarketingFooter() {
+  const t = useTranslations('common.footer')
 
   const cols = [
     { title: t('product'), links: [{ label: t('features'), href: '/#functies' }, { label: t('pricing'), href: '/pricing' }] },
