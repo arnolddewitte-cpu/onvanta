@@ -48,25 +48,21 @@ export default function Navigation({ role = 'employee' }: Props) {
     router.push('/login')
   }
 
-  // App routes that never carry a locale prefix — these use DB + reload
   const APP_PREFIXES = ['/admin', '/dashboard', '/manager', '/onboarding', '/login', '/signup', '/flashcards', '/tasks', '/super']
 
   function switchLocale(next: string) {
+    // Persist locale client-side — cookie is read by request.ts on every SSR
+    localStorage.setItem('locale', next)
+    document.cookie = `ONVANTA_LOCALE=${next}; path=/; max-age=31536000; SameSite=Lax`
+
     const path = window.location.pathname
     const base = path.startsWith('/en/') ? path.slice(3) : path === '/en' ? '/' : path
     const isAppRoute = APP_PREFIXES.some(p => base === p || base.startsWith(p + '/'))
 
     if (isAppRoute) {
-      // Cookie always wins as fallback (works for super_admin who has no company)
-      document.cookie = `ONVANTA_LOCALE=${next}; path=/; max-age=31536000; SameSite=Lax`
-      // Try to persist to company DB — silently skip if no permission (e.g. super_admin)
-      fetch('/api/admin/company', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ locale: next }),
-      }).catch(() => {}).finally(() => window.location.reload())
+      window.location.reload()
     } else {
-      // [locale] page (marketing / /help): change URL prefix only
+      // [locale] page (/help, marketing): change URL prefix
       if (next === 'en' && !path.startsWith('/en')) {
         window.location.href = '/en' + (path === '/' ? '' : path)
       } else if (next === 'nl' && path.startsWith('/en')) {
