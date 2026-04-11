@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { getSession } from '@/lib/session'
 import { supabaseAdmin } from '@/lib/supabase'
 
@@ -42,6 +43,9 @@ export async function PATCH(req: NextRequest) {
     .eq('id', session.companyId)
 
   if (error) return NextResponse.json({ error: 'Kon niet opslaan' }, { status: 500 })
+
+  // Invalideer de volledige route tree zodat de nieuwe locale direct opgepikt wordt
+  if (updates.locale) revalidatePath('/', 'layout')
 
   return NextResponse.json({ success: true })
 }
