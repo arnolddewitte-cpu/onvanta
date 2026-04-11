@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 120" width="420" height="120">
+  <!-- Icon: blue rounded square -->
+  <rect width="120" height="120" rx="28" fill="#1a5fd4"/>
+  <!-- Icon: italic O -->
+  <text
+    x="60" y="60"
+    text-anchor="middle"
+    dominant-baseline="central"
+    font-family="Georgia, 'Times New Roman', serif"
+    font-style="italic"
+    font-size="66"
+    fill="white"
+  >O</text>
+  <!-- Wordmark: Onvanta -->
+  <text
+    x="152" y="60"
+    text-anchor="start"
+    dominant-baseline="central"
+    font-family="'DM Sans', system-ui, -apple-system, Arial, sans-serif"
+    font-weight="500"
+    font-size="64"
+    fill="#0f0f0e"
+    letter-spacing="-1"
+  >Onvanta</text>
+</svg>
