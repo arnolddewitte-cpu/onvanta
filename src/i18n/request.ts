@@ -49,6 +49,9 @@ export default getRequestConfig(async ({ requestLocale }) => {
 
     const companyLocale = await getCompanyLocale()
 
+    // TODO: remove after debugging
+    console.error('[request.ts] cookieLocale=%s companyLocale=%s urlLocale=%s', cookieLocale, companyLocale, locale)
+
     if (isValidLocale(companyLocale)) {
       locale = companyLocale
     } else if (isValidLocale(cookieLocale)) {
@@ -56,6 +59,9 @@ export default getRequestConfig(async ({ requestLocale }) => {
     } else {
       locale = routing.defaultLocale
     }
+
+    // TODO: remove after debugging
+    console.error('[request.ts] resolved locale=%s', locale)
   }
 
   const [common, home, pricing, about, contact, privacy, terms, app] = await Promise.all([
