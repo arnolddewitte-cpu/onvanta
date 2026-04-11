@@ -15,7 +15,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
     locale = isValidLocale(cookieLocale) ? cookieLocale : routing.defaultLocale
   }
 
-  const [common, home, pricing, about, contact, privacy, terms, app] = await Promise.all([
+  const [common, home, pricing, about, contact, privacy, terms, app, faq] = await Promise.all([
     import(`../../locales/${locale}/common.json`),
     import(`../../locales/${locale}/home.json`),
     import(`../../locales/${locale}/pricing.json`),
@@ -24,6 +24,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
     import(`../../locales/${locale}/privacy.json`),
     import(`../../locales/${locale}/terms.json`),
     import(`../../locales/${locale}/app.json`),
+    import(`../../locales/${locale}/faq.json`),
   ])
 
   return {
@@ -37,6 +38,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
       privacy: privacy.default,
       terms: terms.default,
       app: app.default,
+      faq: faq.default,
     },
   }
 })

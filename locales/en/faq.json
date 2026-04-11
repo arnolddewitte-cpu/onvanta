@@ -1,0 +1,87 @@
+{
+  "badge": "FREQUENTLY ASKED QUESTIONS",
+  "title": "Everything you need to know about Onvanta",
+  "categories": [
+    {
+      "title": "Product & Features",
+      "items": [
+        {
+          "q": "What is Onvanta?",
+          "a": "Onvanta is an onboarding platform that makes new employees productive faster. It combines structured onboarding, spaced repetition flashcards and manager visibility in one system — built for growing teams."
+        },
+        {
+          "q": "What's the difference from an LMS?",
+          "a": "An LMS (Learning Management System) focuses on courses and certificates. Onvanta focuses specifically on a new employee's first weeks: tasks, knowledge retention via flashcards, and visibility for managers on who is on track and who needs attention."
+        },
+        {
+          "q": "How do the flashcards work?",
+          "a": "Onvanta uses spaced repetition: questions are repeated at the moment you're about to forget them. This builds lasting knowledge with minimal effort. Employees practice a few minutes daily via their dashboard."
+        },
+        {
+          "q": "What is at-risk detection?",
+          "a": "At-risk detection flags employees who are falling behind on their onboarding — low flashcard activity, outstanding tasks or slow progress. Managers receive a weekly digest and can step in immediately."
+        }
+      ]
+    },
+    {
+      "title": "Getting Started",
+      "items": [
+        {
+          "q": "How do I start a free trial?",
+          "a": "Go to onvanta.io/signup, create an account and you can start immediately. No credit card required, no installation. You'll have your first onboarding template ready within 5 minutes."
+        },
+        {
+          "q": "How do I invite employees?",
+          "a": "From your admin dashboard go to Users → Invite. You send an email invitation and the employee creates their own account. You can also start an onboarding directly via Onboardings → New."
+        },
+        {
+          "q": "Can I use existing templates?",
+          "a": "Yes. Onvanta has a library of standard onboarding templates per role and industry. Import them with one click and customise them to fit your own process and company style."
+        },
+        {
+          "q": "How long does implementation take?",
+          "a": "Most companies are up and running within one day. You create a template, invite your first employee and the onboarding runs. More extensive setup with multiple templates typically takes 2-3 hours."
+        }
+      ]
+    },
+    {
+      "title": "Pricing & Billing",
+      "items": [
+        {
+          "q": "What does Onvanta cost?",
+          "a": "Onvanta charges per active onboardee per month. The Starter plan starts at €4/month per active onboardee (max 10). The Growth plan is €6/month per active onboardee with no limit. See the full pricing at onvanta.io/pricing."
+        },
+        {
+          "q": "What is an active onboardee?",
+          "a": "An active onboardee is an employee with an ongoing onboarding in the current calendar month. Employees without an active onboarding — for example after completing it — don't count and cost nothing."
+        },
+        {
+          "q": "Are managers and admins free?",
+          "a": "Yes. Managers and company admins don't count towards billing. You only pay for employees who are actively onboarding."
+        },
+        {
+          "q": "Can I cancel anytime?",
+          "a": "Yes, you can cancel on a monthly basis. There are no annual contracts or cancellation fees. Your account stays active until the end of the paid period."
+        }
+      ]
+    },
+    {
+      "title": "Privacy & Security",
+      "items": [
+        {
+          "q": "Where is my data stored?",
+          "a": "All data is stored in the EU (Frankfurt, Germany) via Supabase. We do not leave the European Economic Area for data storage or processing."
+        },
+        {
+          "q": "Is Onvanta GDPR-compliant?",
+          "a": "Yes. Onvanta is designed with privacy by design. We only process data necessary for the service, offer a Data Processing Agreement (DPA) and comply with all GDPR requirements."
+        },
+        {
+          "q": "Can I export my data?",
+          "a": "Yes. Via the admin dashboard you can request a full export of all employee data, onboarding progress and flashcard results in CSV format. Contact us for a complete data export."
+        }
+      ]
+    }
+  ],
+  "cta": "Can't find your answer? Contact us →"
+}

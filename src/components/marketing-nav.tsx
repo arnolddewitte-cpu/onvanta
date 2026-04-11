@@ -16,6 +16,7 @@ export default function MarketingNav() {
     { href: '/pricing' as const, label: t('pricing') },
     { href: '/about' as const, label: t('about') },
     { href: '/contact' as const, label: t('contact') },
+    { href: '/faq' as const, label: t('faq') },
   ]
 
   const isActive = (href: string) => {
