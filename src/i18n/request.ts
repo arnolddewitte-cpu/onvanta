@@ -1,5 +1,5 @@
 import { getRequestConfig } from 'next-intl/server'
-import { cookies, headers } from 'next/headers'
+import { cookies } from 'next/headers'
 import { routing } from './routing'
 
 function isValidLocale(v: string | undefined | null): v is 'nl' | 'en' {
@@ -10,12 +10,8 @@ export default getRequestConfig(async ({ requestLocale }) => {
   let locale = await requestLocale
 
   if (!isValidLocale(locale)) {
-    const cookieHeader = (await headers()).get('cookie')
     const cookieStore = await cookies()
     const cookieLocale = cookieStore.get('ONVANTA_LOCALE')?.value
-    // TODO: remove after debugging
-    console.error('[request.ts] cookie header:', cookieHeader)
-    console.error('[request.ts] ONVANTA_LOCALE:', cookieLocale)
     locale = isValidLocale(cookieLocale) ? cookieLocale : routing.defaultLocale
   }
 

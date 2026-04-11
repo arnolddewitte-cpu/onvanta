@@ -1,12 +1,13 @@
 import { unstable_noStore as noStore } from 'next/cache'
-import { getMessages } from 'next-intl/server'
+import { getLocale, getMessages } from 'next-intl/server'
 import { NextIntlClientProvider } from 'next-intl'
 
 export default async function SignupLayout({ children }: { children: React.ReactNode }) {
   noStore()
-  const messages = await getMessages()
+  const locale = await getLocale()
+  const messages = await getMessages({ locale })
   return (
-    <NextIntlClientProvider messages={messages}>
+    <NextIntlClientProvider locale={locale} messages={messages}>
       {children}
     </NextIntlClientProvider>
   )

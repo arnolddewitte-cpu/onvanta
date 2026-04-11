@@ -17,7 +17,7 @@ export default async function LocaleLayout({
   const { locale } = await params
   if (!routing.locales.includes(locale as 'nl' | 'en')) notFound()
 
-  const messages = await getMessages()
+  const messages = await getMessages({ locale })
 
   return (
     <NextIntlClientProvider locale={locale} messages={messages}>

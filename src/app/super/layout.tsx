@@ -1,13 +1,14 @@
 import { unstable_noStore as noStore } from 'next/cache'
-import { getMessages } from 'next-intl/server'
+import { getLocale, getMessages } from 'next-intl/server'
 import { NextIntlClientProvider } from 'next-intl'
 import Navigation from '@/components/navigation'
 
 export default async function SuperLayout({ children }: { children: React.ReactNode }) {
   noStore()
-  const messages = await getMessages()
+  const locale = await getLocale()
+  const messages = await getMessages({ locale })
   return (
-    <NextIntlClientProvider messages={messages}>
+    <NextIntlClientProvider locale={locale} messages={messages}>
       <div className="md:pl-56">
         <Navigation role="super_admin" />
         {children}
