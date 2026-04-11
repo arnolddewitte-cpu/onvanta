@@ -48,28 +48,15 @@ export default function Navigation({ role = 'employee' }: Props) {
     router.push('/login')
   }
 
-  const APP_PREFIXES = ['/admin', '/dashboard', '/manager', '/onboarding', '/login', '/signup', '/flashcards', '/tasks', '/super']
-
   function switchLocale(next: string) {
-    // Persist locale client-side — cookie is read by request.ts on every SSR
-    localStorage.setItem('locale', next)
     document.cookie = `ONVANTA_LOCALE=${next}; path=/; max-age=31536000; SameSite=Lax`
-
     const path = window.location.pathname
-    const base = path.startsWith('/en/') ? path.slice(3) : path === '/en' ? '/' : path
-    const isAppRoute = APP_PREFIXES.some(p => base === p || base.startsWith(p + '/'))
-
-    if (isAppRoute) {
-      window.location.reload()
-    } else {
-      // [locale] page (/help, marketing): change URL prefix
-      if (next === 'en' && !path.startsWith('/en')) {
-        window.location.href = '/en' + (path === '/' ? '' : path)
-      } else if (next === 'nl' && path.startsWith('/en')) {
-        window.location.href = path.replace(/^\/en/, '') || '/'
-      } else {
-        window.location.reload()
-      }
+    if (next === 'en' && !path.startsWith('/en')) {
+      window.location.href = '/en' + (path === '/' ? '' : path)
+    } else if (next === 'nl') {
+      window.location.href = path.startsWith('/en/')
+        ? path.slice(3)
+        : path === '/en' ? '/' : path
     }
   }
 
