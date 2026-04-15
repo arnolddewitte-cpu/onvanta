@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
   // 1. Zoek token op
   const { data: magicToken } = await supabaseAdmin
     .from('MagicLinkToken')
-    .select('*, User(*)')
+    .select('userId, expires, used')
     .eq('token', token)
     .eq('used', false)
     .single()
@@ -27,14 +27,24 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(new URL('/login?error=expired-token', req.url))
   }
 
-  // 3. Markeer token als gebruikt
+  // 3. Haal user op via aparte query (voorkomt array-vs-object ambiguïteit bij Supabase join)
+  const { data: user } = await supabaseAdmin
+    .from('User')
+    .select('id, email, role, companyId')
+    .eq('id', magicToken.userId)
+    .single()
+
+  if (!user) {
+    return NextResponse.redirect(new URL('/login?error=invalid-token', req.url))
+  }
+
+  // 4. Markeer token als gebruikt
   await supabaseAdmin
     .from('MagicLinkToken')
     .update({ used: true })
     .eq('token', token)
 
-  // 4. Maak sessie aan via jose
-  const user = magicToken.User
+  // 5. Maak sessie aan via jose
   const secret = new TextEncoder().encode(process.env.NEXTAUTH_SECRET!)
 
   const sessionToken = await new SignJWT({
@@ -48,10 +58,10 @@ export async function GET(req: NextRequest) {
     .setExpirationTime('30d')
     .sign(secret)
 
-  // 4b. Log login
+  // 5b. Log login
   await logAudit('login', user.id, user.companyId, { email: user.email, role: user.role })
 
-  // 5. Redirect op basis van rol
+  // 6. Redirect op basis van rol
   const redirectMap: Record<string, string> = {
     super_admin: '/super',
     company_admin: '/admin',
