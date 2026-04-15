@@ -1,6 +1,18 @@
 import Link from 'next/link'
 import { getTranslations, getMessages } from 'next-intl/server'
+import { seoMeta, ogImage } from '@/lib/seo'
 import MarketingNav from '@/components/marketing-nav'
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params
+  const m = seoMeta[locale === 'en' ? 'en' : 'nl'].home
+  return {
+    title: m.title,
+    description: m.description,
+    alternates: { canonical: `https://onvanta.io${locale === 'en' ? '/en' : '/'}` },
+    openGraph: { title: m.title, description: m.description, images: [ogImage] }
+  }
+}
 import MarketingFooter from '@/components/marketing-footer'
 import CookieBanner from '@/components/cookie-banner'
 
