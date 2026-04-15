@@ -41,6 +41,16 @@ export default function LoginPage() {
             <div className="text-4xl mb-4">📬</div>
             <h2 className="text-lg font-semibold text-gray-900 mb-2">{t('sentTitle')}</h2>
             <p className="text-gray-500 text-sm">{t('sentText', { email })}</p>
+            <p className="text-sm text-muted-foreground mt-6 text-center">
+              Geen mail ontvangen?{' '}
+              <button
+                onClick={() => setStatus('idle')}
+                className="underline hover:text-foreground transition-colors"
+              >
+                Vraag een nieuwe link aan
+              </button>
+              {' '}· Controleer ook je spam folder · Link is 15 minuten geldig
+            </p>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="mb-4">
