@@ -1,25 +1,42 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
+
+interface Stats {
+  activeOnboardings: number
+  completedThisMonth: number
+  atRisk: number
+  templates: number
+}
+
+interface Onboarding {
+  id: string
+  name: string
+  role: string
+  progress: number
+  status: 'at_risk' | 'on_track'
+  phase: string
+}
 
 export default function AdminPage() {
   const t = useTranslations('app')
   const router = useRouter()
 
-  const stats = {
-    activeOnboardings: 4,
-    completedThisMonth: 2,
-    atRisk: 2,
-    templates: 3,
-  }
+  const [stats, setStats] = useState<Stats>({ activeOnboardings: 0, completedThisMonth: 0, atRisk: 0, templates: 0 })
+  const [recentOnboardings, setRecentOnboardings] = useState<Onboarding[]>([])
+  const [loading, setLoading] = useState(true)
 
-  const recentOnboardings = [
-    { id: '1', name: 'Tom Janssen', role: 'Sales', progress: 20, status: 'at_risk', phase: 'Dag 1' },
-    { id: '2', name: 'Sarah de Vries', role: 'Customer Service', progress: 65, status: 'on_track', phase: 'Week 1' },
-    { id: '3', name: 'Lisa Bakker', role: 'Operator', progress: 90, status: 'on_track', phase: 'Maand 1' },
-    { id: '4', name: 'Mark Visser', role: 'Customer Service', progress: 40, status: 'at_risk', phase: 'Week 1' },
-  ]
+  useEffect(() => {
+    fetch('/api/admin/dashboard')
+      .then(r => r.json())
+      .then(data => {
+        if (data.stats) setStats(data.stats)
+        if (data.recentOnboardings) setRecentOnboardings(data.recentOnboardings)
+      })
+      .finally(() => setLoading(false))
+  }, [])
 
   const totalOnboardings = stats.activeOnboardings + stats.completedThisMonth
 
@@ -38,7 +55,7 @@ export default function AdminPage() {
           <p className="text-gray-500 mt-1">{t('admin.subtitle')}</p>
         </div>
 
-        {totalOnboardings === 0 && (
+        {!loading && totalOnboardings === 0 && (
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
             <h2 className="font-semibold text-blue-900 mb-1">👋 Welkom bij Onvanta!</h2>
             <p className="text-blue-700 text-sm">Je account is actief. Begin met een template kiezen en je eerste medewerker uitnodigen.</p>
@@ -80,10 +97,12 @@ export default function AdminPage() {
         <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
           <div className="p-5 border-b border-gray-50 flex items-center justify-between">
             <h2 className="font-semibold text-gray-900">{t('admin.recentOnboardings')}</h2>
-            <button className="text-sm text-blue-600 hover:text-blue-700">{t('admin.viewAll')}</button>
+            <button className="text-sm text-blue-600 hover:text-blue-700" onClick={() => router.push('/admin/onboardings')}>{t('admin.viewAll')}</button>
           </div>
           <div className="divide-y divide-gray-50">
-            {recentOnboardings.length === 0 ? (
+            {loading ? (
+              <div className="p-8 text-center text-sm text-gray-400">Laden…</div>
+            ) : recentOnboardings.length === 0 ? (
               <div className="text-center py-12 border rounded-lg border-dashed">
                 <p className="text-2xl mb-2">🚀</p>
                 <h3 className="font-medium text-lg mb-1">Nog geen actieve onboardings</h3>
@@ -113,7 +132,7 @@ export default function AdminPage() {
                         <span className="text-xs bg-red-50 text-red-600 px-2 py-0.5 rounded-full">{t('admin.atRisk')}</span>
                       )}
                     </div>
-                    <p className="text-xs text-gray-500 mt-0.5">{onboarding.role} · {onboarding.phase}</p>
+                    <p className="text-xs text-gray-500 mt-0.5">{onboarding.role}</p>
                   </div>
                   <div className="text-right w-32">
                     <p className="text-sm font-semibold text-gray-900 mb-1">{onboarding.progress}%</p>
