@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
     await Promise.all([
       // 1. Notificatie naar hello@onvanta.io
       resend.emails.send({
-        from: 'Onvanta Contact <noreply@onvanta.io>',
+        from: 'Onvanta Contact <hello@onvanta.io>',
         to: 'hello@onvanta.io',
         subject: `Nieuw contactbericht van ${name}`,
         html: `

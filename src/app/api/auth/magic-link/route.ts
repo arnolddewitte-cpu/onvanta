@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
     const verifyUrl = `${process.env.NEXTAUTH_URL}/api/auth/verify?token=${token}`
 
     await resend.emails.send({
-      from: 'Onvanta <noreply@onvanta.io>',
+      from: 'Onvanta <hello@onvanta.io>',
       to: email,
       subject: 'Jouw inloglink voor Onvanta',
       html: `

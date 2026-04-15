@@ -118,7 +118,7 @@ export async function POST(req: NextRequest) {
     }
 
     await resend.emails.send({
-      from: `${resolveSender(branding)} <noreply@onvanta.io>`,
+      from: `${resolveSender(branding)} <hello@onvanta.io>`,
       to: email,
       subject: `Welkom bij ${template.name} — start je onboarding`,
       html: buildInviteEmail({

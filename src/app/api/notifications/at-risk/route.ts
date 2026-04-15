@@ -287,7 +287,7 @@ async function runWeeklyDigest(now: Date, baseUrl: string): Promise<{ sent: numb
 
     try {
       await resend.emails.send({
-        from: 'Onvanta <noreply@onvanta.io>',
+        from: 'Onvanta <hello@onvanta.io>',
         to: manager.email,
         subject,
         html: buildDigestEmail({
@@ -391,7 +391,7 @@ async function runAtRiskCheck(now: Date, baseUrl: string): Promise<{ notified: n
 
     try {
       await resend.emails.send({
-        from: 'Onvanta <noreply@onvanta.io>',
+        from: 'Onvanta <hello@onvanta.io>',
         to: instance.manager.email,
         subject: `⚠️ ${instance.employee.name} heeft aandacht nodig`,
         html: buildAtRiskEmail({

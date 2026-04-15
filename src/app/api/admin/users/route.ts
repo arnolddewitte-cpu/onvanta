@@ -119,7 +119,7 @@ export async function POST(req: NextRequest) {
   const sender = resolveSender(branding)
 
   const { error: mailError } = await resend.emails.send({
-    from: `${sender} <noreply@onvanta.io>`,
+    from: `${sender} <hello@onvanta.io>`,
     to: normalizedEmail,
     subject: `Je bent uitgenodigd voor ${company.name} op Onvanta`,
     html: `

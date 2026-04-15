@@ -91,7 +91,7 @@ export async function POST() {
 </html>`
 
   const { error } = await resend.emails.send({
-    from: `${sender} <noreply@onvanta.io>`,
+    from: `${sender} <hello@onvanta.io>`,
     to: user.email,
     subject: `[Testmail] Welkom bij ${company.name} — je toegangslink staat klaar`,
     html,

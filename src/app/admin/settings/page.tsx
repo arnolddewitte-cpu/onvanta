@@ -450,7 +450,7 @@ function SettingsContent() {
               </div>
               <div className="px-6 py-2 bg-gray-50 border-b border-gray-100 flex items-center gap-2">
                 <span className="text-xs text-gray-400 font-medium w-20 flex-shrink-0">Van</span>
-                <span className="text-xs text-gray-700">{senderName || 'Onvanta'} &lt;noreply@onvanta.io&gt;</span>
+                <span className="text-xs text-gray-700">{senderName || 'Onvanta'} &lt;hello@onvanta.io&gt;</span>
               </div>
 
               {/* iframe preview */}

@@ -91,7 +91,7 @@ export async function POST(req: NextRequest) {
   const loginUrl = `${baseUrl}/api/auth/verify?token=${token}`
 
     await resend.emails.send({
-      from: 'Onvanta <noreply@onvanta.io>',
+      from: 'Onvanta <hello@onvanta.io>',
       to: email,
       subject: 'Welkom bij Onvanta — log hier in',
       html: `

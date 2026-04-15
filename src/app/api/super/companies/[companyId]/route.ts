@@ -240,7 +240,7 @@ export async function POST(
   }
 
   await resend.emails.send({
-    from: 'Onvanta <noreply@onvanta.io>',
+    from: 'Onvanta <hello@onvanta.io>',
     to: normalizedEmail,
     subject: `Je bent uitgenodigd voor ${company.name} op Onvanta`,
     html: `
