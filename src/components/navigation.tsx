@@ -64,12 +64,12 @@ export default function Navigation({ role = 'employee' }: Props) {
       <aside className="hidden md:flex fixed left-0 top-0 h-full w-56 bg-white border-r border-gray-100 flex-col z-40">
         {/* Logo */}
         <div className="px-5 py-5 border-b border-gray-100">
-          <div className="flex items-center gap-2.5">
+          <Link href={items[0]?.href ?? '/dashboard'} className="flex items-center gap-2.5">
             <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
               <span className="text-white font-semibold text-sm">O</span>
             </div>
             <span className="font-semibold text-gray-900">Onvanta</span>
-          </div>
+          </Link>
         </div>
 
         {/* Nav items */}
