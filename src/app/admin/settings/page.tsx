@@ -16,6 +16,17 @@ interface Company {
   senderName: string | null
   welcomeMessage: string | null
   brandColor: string | null
+  contactName: string | null
+  contactEmail: string | null
+  contactPhone: string | null
+  website: string | null
+  billingName: string | null
+  vatNumber: string | null
+  kvkNumber: string | null
+  billingAddress: string | null
+  billingZip: string | null
+  billingCity: string | null
+  billingCountry: string | null
 }
 
 function SettingsContent() {
@@ -28,9 +39,23 @@ function SettingsContent() {
   const [company, setCompany] = useState<Company | null>(null)
   const [loading, setLoading] = useState(true)
 
-  // Algemeen
+  // Algemeen — bedrijfsgegevens
   const [companyName, setCompanyName] = useState('')
+  const [contactName, setContactName] = useState('')
+  const [contactEmail, setContactEmail] = useState('')
+  const [contactPhone, setContactPhone] = useState('')
+  const [website, setWebsite] = useState('')
   const [savedGeneral, setSavedGeneral] = useState(false)
+
+  // Factuurgegevens
+  const [billingName, setBillingName] = useState('')
+  const [vatNumber, setVatNumber] = useState('')
+  const [kvkNumber, setKvkNumber] = useState('')
+  const [billingAddress, setBillingAddress] = useState('')
+  const [billingZip, setBillingZip] = useState('')
+  const [billingCity, setBillingCity] = useState('')
+  const [billingCountry, setBillingCountry] = useState('NL')
+  const [savedBilling, setSavedBilling] = useState(false)
 
   // Huisstijl
   const [logoUrl, setLogoUrl] = useState<string | null>(null)
@@ -75,6 +100,17 @@ function SettingsContent() {
         if (!data.error) {
           setCompany(data)
           setCompanyName(data.name)
+          setContactName(data.contactName ?? '')
+          setContactEmail(data.contactEmail ?? '')
+          setContactPhone(data.contactPhone ?? '')
+          setWebsite(data.website ?? '')
+          setBillingName(data.billingName ?? '')
+          setVatNumber(data.vatNumber ?? '')
+          setKvkNumber(data.kvkNumber ?? '')
+          setBillingAddress(data.billingAddress ?? '')
+          setBillingZip(data.billingZip ?? '')
+          setBillingCity(data.billingCity ?? '')
+          setBillingCountry(data.billingCountry ?? 'NL')
           setLogoUrl(data.logoUrl ?? null)
           setSenderName(data.senderName ?? '')
           setWelcomeMessage(data.welcomeMessage ?? '')
@@ -89,11 +125,23 @@ function SettingsContent() {
     await fetch('/api/admin/company', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: companyName }),
+      body: JSON.stringify({ name: companyName, contactName, contactEmail, contactPhone, website }),
     })
-    setCompany({ ...company, name: companyName })
+    setCompany({ ...company, name: companyName, contactName, contactEmail, contactPhone, website })
     setSavedGeneral(true)
     setTimeout(() => setSavedGeneral(false), 2000)
+  }
+
+  async function handleSaveBilling() {
+    if (!company) return
+    await fetch('/api/admin/company', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ billingName, vatNumber, kvkNumber, billingAddress, billingZip, billingCity, billingCountry }),
+    })
+    setCompany({ ...company, billingName, vatNumber, kvkNumber, billingAddress, billingZip, billingCity, billingCountry })
+    setSavedBilling(true)
+    setTimeout(() => setSavedBilling(false), 2000)
   }
 
   async function handleLogoUpload(e: React.ChangeEvent<HTMLInputElement>) {
@@ -263,31 +311,133 @@ function SettingsContent() {
 
         {/* ── Tab: Algemeen ── */}
         {activeTab === 'algemeen' && (
-          <div className="bg-white rounded-2xl border border-gray-100 p-6">
-            <h2 className="font-semibold text-gray-900 mb-5">Bedrijfsgegevens</h2>
-            {loading ? (
-              <div className="h-12 bg-gray-100 rounded-xl animate-pulse" />
-            ) : (
-              <>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Bedrijfsnaam</label>
-                  <input
-                    type="text"
-                    value={companyName}
-                    onChange={e => setCompanyName(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
+          <div className="space-y-6">
+            {/* Bedrijfsgegevens */}
+            <div className="bg-white rounded-2xl border border-gray-100 p-6">
+              <h2 className="font-semibold text-gray-900 mb-5">Bedrijfsgegevens</h2>
+              {loading ? (
+                <div className="space-y-3">
+                  <div className="h-10 bg-gray-100 rounded-xl animate-pulse" />
+                  <div className="h-10 bg-gray-100 rounded-xl animate-pulse" />
+                  <div className="h-10 bg-gray-100 rounded-xl animate-pulse" />
                 </div>
-                <button
-                  onClick={handleSaveGeneral}
-                  className={`mt-5 px-5 py-2.5 rounded-xl text-sm font-medium transition-colors ${
-                    savedGeneral ? 'bg-green-500 text-white' : 'bg-blue-600 text-white hover:bg-blue-700'
-                  }`}
-                >
-                  {savedGeneral ? '✓ Opgeslagen!' : 'Wijzigingen opslaan'}
-                </button>
-              </>
-            )}
+              ) : (
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Bedrijfsnaam</label>
+                    <input type="text" value={companyName} onChange={e => setCompanyName(e.target.value)}
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Contactpersoon</label>
+                    <input type="text" value={contactName} onChange={e => setContactName(e.target.value)}
+                      placeholder="Voor- en achternaam"
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">E-mailadres</label>
+                    <input type="email" value={contactEmail} onChange={e => setContactEmail(e.target.value)}
+                      placeholder="info@bedrijf.nl"
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Telefoonnummer</label>
+                    <input type="tel" value={contactPhone} onChange={e => setContactPhone(e.target.value)}
+                      placeholder="+31 20 000 0000"
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Website</label>
+                    <input type="url" value={website} onChange={e => setWebsite(e.target.value)}
+                      placeholder="https://www.bedrijf.nl"
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  </div>
+                  <button
+                    onClick={handleSaveGeneral}
+                    className={`mt-1 px-5 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+                      savedGeneral ? 'bg-green-500 text-white' : 'bg-blue-600 text-white hover:bg-blue-700'
+                    }`}
+                  >
+                    {savedGeneral ? '✓ Opgeslagen!' : 'Wijzigingen opslaan'}
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Factuurgegevens */}
+            <div className="bg-white rounded-2xl border border-gray-100 p-6">
+              <h2 className="font-semibold text-gray-900 mb-5">Factuurgegevens</h2>
+              {loading ? (
+                <div className="space-y-3">
+                  <div className="h-10 bg-gray-100 rounded-xl animate-pulse" />
+                  <div className="h-10 bg-gray-100 rounded-xl animate-pulse" />
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Factuurnaam <span className="text-gray-400 font-normal">(juridische naam)</span></label>
+                    <input type="text" value={billingName} onChange={e => setBillingName(e.target.value)}
+                      placeholder="Bedrijf B.V."
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1.5">BTW-nummer</label>
+                      <input type="text" value={vatNumber} onChange={e => setVatNumber(e.target.value)}
+                        placeholder="NL000000000B01"
+                        className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1.5">KVK-nummer</label>
+                      <input type="text" value={kvkNumber} onChange={e => setKvkNumber(e.target.value)}
+                        placeholder="12345678"
+                        className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Factuuradres</label>
+                    <input type="text" value={billingAddress} onChange={e => setBillingAddress(e.target.value)}
+                      placeholder="Straat + huisnummer"
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  </div>
+                  <div className="grid grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1.5">Postcode</label>
+                      <input type="text" value={billingZip} onChange={e => setBillingZip(e.target.value)}
+                        placeholder="1234 AB"
+                        className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1.5">Stad</label>
+                      <input type="text" value={billingCity} onChange={e => setBillingCity(e.target.value)}
+                        placeholder="Amsterdam"
+                        className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1.5">Land</label>
+                      <select value={billingCountry} onChange={e => setBillingCountry(e.target.value)}
+                        className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+                        <option value="NL">Nederland</option>
+                        <option value="BE">België</option>
+                        <option value="DE">Duitsland</option>
+                        <option value="FR">Frankrijk</option>
+                        <option value="GB">Verenigd Koninkrijk</option>
+                        <option value="US">Verenigde Staten</option>
+                        <option value="OTHER">Overig</option>
+                      </select>
+                    </div>
+                  </div>
+                  <button
+                    onClick={handleSaveBilling}
+                    className={`mt-1 px-5 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+                      savedBilling ? 'bg-green-500 text-white' : 'bg-blue-600 text-white hover:bg-blue-700'
+                    }`}
+                  >
+                    {savedBilling ? '✓ Opgeslagen!' : 'Factuurgegevens opslaan'}
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         )}
 

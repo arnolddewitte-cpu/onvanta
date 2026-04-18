@@ -11,7 +11,7 @@ export async function GET() {
 
   const { data: company } = await supabaseAdmin
     .from('Company')
-    .select('id, name, slug, plan, status, trialEndsAt, stripeCustomerId, logoUrl, senderName, welcomeMessage, brandColor, locale')
+    .select('id, name, slug, plan, status, trialEndsAt, stripeCustomerId, logoUrl, senderName, welcomeMessage, brandColor, locale, contactName, contactEmail, contactPhone, website, billingName, vatNumber, kvkNumber, billingAddress, billingZip, billingCity, billingCountry')
     .eq('id', session.companyId)
     .single()
 
@@ -27,7 +27,7 @@ export async function PATCH(req: NextRequest) {
   }
 
   const body = await req.json()
-  const allowed = ['name', 'senderName', 'welcomeMessage', 'brandColor', 'logoUrl', 'locale']
+  const allowed = ['name', 'senderName', 'welcomeMessage', 'brandColor', 'logoUrl', 'locale', 'contactName', 'contactEmail', 'contactPhone', 'website', 'billingName', 'vatNumber', 'kvkNumber', 'billingAddress', 'billingZip', 'billingCity', 'billingCountry']
   const updates: Record<string, unknown> = {}
   for (const key of allowed) {
     if (body[key] !== undefined) updates[key] = body[key]

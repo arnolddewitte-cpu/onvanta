@@ -76,6 +76,17 @@ model Company {
   stripeCustomerId     String?
   stripeSubscriptionId String?
   locale               String        @default("nl")
+  contactName          String?
+  contactEmail         String?
+  contactPhone         String?
+  website              String?
+  billingName          String?
+  vatNumber            String?
+  kvkNumber            String?
+  billingAddress       String?
+  billingZip           String?
+  billingCity          String?
+  billingCountry       String?       @default("NL")
   createdAt            DateTime      @default(now())
   updatedAt            DateTime      @updatedAt
 
