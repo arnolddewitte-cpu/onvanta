@@ -326,31 +326,31 @@ function SettingsContent() {
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1.5">Bedrijfsnaam</label>
                     <input type="text" value={companyName} onChange={e => setCompanyName(e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500" />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1.5">Contactpersoon</label>
                     <input type="text" value={contactName} onChange={e => setContactName(e.target.value)}
                       placeholder="Voor- en achternaam"
-                      className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500" />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1.5">E-mailadres</label>
                     <input type="email" value={contactEmail} onChange={e => setContactEmail(e.target.value)}
                       placeholder="info@bedrijf.nl"
-                      className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500" />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1.5">Telefoonnummer</label>
                     <input type="tel" value={contactPhone} onChange={e => setContactPhone(e.target.value)}
                       placeholder="+31 20 000 0000"
-                      className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500" />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1.5">Website</label>
                     <input type="url" value={website} onChange={e => setWebsite(e.target.value)}
                       placeholder="https://www.bedrijf.nl"
-                      className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500" />
                   </div>
                   <button
                     onClick={handleSaveGeneral}
@@ -378,40 +378,40 @@ function SettingsContent() {
                     <label className="block text-sm font-medium text-gray-700 mb-1.5">Factuurnaam <span className="text-gray-400 font-normal">(juridische naam)</span></label>
                     <input type="text" value={billingName} onChange={e => setBillingName(e.target.value)}
                       placeholder="Bedrijf B.V."
-                      className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500" />
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1.5">BTW-nummer</label>
                       <input type="text" value={vatNumber} onChange={e => setVatNumber(e.target.value)}
                         placeholder="NL000000000B01"
-                        className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                        className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500" />
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1.5">KVK-nummer</label>
                       <input type="text" value={kvkNumber} onChange={e => setKvkNumber(e.target.value)}
                         placeholder="12345678"
-                        className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                        className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500" />
                     </div>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1.5">Factuuradres</label>
                     <input type="text" value={billingAddress} onChange={e => setBillingAddress(e.target.value)}
                       placeholder="Straat + huisnummer"
-                      className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500" />
                   </div>
                   <div className="grid grid-cols-3 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1.5">Postcode</label>
                       <input type="text" value={billingZip} onChange={e => setBillingZip(e.target.value)}
                         placeholder="1234 AB"
-                        className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                        className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500" />
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1.5">Stad</label>
                       <input type="text" value={billingCity} onChange={e => setBillingCity(e.target.value)}
                         placeholder="Amsterdam"
-                        className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                        className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500" />
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1.5">Land</label>
@@ -516,7 +516,7 @@ function SettingsContent() {
                       onChange={e => setSenderName(e.target.value)}
                       placeholder={`Team ${company?.name ?? 'Jouw bedrijf'}`}
                       maxLength={80}
-                      className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                     <p className="mt-1 text-xs text-gray-400">Verschijnt als afzender in de inbox. Bijv. &ldquo;Team Acme B.V.&rdquo;</p>
                   </div>
@@ -531,7 +531,7 @@ function SettingsContent() {
                       placeholder="Welkom bij ons team! We kijken ernaar uit om je te verwelkomen..."
                       maxLength={500}
                       rows={4}
-                      className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
                     />
                     <p className="mt-1 text-xs text-gray-400">{welcomeMessage.length}/500 tekens · Persoonlijk bericht van de directeur of HR</p>
                   </div>
@@ -865,7 +865,7 @@ function SettingsContent() {
               value={deleteConfirm}
               onChange={e => setDeleteConfirm(e.target.value)}
               placeholder={company?.name ?? ''}
-              className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-red-500 mb-4"
+              className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 mb-4"
             />
             {deleteError && (
               <p className="text-xs text-red-600 mb-3">{deleteError}</p>
