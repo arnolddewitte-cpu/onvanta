@@ -1,9 +1,16 @@
 import { createClient } from 'contentful'
 import type { EntryFieldTypes } from 'contentful'
 
+const spaceId = process.env.CONTENTFUL_SPACE_ID
+const accessToken = process.env.CONTENTFUL_ACCESS_TOKEN
+
+if (!spaceId || !accessToken) {
+  console.warn('[Contentful] Missing env vars — CONTENTFUL_SPACE_ID:', !!spaceId, 'CONTENTFUL_ACCESS_TOKEN:', !!accessToken)
+}
+
 const client = createClient({
-  space: process.env.CONTENTFUL_SPACE_ID!,
-  accessToken: process.env.CONTENTFUL_ACCESS_TOKEN!,
+  space: spaceId ?? '',
+  accessToken: accessToken ?? '',
 })
 
 export interface BlogPostFields {
@@ -31,12 +38,14 @@ function cfLocale(locale: string): string {
 }
 
 export async function getBlogPosts(locale: string): Promise<BlogPost[]> {
+  console.log('[Contentful] getBlogPosts — locale:', locale, '→', cfLocale(locale))
   try {
     const res = await client.getEntries({
       content_type: 'blogPost',
       locale: cfLocale(locale),
       order: ['-fields.date'],
     })
+    console.log('[Contentful] getBlogPosts — total:', res.total, 'items:', res.items.length)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return res.items.map((item: any) => ({
       id: item.sys.id,
@@ -47,7 +56,8 @@ export async function getBlogPosts(locale: string): Promise<BlogPost[]> {
       date: item.fields.date ?? '',
       tags: item.fields.tags ?? [],
     }))
-  } catch {
+  } catch (err) {
+    console.error('[Contentful] getBlogPosts error:', err)
     return []
   }
 }
@@ -72,7 +82,8 @@ export async function getBlogPost(slug: string, locale: string): Promise<BlogPos
       date: item.fields.date ?? '',
       tags: item.fields.tags ?? [],
     }
-  } catch {
+  } catch (err) {
+    console.error('[Contentful] getBlogPost error:', err)
     return null
   }
 }
@@ -86,7 +97,8 @@ export async function getAllBlogSlugs(locale: string): Promise<string[]> {
     })
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return res.items.map((item: any) => item.fields.slug ?? '').filter(Boolean)
-  } catch {
+  } catch (err) {
+    console.error('[Contentful] getAllBlogSlugs error:', err)
     return []
   }
 }
