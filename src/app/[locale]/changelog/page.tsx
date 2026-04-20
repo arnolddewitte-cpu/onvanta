@@ -33,6 +33,16 @@ interface Release {
 
 const releasesNl: Release[] = [
   {
+    version: 'v8.3',
+    date: '20 april 2026',
+    items: [
+      { tag: 'Nieuw',     text: 'Blog powered by Contentful — NL + EN, rich text, tags, leestijdschatting' },
+      { tag: 'Verbeterd', text: 'ISR revalidate=60 op blog overzicht en post pagina\'s — nieuwe posts verschijnen zonder herdeployment' },
+      { tag: 'Nieuw',     text: 'Cookiebeleid en Verwerkersovereenkomst (DPA) pagina\'s toegevoegd' },
+      { tag: 'Nieuw',     text: 'Changelog pagina toegevoegd' },
+    ],
+  },
+  {
     version: 'v8.2',
     date: '20 april 2026',
     items: [
@@ -57,6 +67,16 @@ const releasesNl: Release[] = [
 ]
 
 const releasesEn: Release[] = [
+  {
+    version: 'v8.3',
+    date: 'April 20, 2026',
+    items: [
+      { tag: 'New',      text: 'Contentful-powered blog — NL + EN, rich text, tags, read time estimate' },
+      { tag: 'Improved', text: 'ISR revalidate=60 on blog overview and post pages — new posts appear without redeployment' },
+      { tag: 'New',      text: 'Cookie Policy and Data Processing Agreement (DPA) pages added' },
+      { tag: 'New',      text: 'Changelog page added' },
+    ],
+  },
   {
     version: 'v8.2',
     date: 'April 20, 2026',
