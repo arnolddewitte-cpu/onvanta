@@ -1,3 +1,5 @@
+export const revalidate = 60
+
 import Link from 'next/link'
 import { ogImage } from '@/lib/seo'
 import { getBlogPosts } from '@/lib/contentful'
