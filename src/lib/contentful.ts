@@ -34,7 +34,7 @@ export type BlogPost = {
 }
 
 function cfLocale(locale: string): string {
-  return locale === 'en' ? 'en-US' : 'nl-NL'
+  return locale === 'en' ? 'en-US' : 'nl'
 }
 
 export async function getBlogPosts(locale: string): Promise<BlogPost[]> {
