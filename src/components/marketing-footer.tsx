@@ -9,7 +9,7 @@ export default function MarketingFooter() {
   const cols = [
     { title: t('product'), links: [{ label: t('features'), href: '/#functies' }, { label: t('pricing'), href: '/pricing' }, { label: t('faq'), href: '/faq' }, { label: t('changelog'), href: '/changelog' }] },
     { title: t('company'), links: [{ label: t('about'), href: '/about' }, { label: t('contact'), href: '/contact' }] },
-    { title: t('legal'), links: [{ label: t('privacy'), href: '/privacy' }, { label: t('terms'), href: '/terms' }] },
+    { title: t('legal'), links: [{ label: t('privacy'), href: '/privacy' }, { label: t('terms'), href: '/terms' }, { label: t('cookies'), href: '/cookies' }, { label: t('dpa'), href: '/dpa' }] },
   ]
 
   return (
