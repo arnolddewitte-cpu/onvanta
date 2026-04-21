@@ -24,15 +24,26 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 
 function formatDate(dateStr: string, locale: string): string {
   if (!dateStr) return ''
-  return new Date(dateStr).toLocaleDateString(locale === 'en' ? 'en-GB' : 'nl-NL', {
-    day: 'numeric', month: 'long', year: 'numeric',
-  })
+  try {
+    return new Date(dateStr).toLocaleDateString(locale === 'en' ? 'en-GB' : 'nl-NL', {
+      day: 'numeric', month: 'long', year: 'numeric',
+    })
+  } catch {
+    return dateStr
+  }
 }
 
 export default async function BlogPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
   const isEn = locale === 'en'
-  const posts = await getBlogPosts(locale)
+
+  let posts = []
+  try {
+    posts = await getBlogPosts(locale)
+  } catch (err) {
+    console.error('[Blog] getBlogPosts threw:', err)
+    posts = []
+  }
 
   return (
     <main style={{ background: '#faf9f6', fontFamily: 'DM Sans, system-ui, sans-serif', minHeight: '100vh' }}>
@@ -44,6 +55,17 @@ export default async function BlogPage({ params }: { params: Promise<{ locale: s
           .blog-hero { padding: 48px 20px 40px !important; }
           .blog-body { padding: 0 20px 80px !important; }
         }
+        .blog-card {
+          background: #fff;
+          border: 1px solid #e8e7e2;
+          border-radius: 16px;
+          padding: 28px 28px 24px;
+          display: block;
+          height: 100%;
+          transition: box-shadow .15s;
+          text-decoration: none;
+        }
+        .blog-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,.07); }
       `}</style>
 
       <MarketingNav />
@@ -73,54 +95,37 @@ export default async function BlogPage({ params }: { params: Promise<{ locale: s
             </h2>
             <p style={{ fontSize: 15, color: '#7a7a78', lineHeight: 1.7 }}>
               {isEn
-                ? 'We\'re working on our first articles. Check back soon.'
+                ? "We're working on our first articles. Check back soon."
                 : 'We werken aan onze eerste artikelen. Kom snel terug.'}
             </p>
           </div>
         ) : (
           <div className="blog-grid">
             {posts.map(post => (
-              <Link
-                key={post.id}
-                href={`/blog/${post.slug}`}
-                style={{ textDecoration: 'none', display: 'block' }}
-              >
-                <article style={{
-                  background: '#fff',
-                  border: '1px solid #e8e7e2',
-                  borderRadius: 16,
-                  padding: '28px 28px 24px',
-                  height: '100%',
-                  transition: 'box-shadow .15s',
-                  cursor: 'pointer',
-                }}
-                  onMouseEnter={e => (e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,.07)')}
-                  onMouseLeave={e => (e.currentTarget.style.boxShadow = 'none')}
-                >
-                  {post.tags?.length > 0 && (
-                    <div style={{ marginBottom: 14, display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                      {post.tags.map((tag: string) => (
-                        <span key={tag} style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.4px', textTransform: 'uppercase', background: '#e8f0fc', color: '#1a5fd4', padding: '3px 9px', borderRadius: 20 }}>
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                  <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 20, fontWeight: 400, color: '#0f0f0e', lineHeight: 1.3, marginBottom: 10 }}>
-                    {post.title}
-                  </h2>
-                  {post.description && (
-                    <p style={{ fontSize: 14, color: '#5a5a58', lineHeight: 1.7, marginBottom: 16, display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                      {post.description}
-                    </p>
-                  )}
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 'auto' }}>
-                    <span style={{ fontSize: 13, color: '#7a7a78' }}>{formatDate(post.date, locale)}</span>
-                    <span style={{ fontSize: 13, color: '#1a5fd4', fontWeight: 500 }}>
-                      {isEn ? 'Read more →' : 'Lees meer →'}
-                    </span>
+              <Link key={post.id} href={`/blog/${post.slug}`} className="blog-card">
+                {post.tags?.length > 0 && (
+                  <div style={{ marginBottom: 14, display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                    {post.tags.map((tag: string) => (
+                      <span key={tag} style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.4px', textTransform: 'uppercase', background: '#e8f0fc', color: '#1a5fd4', padding: '3px 9px', borderRadius: 20 }}>
+                        {tag}
+                      </span>
+                    ))}
                   </div>
-                </article>
+                )}
+                <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 20, fontWeight: 400, color: '#0f0f0e', lineHeight: 1.3, marginBottom: 10 }}>
+                  {post.title}
+                </h2>
+                {post.description && (
+                  <p style={{ fontSize: 14, color: '#5a5a58', lineHeight: 1.7, marginBottom: 16, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical' }}>
+                    {post.description}
+                  </p>
+                )}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <span style={{ fontSize: 13, color: '#7a7a78' }}>{formatDate(post.date, locale)}</span>
+                  <span style={{ fontSize: 13, color: '#1a5fd4', fontWeight: 500 }}>
+                    {isEn ? 'Read more →' : 'Lees meer →'}
+                  </span>
+                </div>
               </Link>
             ))}
           </div>
