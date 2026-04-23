@@ -33,6 +33,20 @@ interface Release {
 
 const releasesNl: Release[] = [
   {
+    version: 'v8.4',
+    date: '23 april 2026',
+    items: [
+      { tag: 'Nieuw',     text: 'Blog gelanceerd met Contentful integratie — posts verschijnen automatisch zonder redeploy (ISR)' },
+      { tag: 'Nieuw',     text: 'Cookiebeleid pagina (/cookies)' },
+      { tag: 'Nieuw',     text: 'Verwerkersovereenkomst pagina (/dpa)' },
+      { tag: 'Nieuw',     text: 'Support pagina (/support) met publiek helpcentrum' },
+      { tag: 'Nieuw',     text: '/help nu publiek toegankelijk zonder inloggen' },
+      { tag: 'Verbeterd', text: 'Homepage doelgroep verbreed — niet meer alleen logistiek/print maar elk groeiend bedrijf' },
+      { tag: 'Verbeterd', text: 'Footer uitgebreid: Blog, Changelog, Cookiebeleid, Verwerkersovereenkomst, Support toegevoegd' },
+      { tag: 'Verbeterd', text: 'Sitemap uitgebreid naar 28 URLs' },
+    ],
+  },
+  {
     version: 'v8.3',
     date: '20 april 2026',
     items: [
@@ -67,6 +81,20 @@ const releasesNl: Release[] = [
 ]
 
 const releasesEn: Release[] = [
+  {
+    version: 'v8.4',
+    date: 'April 23, 2026',
+    items: [
+      { tag: 'New',      text: 'Blog launched with Contentful integration — posts appear automatically without redeployment (ISR)' },
+      { tag: 'New',      text: 'Cookie Policy page (/cookies)' },
+      { tag: 'New',      text: 'Data Processing Agreement page (/dpa)' },
+      { tag: 'New',      text: 'Support page (/support) with public help centre' },
+      { tag: 'New',      text: '/help now publicly accessible without logging in' },
+      { tag: 'Improved', text: 'Homepage messaging broadened — no longer focused on logistics/print but every growing business' },
+      { tag: 'Improved', text: 'Footer expanded: Blog, Changelog, Cookie Policy, DPA and Support added' },
+      { tag: 'Improved', text: 'Sitemap expanded to 28 URLs' },
+    ],
+  },
   {
     version: 'v8.3',
     date: 'April 20, 2026',
