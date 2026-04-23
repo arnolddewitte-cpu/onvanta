@@ -3,7 +3,7 @@
   "hero": {
     "line1": "New employees,",
     "em": "productive faster.",
-    "subtitle": "Structured onboarding, spaced repetition flashcards and manager visibility — all in one system for growing teams.",
+    "subtitle": "Structured onboarding, spaced repetition flashcards and manager visibility — all in one system for every growing business.",
     "ctaPrimary": "Start free →",
     "ctaSecondary": "How it works",
     "social": "14-day free trial · No credit card required"
@@ -24,13 +24,13 @@
     "badge": "Features",
     "title1": "Everything your team needs",
     "em": "for a great start.",
-    "subtitle": "Not a generic LMS. Not an HRIS. Built specifically for employee onboarding and knowledge retention.",
+    "subtitle": "Not a generic LMS. Not an HRIS. Built for any business that grows and wants to give new people a solid start.",
     "items": [
       { "icon": "📋", "title": "Structured onboarding", "desc": "Build templates with phases, steps and content blocks. Every new hire gets the same solid start." },
       { "icon": "🃏", "title": "Spaced repetition", "desc": "ANKI-style flashcards built into onboarding. Knowledge sticks because it's repeated at the right moment." },
       { "icon": "👁️", "title": "Manager visibility", "desc": "At-risk detection, quiz scores, flashcard accuracy. Know who's struggling before the 30-day review." },
       { "icon": "⚡", "title": "Live in 60 seconds", "desc": "Pick a template, assign a manager, set a start date. Your first onboarding is running within a minute." },
-      { "icon": "🎯", "title": "Role-specific templates", "desc": "Different templates for CS, Sales and Operators. Each role gets content that matches the real work." },
+      { "icon": "🎯", "title": "Role-specific templates", "desc": "Fully customizable templates per role — whether you're onboarding CS, Sales, Operators or anything else. Each role gets content that matches the real work." },
       { "icon": "✅", "title": "Manager approvals", "desc": "Block progress until a manager signs off. Ensure standards are met before moving to the next phase." }
     ]
   },
@@ -56,7 +56,7 @@
   },
   "cta": {
     "title": "Ready for better onboarding?",
-    "subtitle": "14-day free trial. No credit card required.",
+    "subtitle": "Every growing business deserves structured onboarding. 14-day free trial. No credit card required.",
     "btn": "Start free →",
     "note": "14 days free · No credit card required"
   }
