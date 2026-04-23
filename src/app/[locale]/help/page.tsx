@@ -3,5 +3,7 @@ import HelpClient from './HelpClient'
 
 export default async function HelpPage() {
   const session = await getSession()
-  return <HelpClient role={session!.role as 'employee' | 'manager' | 'company_admin' | 'super_admin'} />
+  // Public visitors see all articles (company_admin level)
+  const role = (session?.role ?? 'company_admin') as 'employee' | 'manager' | 'company_admin' | 'super_admin'
+  return <HelpClient role={role} />
 }

@@ -7,6 +7,7 @@ export const seoMeta = {
     contact:  { title: 'Contact', description: 'Neem contact op. We reageren binnen één werkdag.' },
     cookies:  { title: 'Cookiebeleid', description: 'Hoe Onvanta cookies gebruikt en hoe je ze beheert.' },
     dpa:      { title: 'Verwerkersovereenkomst', description: 'AVG-conforme verwerkersovereenkomst tussen Onvanta en haar klanten.' },
+    support:  { title: 'Support', description: 'Hulp nodig? Bekijk de kennisbank, veelgestelde vragen of neem contact op.' },
   },
   en: {
     home: { title: 'New hires, productive faster', description: 'Structured onboarding with at-risk detection for growing teams.' },
@@ -16,6 +17,7 @@ export const seoMeta = {
     contact:  { title: 'Contact', description: 'Get in touch. We respond within one business day.' },
     cookies:  { title: 'Cookie Policy', description: 'How Onvanta uses cookies and how to manage them.' },
     dpa:      { title: 'Data Processing Agreement', description: 'GDPR-compliant data processing agreement between Onvanta and its customers.' },
+    support:  { title: 'Support', description: 'Need help? Browse the knowledge base, FAQs or get in touch.' },
   }
 }
 export const ogImage = { url: 'https://onvanta.io/og-image.png', width: 1200, height: 630 }

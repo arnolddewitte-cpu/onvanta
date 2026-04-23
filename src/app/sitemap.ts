@@ -19,6 +19,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${baseUrl}/terms`, lastModified, changeFrequency: 'yearly', priority: 0.3 },
     { url: `${baseUrl}/cookies`, lastModified, changeFrequency: 'yearly', priority: 0.3 },
     { url: `${baseUrl}/dpa`, lastModified, changeFrequency: 'yearly', priority: 0.3 },
+    { url: `${baseUrl}/support`, lastModified, changeFrequency: 'monthly', priority: 0.6 },
 
     // Engels (/en prefix)
     { url: `${baseUrl}/en`, lastModified, changeFrequency: 'weekly', priority: 1.0 },
@@ -34,5 +35,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${baseUrl}/en/terms`, lastModified, changeFrequency: 'yearly', priority: 0.3 },
     { url: `${baseUrl}/en/cookies`, lastModified, changeFrequency: 'yearly', priority: 0.3 },
     { url: `${baseUrl}/en/dpa`, lastModified, changeFrequency: 'yearly', priority: 0.3 },
+    { url: `${baseUrl}/en/support`, lastModified, changeFrequency: 'monthly', priority: 0.6 },
   ]
 }
