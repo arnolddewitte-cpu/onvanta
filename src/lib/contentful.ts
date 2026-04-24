@@ -22,7 +22,7 @@ function getClient() {
     console.warn('[Contentful] Missing env vars — CONTENTFUL_SPACE_ID:', !!space, 'CONTENTFUL_ACCESS_TOKEN:', !!accessToken)
     return null
   }
-  console.log('[Contentful] token prefix:', accessToken.slice(0, 4))
+  console.log('[Contentful] token prefix:', accessToken.slice(0, 6) ?? 'MISSING')
   return createClient({ space, accessToken })
 }
 
