@@ -15,13 +15,10 @@ function cfLocale(locale: string): string {
   return locale === 'en' ? 'en-US' : 'nl'
 }
 
-const SPACE_ID = process.env.CONTENTFUL_SPACE_ID || 'm4r8wwe9iedp'
-const ACCESS_TOKEN = process.env.CONTENTFUL_ACCESS_TOKEN || 'lq7X8P2KiITTliBLHhIgKVRlXe9m63p8eKSic4JmaUE'
+const SPACE_ID = 'm4r8wwe9iedp'
+const ACCESS_TOKEN = 'lq7X8P2KiITTliBLHhIgKVRlXe9m63p8eKSic4JmaUE'
 
-function getClient() {
-  console.log('[Contentful] token prefix:', ACCESS_TOKEN.slice(0, 6))
-  return createClient({ space: SPACE_ID, accessToken: ACCESS_TOKEN })
-}
+const client = createClient({ space: SPACE_ID, accessToken: ACCESS_TOKEN })
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function mapPost(item: any): BlogPost {
@@ -37,18 +34,13 @@ function mapPost(item: any): BlogPost {
 }
 
 export async function getBlogPosts(locale: string): Promise<BlogPost[]> {
-  console.log('[Contentful] getBlogPosts — locale:', locale, '→', cfLocale(locale))
-  const client = getClient()
-  if (!client) return []
   try {
     const res = await client.getEntries({
       content_type: 'blogPost',
       locale: cfLocale(locale),
       order: ['-fields.date' as 'fields.date'],
     })
-    console.log('[Contentful] getBlogPosts — total:', res.total, 'items:', res.items.length)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return res.items.map((item: any) => mapPost(item))
+    return res.items.map((item: any) => mapPost(item)) // eslint-disable-line @typescript-eslint/no-explicit-any
   } catch (err) {
     console.error('[Contentful] getBlogPosts error:', err)
     return []
@@ -56,9 +48,6 @@ export async function getBlogPosts(locale: string): Promise<BlogPost[]> {
 }
 
 export async function getBlogPost(slug: string, locale: string): Promise<BlogPost | null> {
-  console.log('[Contentful] getBlogPost — slug:', slug, 'locale:', cfLocale(locale))
-  const client = getClient()
-  if (!client) return null
   try {
     const res = await client.getEntries({
       content_type: 'blogPost',
@@ -66,12 +55,8 @@ export async function getBlogPost(slug: string, locale: string): Promise<BlogPos
       'fields.slug': slug,
       limit: 1,
     })
-    if (!res.items.length) {
-      console.log('[Contentful] getBlogPost — not found:', slug)
-      return null
-    }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return mapPost(res.items[0] as any)
+    if (!res.items.length) return null
+    return mapPost(res.items[0] as any) // eslint-disable-line @typescript-eslint/no-explicit-any
   } catch (err) {
     console.error('[Contentful] getBlogPost error:', err)
     return null
@@ -79,16 +64,13 @@ export async function getBlogPost(slug: string, locale: string): Promise<BlogPos
 }
 
 export async function getAllBlogSlugs(locale: string): Promise<string[]> {
-  const client = getClient()
-  if (!client) return []
   try {
     const res = await client.getEntries({
       content_type: 'blogPost',
       locale: cfLocale(locale),
       select: ['fields.slug'],
     })
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return res.items.map((item: any) => item.fields.slug ?? '').filter(Boolean)
+    return res.items.map((item: any) => item.fields.slug ?? '').filter(Boolean) // eslint-disable-line @typescript-eslint/no-explicit-any
   } catch (err) {
     console.error('[Contentful] getAllBlogSlugs error:', err)
     return []

@@ -155,15 +155,16 @@ export default async function BlogPage({ params }: { params: Promise<{ locale: s
     )
   } catch (err) {
     console.error('[Blog] page render crashed:', err)
-    // Bare-bones fallback — no imported components to avoid cascading failures
     return (
-      <main style={{ background: '#faf9f6', fontFamily: 'DM Sans, system-ui, sans-serif', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ textAlign: 'center', padding: '60px 20px' }}>
-          <p style={{ fontSize: 32, marginBottom: 12 }}>✍️</p>
-          <h1 style={{ fontFamily: 'Georgia, serif', fontSize: 28, fontWeight: 400, color: '#0f0f0e', marginBottom: 8 }}>Blog</h1>
-          <p style={{ fontSize: 15, color: '#7a7a78' }}>Artikelen worden geladen. Probeer het straks opnieuw.</p>
-        </div>
-      </main>
+      <>
+        <MarketingNav />
+        <main style={{ background: '#faf9f6', fontFamily: 'DM Sans, system-ui, sans-serif', minHeight: '100vh' }}>
+          <section style={{ maxWidth: 1100, margin: '0 auto', padding: '80px 40px 100px' }}>
+            <EmptyState isEn={false} />
+          </section>
+        </main>
+        <MarketingFooter />
+      </>
     )
   }
 }
