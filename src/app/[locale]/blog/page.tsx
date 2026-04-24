@@ -3,6 +3,7 @@ export const revalidate = 60
 import Link from 'next/link'
 import { ogImage } from '@/lib/seo'
 import { getBlogPosts } from '@/lib/contentful'
+import type { BlogPost } from '@/lib/contentful'
 import MarketingNav from '@/components/marketing-nav'
 import MarketingFooter from '@/components/marketing-footer'
 import CookieBanner from '@/components/cookie-banner'
@@ -37,7 +38,7 @@ export default async function BlogPage({ params }: { params: Promise<{ locale: s
   const { locale } = await params
   const isEn = locale === 'en'
 
-  let posts = []
+  let posts: BlogPost[] = []
   try {
     posts = await getBlogPosts(locale)
   } catch (err) {
