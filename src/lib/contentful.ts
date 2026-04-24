@@ -15,15 +15,12 @@ function cfLocale(locale: string): string {
   return locale === 'en' ? 'en-US' : 'nl'
 }
 
+const SPACE_ID = process.env.CONTENTFUL_SPACE_ID || 'm4r8wwe9iedp'
+const ACCESS_TOKEN = process.env.CONTENTFUL_ACCESS_TOKEN || 'lq7X8P2KiITTliBLHhIgKVRlXe9m63p8eKSic4JmaUE'
+
 function getClient() {
-  const space = process.env.CONTENTFUL_SPACE_ID
-  const accessToken = process.env.CONTENTFUL_ACCESS_TOKEN
-  if (!space || !accessToken) {
-    console.warn('[Contentful] Missing env vars — CONTENTFUL_SPACE_ID:', !!space, 'CONTENTFUL_ACCESS_TOKEN:', !!accessToken)
-    return null
-  }
-  console.log('[Contentful] token prefix:', accessToken.slice(0, 6) ?? 'MISSING')
-  return createClient({ space, accessToken })
+  console.log('[Contentful] token prefix:', ACCESS_TOKEN.slice(0, 6))
+  return createClient({ space: SPACE_ID, accessToken: ACCESS_TOKEN })
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
