@@ -9,6 +9,15 @@
     "login": "Inloggen",
     "cta": "Gratis proberen →"
   },
+  "paymentMethods": {
+    "title": "Betalen zoals jij wilt",
+    "subtitle": "Geen creditcard nodig. Kies de betaalmethode die voor jouw bedrijf werkt.",
+    "methods": [
+      { "icon": "🏦", "name": "iDEAL", "desc": "Direct betalen via jouw bank" },
+      { "icon": "📋", "name": "SEPA-incasso", "desc": "Automatische maandelijkse afschrijving" },
+      { "icon": "💳", "name": "Creditcard", "desc": "Visa, Mastercard en meer" }
+    ]
+  },
   "footer": {
     "tagline": "Nieuwe medewerkers, sneller productief. Onboarding software voor elk groeiend bedrijf.",
     "product": "Product",

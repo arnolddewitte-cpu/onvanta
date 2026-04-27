@@ -23,6 +23,11 @@ export default async function PricingPage() {
   const features = m.features as string[]
   const examples = m.examples as { n: number; price: string }[]
   const faqs = m.faqs as { q: string; a: string }[]
+  const pm = (messages.common as Record<string, unknown>).paymentMethods as {
+    title: string
+    subtitle: string
+    methods: { icon: string; name: string; desc: string }[]
+  }
 
   return (
     <main style={{ background: '#faf9f6', fontFamily: 'DM Sans, system-ui, sans-serif', minHeight: '100vh' }}>
@@ -30,8 +35,10 @@ export default async function PricingPage() {
         @media (max-width: 768px) {
           .pr-hero { padding: 48px 20px 32px !important; }
           .pr-card-wrap { padding: 0 20px !important; }
+          .pr-payment { padding: 0 20px !important; }
           .pr-faq { padding: 0 20px !important; }
           .pr-cta { padding: 60px 20px !important; }
+          .pr-methods { flex-direction: column !important; }
         }
       `}</style>
 
@@ -108,6 +115,25 @@ export default async function PricingPage() {
             {t('enterprise.cta')}
           </Link>
         </div>
+      </div>
+
+      {/* Payment methods */}
+      <div className="pr-payment" style={{ maxWidth: 480, margin: '0 auto 72px', padding: '0 40px' }}>
+        <p style={{ textAlign: 'center', fontSize: 13, fontWeight: 600, letterSpacing: '.4px', textTransform: 'uppercase', color: '#7a7a78', marginBottom: 14 }}>
+          {pm.title}
+        </p>
+        <div className="pr-methods" style={{ display: 'flex', gap: 10 }}>
+          {pm.methods.map((method) => (
+            <div key={method.name} style={{ flex: 1, border: '1px solid #e8e7e2', borderRadius: 12, padding: '14px 16px', background: 'white' }}>
+              <div style={{ fontSize: 22, marginBottom: 6 }}>{method.icon}</div>
+              <div style={{ fontSize: 13, fontWeight: 600, color: '#0f0f0e', marginBottom: 3 }}>{method.name}</div>
+              <div style={{ fontSize: 12, color: '#7a7a78', lineHeight: 1.4 }}>{method.desc}</div>
+            </div>
+          ))}
+        </div>
+        <p style={{ textAlign: 'center', fontSize: 12, color: '#b8b8b5', marginTop: 14, lineHeight: 1.5 }}>
+          {pm.subtitle}
+        </p>
       </div>
 
       {/* FAQ */}
