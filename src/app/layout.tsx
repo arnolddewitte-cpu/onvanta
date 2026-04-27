@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import ImpersonationBanner from "@/components/impersonation-banner";
+
+const isProd = process.env.NODE_ENV === 'production'
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -53,6 +56,22 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+        {isProd && (
+          <>
+            <Script
+              src="https://www.googletagmanager.com/gtag/js?id=G-6VKYLX0HTZ"
+              strategy="afterInteractive"
+            />
+            <Script id="google-analytics" strategy="afterInteractive">
+              {`
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', 'G-6VKYLX0HTZ');
+              `}
+            </Script>
+          </>
+        )}
         <ImpersonationBanner />
         {children}
       </body>
