@@ -52,6 +52,10 @@
           "a": "Onvanta charges €24.99 per active onboardee per month. Managers and admins are always free — you only pay for employees who are actively going through their onboarding. See all details at onvanta.io/pricing."
         },
         {
+          "q": "How is billing handled if an onboarding starts mid-month?",
+          "a": "Onvanta bills per calendar month. Once an onboarding starts, the full month is charged — regardless of the start date. This gives your business a predictable and transparent cost structure."
+        },
+        {
           "q": "What is an active onboardee?",
           "a": "An active onboardee is an employee with an ongoing onboarding in the current calendar month. Employees without an active onboarding — for example after completing it — don't count and cost nothing."
         },
