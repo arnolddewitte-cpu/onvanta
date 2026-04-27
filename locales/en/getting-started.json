@@ -1,0 +1,36 @@
+{
+  "badge": "Getting started",
+  "title": "From sign-up to first onboarding",
+  "subtitle": "Live in 5 steps. It takes less than 10 minutes.",
+  "steps": [
+    {
+      "icon": "🚀",
+      "title": "Create a free account",
+      "text": "Go to onvanta.io and click 'Start free'. Enter your name, company name and email address. You'll receive a magic link — no password needed. The first 14 days are completely free."
+    },
+    {
+      "icon": "🎨",
+      "title": "Set up your branding",
+      "text": "Go to Settings → Branding. Upload your logo and choose your primary colour. Every new employee will immediately see that it's your company."
+    },
+    {
+      "icon": "🗂️",
+      "title": "Create your first onboarding template",
+      "text": "Go to Templates and click 'New template'. Choose a role (e.g. Customer Service, Sales, Operator) and give the template a name. Add steps with text, video, quizzes or flashcards. You can also choose from our library of 30 ready-made templates, or let AI generate a template based on a job description."
+    },
+    {
+      "icon": "✉️",
+      "title": "Invite your first employee",
+      "text": "Go to Onboardings → New onboarding. Enter the name and email address of your new employee and link the right template. The employee automatically receives an invitation email with a personal magic link."
+    },
+    {
+      "icon": "📊",
+      "title": "Track progress in your dashboard",
+      "text": "In the manager dashboard you can see immediately how far each employee is. Is someone falling behind? You'll automatically receive an at-risk alert so you can step in early — before the 30-day review."
+    }
+  ],
+  "cta": {
+    "label": "Ready to get started?",
+    "btn": "Create a free account →"
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "badge": "Aan de slag",
+  "title": "Van aanmelding tot eerste onboarding",
+  "subtitle": "In 5 stappen ben je live. Het duurt minder dan 10 minuten.",
+  "steps": [
+    {
+      "icon": "🚀",
+      "title": "Maak een gratis account aan",
+      "text": "Ga naar onvanta.io en klik op 'Gratis proberen'. Vul je naam, bedrijfsnaam en e-mailadres in. Je ontvangt een magic link — geen wachtwoord nodig. De eerste 14 dagen zijn volledig gratis."
+    },
+    {
+      "icon": "🎨",
+      "title": "Stel je huisstijl in",
+      "text": "Ga naar Instellingen → Huisstijl. Upload je logo en kies je primaire kleur. Zo ziet elke nieuwe medewerker direct dat het om jouw bedrijf gaat."
+    },
+    {
+      "icon": "🗂️",
+      "title": "Maak je eerste onboarding template",
+      "text": "Ga naar Templates en klik op 'Nieuw template'. Kies een rol (bijv. Klantenservice, Sales, Operator) en geef het template een naam. Voeg stappen toe met tekst, video, quizzen of flashcards. Je kunt ook kiezen uit onze bibliotheek van 30 kant-en-klare templates, of laat AI een template genereren op basis van een functiebeschrijving."
+    },
+    {
+      "icon": "✉️",
+      "title": "Nodig je eerste medewerker uit",
+      "text": "Ga naar Onboardings → Nieuwe onboarding. Vul de naam en het e-mailadres van je nieuwe medewerker in en koppel het juiste template. De medewerker ontvangt automatisch een uitnodigingsmail met een persoonlijke magic link."
+    },
+    {
+      "icon": "📊",
+      "title": "Volg de voortgang in je dashboard",
+      "text": "In het manager dashboard zie je direct hoe ver elke medewerker is. Loopt iemand achter? Dan ontvang je automatisch een at-risk melding zodat je op tijd kunt bijsturen — voor het 30-dagengesprek."
+    }
+  ],
+  "cta": {
+    "label": "Klaar om te starten?",
+    "btn": "Maak een gratis account aan →"
+  }
+}

@@ -8,6 +8,7 @@ export const seoMeta = {
     cookies:  { title: 'Cookiebeleid', description: 'Hoe Onvanta cookies gebruikt en hoe je ze beheert.' },
     dpa:      { title: 'Verwerkersovereenkomst', description: 'AVG-conforme verwerkersovereenkomst tussen Onvanta en haar klanten.' },
     support:  { title: 'Support', description: 'Hulp nodig? Bekijk de kennisbank, veelgestelde vragen of neem contact op.' },
+    gettingStarted: { title: 'Aan de slag', description: 'Van aanmelding tot eerste onboarding in 5 stappen. Binnen 10 minuten live.' },
   },
   en: {
     home: { title: 'New hires, productive faster', description: 'Structured onboarding with at-risk detection for growing teams.' },
@@ -18,6 +19,7 @@ export const seoMeta = {
     cookies:  { title: 'Cookie Policy', description: 'How Onvanta uses cookies and how to manage them.' },
     dpa:      { title: 'Data Processing Agreement', description: 'GDPR-compliant data processing agreement between Onvanta and its customers.' },
     support:  { title: 'Support', description: 'Need help? Browse the knowledge base, FAQs or get in touch.' },
+    gettingStarted: { title: 'Getting started', description: 'From sign-up to first onboarding in 5 steps. Live in under 10 minutes.' },
   }
 }
 export const ogImage = { url: 'https://onvanta.io/og-image.png', width: 1200, height: 630 }
